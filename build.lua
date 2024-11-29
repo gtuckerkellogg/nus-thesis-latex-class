@@ -10,7 +10,7 @@ pkgdate = "2024-11-28"
 sourcefiledir = "src"
 docfiledir = "doc"
 typesetfiles = {"*.dtx", "*.tex" } 
-typesetexe = "lualatex"
+typesetexe = "pdflatex"
 
 packtdszip = true
 
