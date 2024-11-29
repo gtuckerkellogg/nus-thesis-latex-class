@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}[2022-06-01]
 \RequirePackage{l3keys2e}
-\ProvidesExplClass{nus-thesis}{2024-00-00}{0.0.0.a}{}{NUS thesis class}
+\ProvidesExplClass{nus-thesis}{2024-00-00}{0.0.0.a}{NUS thesis class}
 
 \str_const:Nn \c__classname_base_class_str { book }
 
