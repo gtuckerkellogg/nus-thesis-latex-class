@@ -47,6 +47,8 @@
   , document-type .initial:n = { thesis }
   , candidacy .tl_set:N = \l__thesis_candidacy_tl
   , candidacy .initial:n = { (candidacy) }
+  , field .tl_set:N = \l__degree_field_tl
+  , field .initial:n = { (field) }
   , submission-year .tl_set:N = \l__thesis_year_tl
   , submission-year .initial:n =  { \number\year }
   , qualification .tl_set:N = \l__thesis_qualification_tl
@@ -217,7 +219,9 @@
 \@ifundefined{titlepagefooter}{
   \newcommand{\titlepagefooter}{\large\bfseries\uppercase\expandafter{
       \textsomels{A~\uppercase\expandafter{\l__documenttype_tl}~submitted~
-        for~the~Degree~of~\\\uppercase\expandafter{\l__thesis_candidacy_tl}\\ Department~of~ \uppercase\expandafter{\l__thesis_department_tl}\\ \uppercase\expandafter{\l__thesis_university_tl}}\\
+        for~the~Degree~of~\\\uppercase\expandafter{\l__thesis_candidacy_tl} \\
+        in~\uppercase\expandafter{\l__degree_field_tl} \\
+        Department~of~ \uppercase\expandafter{\l__thesis_department_tl}\\ \uppercase\expandafter{\l__thesis_university_tl}}\\
       \vspace*{2cm}\l__thesis_year_tl\\
     }}}{}
 
