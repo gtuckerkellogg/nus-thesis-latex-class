@@ -4,7 +4,7 @@
 %%
 %% The original source files were:
 %%
-%% nus-thesis.dtx  (with options: `cls')
+%% nus-thesis.dtx  (with options: `class')
 %% 
 %% IMPORTANT NOTICE:
 %% 
@@ -22,13 +22,11 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}[2022-06-01]
 \RequirePackage{l3keys2e}
-\ProvidesExplClass{nus-thesis}{2024-00-00}{0.0.0.a}{NUS thesis class}
-
+\ProvidesExplClass{nus-thesis}
+{2024-11-29}{0.0.0.a}{NUS thesis class}
 \str_const:Nn \c__classname_base_class_str { book }
-
 \PassOptionsToClass{a4paper}{\c__classname_base_class_str}
 \PassOptionsToClass{12pt}{\c__classname_base_class_str}
-
 \keys_define:nn { nus-thesis }
 {
   , openright .bool_set:N = \l__classname_openright_bool
@@ -159,17 +157,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\titlepage}{
   \thispagestyle{empty}
-  \begin{center}\hyphenpenalty=10000
+  \begin{center}%
+    \hyphenpenalty=10000
     \Large\bfseries\uppercase\expandafter{\@title}\\
     \normalsize\mdseries\uppercase\expandafter{\@subtitle}
     \vfill%
-
-  \end{center}\vfill
   \titlepagebody
   \vfill
-  \begin{center}\hyphenpenalty=10000
-    \titlepagefooter
-  \end{center}\newpage}
+  \titlepagefooter
+\end{center}
+\newpage}
 
 \renewcommand{\maketitle}{
   \coverpage
@@ -212,9 +209,9 @@
 
 \@ifundefined{titlepagebody}{
   \newcommand{\titlepagebody}{
-    \begin{center}\hyphenpenalty=10000
-      \large\uppercase\expandafter{{\bfseries\@author}}\\ \textit{\expandafter{\@qualification}}
-    \end{center}}}{}
+    \large\uppercase\expandafter{{\bfseries\@author}}\\
+    \textit{\expandafter{\@qualification}}
+  }}{}
 
 \@ifundefined{titlepagefooter}{
   \newcommand{\titlepagefooter}{\large\bfseries\uppercase\expandafter{
@@ -227,18 +224,17 @@
 
 \@ifundefined{declarationpage}{
   \newcommand{\declarationpage}{
-    \thispagestyle{empty}
     \begin{center}\hyphenpenalty=10000
       \large\bfseries\uppercase\expandafter{DECLARATION}
     \end{center}
     \vspace*{1cm}
     \begin{center}\hyphenpenalty=10000
-      I~hereby~declare~that~the~thesis~is~my~original\\
+      I~hereby~declare~that~the~\l__documenttype_tl{}~is~my~original\\
       work~and~it~has~been~written~by~me~in~its~entirety.\\
       I~have~duly~acknowledged~all~the~sources~of\\
-      information~which~have~been~used~in~the~thesis.\\
+      information~which~have~been~used~in~the~\l__documenttype_tl.\\
       \vspace*{0.5cm}
-      This~thesis~has~also~not~been~submitted~for~any\\
+      This~\l__documenttype_tl{}~has~also~not~been~submitted~for~any\\
       degree~in~any~university~previously.\\
       \vspace*{2cm}
       % \begin{figure}[!h]
@@ -254,10 +250,8 @@
     \end{center}\newpage}} {}
 
 
-\titleformat{\chapter}[display]{
-  \bfseries\Huge
-}{\filleft\MakeUppercase{\textsomels{\chaptertitlename}\  \thechapter}}{1ex}{}[]
-\titlespacing*{\chapter}{0pt}{*4}{*4}
+
+\RequirePackage[palatino]{quotchap}
 
 
 \newcommand{\acknowledgment}[1]{
@@ -322,7 +316,6 @@
   % $\hspace{\@mcsym}$%
   % \begin{minipage}[t]{\@rcsym}#2\end{minipage}\newline
   \acro{#1}{#2}}
-
 \endinput
 %%
 %% End of file `nus-thesis.cls'.

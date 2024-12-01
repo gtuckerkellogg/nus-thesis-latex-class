@@ -1,0 +1,58 @@
+% \iffalse meta-comment -------------------------------------------------------
+%   -------------------------------------------------------------------------
+%   Copyright 2024 Greg Tucker-Kellogg 
+%   
+%   This work is licensed under a Creative Commons Attribution-ShareAlike 4.0
+%   International License (https://creativecommons.org/licenses/by-sa/4.0/).
+%   -------------------------------------------------------------------------
+% \fi
+% \iffalse
+%<package>   \NeedsTeXFormat{LaTeX2e}[2022-06-01]
+%<package>   \RequirePackage{l3keys2e}
+%<package>   \ProvidesExplPackage{lsm4288}
+%<package>   {2024-11-29}{0.0.0.a}{NUS thesis }
+%   
+%<*driver>   
+\documentclass{l3doc}
+\usepackage{framed}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+\DocInput{\jobname.dtx}
+\end{document}
+%</driver> 
+% \fi
+%    \begin{macrocode}
+%<*package>      
+\keys_define:nn { nus-thesis } {
+  , matric .tl_set:N = \l__student_matric_tl
+  , matric .initial:n = { (matric~undefined) }
+  , course .tl_set:N = \l__report_course_tl
+  , course .initial:n = { LSM4288 }
+  , batch  .tl_set:N = \l__student_batch_tl
+  , batch  .initial:n = { (batch~undefined) }
+}
+
+\ThesisSetup{document-type=report}
+
+\renewcommand{\maketitle}{\titlepage}
+
+\renewcommand{\titlepagebody}{
+  \large\uppercase\expandafter{{\bfseries\@author}}\\ \l__student_matric_tl%
+}
+
+\renewcommand{\titlepagefooter}{\singlespacing\large\uppercase\expandafter{
+    \textsomels{A~report~submitted~to~the\\[\baselineskip]
+      Department~of~\uppercase\expandafter{\l__thesis_department_tl}\\
+      \uppercase\expandafter{\l__thesis_university_tl}}\\[\baselineskip]
+    in~partial~fulfillment\\
+    for~the~Degree~of~\uppercase\expandafter{\l__thesis_candidacy_tl}\\
+    with~honours\\
+    in~\uppercase\expandafter{\l__degree_field_tl}
+    \vfill%
+    \l__report_course_tl\\
+    BATCH~\l__student_batch_tl}}
+
+%</package> 
+%    \end{macrocode}

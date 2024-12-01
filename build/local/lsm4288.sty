@@ -1,0 +1,58 @@
+%%
+%% This is file `lsm4288.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% lsm4288.dtx  (with options: `package')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from lsm4288.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file lsm4288.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+   \NeedsTeXFormat{LaTeX2e}[2022-06-01]
+   \RequirePackage{l3keys2e}
+   \ProvidesExplPackage{lsm4288}
+   {2024-11-29}{0.0.0.a}{NUS thesis }
+\keys_define:nn { nus-thesis } {
+  , matric .tl_set:N = \l__student_matric_tl
+  , matric .initial:n = { (matric~undefined) }
+  , course .tl_set:N = \l__report_course_tl
+  , course .initial:n = { LSM4288 }
+  , batch  .tl_set:N = \l__student_batch_tl
+  , batch  .initial:n = { (batch~undefined) }
+}
+
+\ThesisSetup{document-type=report}
+
+\renewcommand{\maketitle}{\titlepage}
+
+\renewcommand{\titlepagebody}{
+  \large\uppercase\expandafter{{\bfseries\@author}}\\ \l__student_matric_tl%
+}
+
+\renewcommand{\titlepagefooter}{\singlespacing\large\uppercase\expandafter{
+    \textsomels{A~report~submitted~to~the\\[\baselineskip]
+      Department~of~\uppercase\expandafter{\l__thesis_department_tl}\\
+      \uppercase\expandafter{\l__thesis_university_tl}}\\[\baselineskip]
+    in~partial~fulfillment\\
+    for~the~Degree~of~\uppercase\expandafter{\l__thesis_candidacy_tl}\\
+    with~honours\\
+    in~\uppercase\expandafter{\l__degree_field_tl}
+    \vfill%
+    \l__report_course_tl\\
+    BATCH~\l__student_batch_tl}}
+
+\endinput
+%%
+%% End of file `lsm4288.sty'.

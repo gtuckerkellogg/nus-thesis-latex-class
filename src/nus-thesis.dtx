@@ -7,12 +7,11 @@
 %   -------------------------------------------------------------------------
 % \fi
 % \iffalse
-%   
-% 
-%<cls>\NeedsTeXFormat{LaTeX2e}[2022-06-01]
-%<cls>\RequirePackage{l3keys2e}
-%<cls>\ProvidesExplClass{nus-thesis}{2024-00-00}{0.0.0.a}{NUS thesis class}
-% 
+%<class>\NeedsTeXFormat{LaTeX2e}[2022-06-01]
+%<class>\RequirePackage{l3keys2e}
+%<class>\ProvidesExplClass{nus-thesis}
+%<class>{2024-11-29}{0.0.0.a}{NUS thesis class}
+%
 %<*driver>
 \documentclass{l3doc}
 \usepackage{framed}
@@ -20,14 +19,14 @@
 \CodelineIndex
 \RecordChanges
 \begin{document}
-\DocInput{\jobname.dtx}
+  \DocInput{\jobname.dtx}
 \end{document}
 %</driver> 
 % \fi
 % 
 % \GetFileInfo{nus-thesis.dtx}
 % \title{The \textsf{nus-thesis} class\thanks{This document
-%   corresponds to \textsf{⟨package⟩}~\fileversion,
+%   corresponds to \textsf{nus-thesis}~\fileversion,
 %   dated~\filedate.}}
 % \author{Greg Tucker-Kellogg \\ \texttt{dbsgtk@nus.edu.sg}}
 % \maketitle
@@ -38,21 +37,6 @@
 % \tableofcontents
 % 
 % \section{Introduction}
-% 
-% \begin{function}{\pdftexengine, \xetexengine, \luatexengine}
-%   \begin{syntax}
-%     \cmd{\pdftexengine}
-%     \cmd{\xetexengine}
-%     \cmd{\luatexengine}
-%   \end{syntax}
-%   These commands alias the built-in \LaTeX3{} macros
-%   \cs{sys_if_engine_pdftex_p:},
-%   \cs{sys_if_engine_xetex_p:}, and
-%   \cs{sys_if_engine_luatex_p:}.
-%   They can be used to check which engine the user is currently running.
-% \end{function}
-% 
-% 
 % 
 % \section{Class options}
 % Class options can be set with the \cs{documentclass}, later as keys, or in some cases in dedicated commands.
@@ -68,20 +52,16 @@
 % degree candidacy
 %
 %    \begin{macrocode}
-%<*cls>      
-
+%<*class>      
+%
 \str_const:Nn \c__classname_base_class_str { book }
-
-% Make sure a few of these base class options are set properly
+%
+% % Make sure a few of these base class options are set properly
 \PassOptionsToClass{a4paper}{\c__classname_base_class_str}
 \PassOptionsToClass{12pt}{\c__classname_base_class_str}
-
+% 
 \keys_define:nn { nus-thesis }
 {
-%    \end{macrocode}
-% \begin{function}{openright}
-% \end{function}
-% \begin{macrocode}
   , openright .bool_set:N = \l__classname_openright_bool
   , openright .initial:n = { false }
   , author .tl_set:N = \l__thesis_author_tl
@@ -222,17 +202,16 @@
 % Title Page
 \renewcommand{\titlepage}{
   \thispagestyle{empty}
-  \begin{center}\hyphenpenalty=10000
+  \begin{center}%
+    \hyphenpenalty=10000
     \Large\bfseries\uppercase\expandafter{\@title}\\
     \normalsize\mdseries\uppercase\expandafter{\@subtitle}
     \vfill%
-
-  \end{center}\vfill
   \titlepagebody
   \vfill
-  \begin{center}\hyphenpenalty=10000
-    \titlepagefooter
-  \end{center}\newpage}
+  \titlepagefooter
+\end{center}
+\newpage}
 
 % Title (Cover and Title)
 \renewcommand{\maketitle}{
@@ -281,9 +260,9 @@
 % Title Page Body
 \@ifundefined{titlepagebody}{
   \newcommand{\titlepagebody}{
-    \begin{center}\hyphenpenalty=10000
-      \large\uppercase\expandafter{{\bfseries\@author}}\\ \textit{\expandafter{\@qualification}}
-    \end{center}}}{}
+    \large\uppercase\expandafter{{\bfseries\@author}}\\
+    \textit{\expandafter{\@qualification}}
+  }}{}
 
 % Title Page Footer
 \@ifundefined{titlepagefooter}{
@@ -298,18 +277,17 @@
 % Declaration Page
 \@ifundefined{declarationpage}{
   \newcommand{\declarationpage}{
-    \thispagestyle{empty}
     \begin{center}\hyphenpenalty=10000
       \large\bfseries\uppercase\expandafter{DECLARATION}
     \end{center}
     \vspace*{1cm}
     \begin{center}\hyphenpenalty=10000
-      I~hereby~declare~that~the~thesis~is~my~original\\
+      I~hereby~declare~that~the~\l__documenttype_tl{}~is~my~original\\
       work~and~it~has~been~written~by~me~in~its~entirety.\\
       I~have~duly~acknowledged~all~the~sources~of\\
-      information~which~have~been~used~in~the~thesis.\\
+      information~which~have~been~used~in~the~\l__documenttype_tl.\\
       \vspace*{0.5cm}
-      This~thesis~has~also~not~been~submitted~for~any\\
+      This~\l__documenttype_tl{}~has~also~not~been~submitted~for~any\\
       degree~in~any~university~previously.\\
       \vspace*{2cm}
       % \begin{figure}[!h]
@@ -335,10 +313,12 @@
 %   \filright}[\vspace{2ex}\titlerule]%
 
 
-\titleformat{\chapter}[display]{
-  \bfseries\Huge
-}{\filleft\MakeUppercase{\textsomels{\chaptertitlename}\  \thechapter}}{1ex}{}[]
-\titlespacing*{\chapter}{0pt}{*4}{*4}
+% \titleformat{\chapter}[display]{
+%   \bfseries\Huge
+% }{\filleft\MakeUppercase{\textsomels{\chaptertitlename}\  \thechapter}}{1ex}{}[]
+% \titlespacing*{\chapter}{0pt}{*4}{*4}
+
+\RequirePackage[palatino]{quotchap}
 
 % Chapfont
 % \newcommand{\chapfont}[1]{
@@ -438,11 +418,8 @@
   % $\hspace{\@mcsym}$%
   % \begin{minipage}[t]{\@rcsym}#2\end{minipage}\newline
   \acro{#1}{#2}}
-%</cls>% 
+%</class>% 
 %    \end{macrocode}
 % 
-% \iffalse
-
-% \fi
 % \Finale
 \endinput
