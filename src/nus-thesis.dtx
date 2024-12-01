@@ -164,7 +164,6 @@
   linkcolor = DarkBlue,
   citecolor = DarkBlue,
   plainpages = false,
-  hyperfootnotes = false,
   hypertexnames = false,
   allbordercolors = white,
 }
@@ -330,10 +329,10 @@
 % \noindent\textbf{\begin{Huge}#1\end{Huge}}\vspace*{1cm}\\}
 
 % Acknowledgment
-\newcommand{\acknowledgment}[1]{
-  \vspace*{2.75cm}
-% \chapfont{Acknowledgments}#1\vfill
-\newpage}
+\newcommand{\acknowledgements}[1]{
+ \chapter*{Acknowledgements}  
+  \vspace*{2.75cm} #1\clearpage}
+
 
 % Abstract
 % \newcommand{\abstract}[1]{
@@ -342,10 +341,10 @@
 % \begin{flushright}\today\end{flushright}\newpage}
 
 \newcommand{\abstract}[1]{
-  \setcounter{secnumdepth}{-2}
-  \chapter{Abstract}
+%  \setcounter{secnumdepth}{-2}
+  \chapter*{Abstract}
   #1\vfill
-  \setcounter{secnumdepth}{2}
+%  \setcounter{secnumdepth}{2}
 }
 
 % Strict Compliant

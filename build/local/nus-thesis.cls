@@ -129,7 +129,6 @@
   linkcolor = DarkBlue,
   citecolor = DarkBlue,
   plainpages = false,
-  hyperfootnotes = false,
   hypertexnames = false,
   allbordercolors = white,
 }
@@ -258,16 +257,14 @@
 \RequirePackage[palatino]{quotchap}
 
 
-\newcommand{\acknowledgment}[1]{
-  \vspace*{2.75cm}
-\newpage}
+\newcommand{\acknowledgements}[1]{
+ \chapter*{Acknowledgements}
+  \vspace*{2.75cm} #1\clearpage}
 
 
 \newcommand{\abstract}[1]{
-  \setcounter{secnumdepth}{-2}
-  \chapter{Abstract}
+  \chapter*{Abstract}
   #1\vfill
-  \setcounter{secnumdepth}{2}
 }
 
 \@ifundefined{@nusstrict}{}{
