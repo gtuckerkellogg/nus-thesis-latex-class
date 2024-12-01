@@ -177,7 +177,7 @@
 
 % Plain Page Style
 \pagestyle{plain}
-
+\RequirePackage{emptypage}
 % Labels Declaration
 \graphicspath{ {./images/} }
 
@@ -215,7 +215,7 @@
   \vfill
   \titlepagefooter
 \end{center}
-\newpage}
+\clearpage{\thispagestyle{empty}\cleardoublepage}}
 
 % Title (Cover and Title)
 \renewcommand{\maketitle}{

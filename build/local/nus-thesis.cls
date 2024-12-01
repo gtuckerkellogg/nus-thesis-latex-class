@@ -139,7 +139,7 @@
 \doublespacing
 
 \pagestyle{plain}
-
+\RequirePackage{emptypage}
 \graphicspath{ {./images/} }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -169,7 +169,7 @@
   \vfill
   \titlepagefooter
 \end{center}
-\newpage}
+\clearpage{\thispagestyle{empty}\cleardoublepage}}
 
 \renewcommand{\maketitle}{
   \coverpage
