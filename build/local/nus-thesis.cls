@@ -116,7 +116,7 @@
   \RequirePackage[utf8]{inputenc}
   \RequirePackage{textcomp} % provides euro and other symbols
   \RequirePackage[scaled=0.9,varl]{inconsolata}
-  \RequirePackage[mono=false]{libertinus-type1}
+  \RequirePackage[mono=false,sb]{libertinus}
   \RequirePackage{libertinust1math}
 \else % if luatex or xelatex
   \RequirePackage{fontspec}
@@ -252,10 +252,30 @@
       \today
     \end{center}\newpage}} {}
 
+%% titlesec
+\definecolor{chaptergrey}{rgb}{0.6,0.6,0.6}
 
+%%% chapter titles similar to quotchap
+\newcommand*{\chapnum}{%
+  \fontsize{100}{130}\sffamily\bfseries\selectfont%
+\color{chaptergrey}\raggedleft}
 
-\RequirePackage[palatino]{quotchap}
+\titleformat{\chapter}[display]{%
+  %format
+  \sffamily\setstretch{0.9}}{%
+  % label
+  \chapnum{\thechapter}}{%
+  % sep
+  0em}{%
+  % beforecode
+  \raggedleft\Huge}{%
+  % aftercode
+}
 
+\titleformat{\section}{\setstretch{1.2}\sffamily\raggedright\Large}{\thesection}{1em}{}
+\titleformat{\subsection}{\setstretch{1.2}\sffamily\raggedright\large}{\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}{\setstretch{1.2}\sffamily\normalsize}{\thesubsubsection}{1em}{}
 
 \newcommand{\acknowledgements}[1]{
  \chapter*{Acknowledgements}
@@ -274,6 +294,16 @@
   \renewcommand{\chaptername}{CHAPTER}
   \renewcommand{\appendixname}{APPENDIX}
 }
+
+\newcommand\appendix@chapter[1]{%
+    \refstepcounter{chapter}%
+    \def\app@ct{Appendix~\@Alph\c@chapter\\[\baselineskip] #1}
+    \orig@chapter*{\app@ct}%
+    \markboth{\MakeUppercase{\app@ct}}{\MakeUppercase{\app@ct}}
+    \addcontentsline{toc}{chapter}{\app@ct}%
+}
+\let\orig@chapter\chapter
+\g@addto@macro\appendix{\let\chapter\appendix@chapter}
 
 \crefname{appsec}{Appendix}{Appendices}
 \crefname{figure}{Fig.}{Fig.}
