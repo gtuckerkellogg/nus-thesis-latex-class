@@ -105,7 +105,7 @@
 \RequirePackage{acronym}
 \RequirePackage[section]{placeins}
 \RequirePackage[nottoc]{tocbibind}
-\RequirePackage[titletoc]{appendix}
+\RequirePackage[title,titletoc]{appendix}
 \RequirePackage{mdwtab}
 \RequirePackage{caption}
 \RequirePackage{floatrow}
@@ -295,15 +295,15 @@
   \renewcommand{\appendixname}{APPENDIX}
 }
 
-\newcommand\appendix@chapter[1]{%
-    \refstepcounter{chapter}%
-    \def\app@ct{Appendix~\@Alph\c@chapter\\[\baselineskip] #1}
-    \orig@chapter*{\app@ct}%
-    \markboth{\MakeUppercase{\app@ct}}{\MakeUppercase{\app@ct}}
-    \addcontentsline{toc}{chapter}{\app@ct}%
+\noappendicestocpagenum
+\renewcommand{\appendixpagename}{\normalfont\sffamily Appendices}
+\g@addto@macro\appendix{%
+\titleformat{\chapter}[display]
+{\sffamily\huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\cleardoublepage
+\addappheadtotoc
+\appendixpage
 }
-\let\orig@chapter\chapter
-\g@addto@macro\appendix{\let\chapter\appendix@chapter}
 
 \crefname{appsec}{Appendix}{Appendices}
 \crefname{figure}{Fig.}{Fig.}

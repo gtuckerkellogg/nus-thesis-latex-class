@@ -139,7 +139,7 @@
 \RequirePackage{acronym}
 \RequirePackage[section]{placeins}
 \RequirePackage[nottoc]{tocbibind}
-\RequirePackage[titletoc]{appendix}
+\RequirePackage[title,titletoc]{appendix}
 \RequirePackage{mdwtab}
 \RequirePackage{caption}
 \RequirePackage{floatrow}
@@ -362,16 +362,15 @@
 % \renewcommand{\chapfont}[1]{{\centering\mdseries\begin{Huge}#1\end{Huge}\vspace*{1cm}\\}}
 }
 
-\newcommand\appendix@chapter[1]{%
-    \refstepcounter{chapter}%
-    \def\app@ct{Appendix~\@Alph\c@chapter\\[\baselineskip] #1}
-    \orig@chapter*{\app@ct}%
-    \markboth{\MakeUppercase{\app@ct}}{\MakeUppercase{\app@ct}}
-    \addcontentsline{toc}{chapter}{\app@ct}%
+\noappendicestocpagenum
+\renewcommand{\appendixpagename}{\normalfont\sffamily Appendices}
+\g@addto@macro\appendix{%
+\titleformat{\chapter}[display]
+{\sffamily\huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\cleardoublepage
+\addappheadtotoc
+\appendixpage
 }
-\let\orig@chapter\chapter
-\g@addto@macro\appendix{\let\chapter\appendix@chapter}
-
 
 % Format text referring to appendices
 \crefname{appsec}{Appendix}{Appendices}
