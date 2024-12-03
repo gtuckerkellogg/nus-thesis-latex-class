@@ -116,7 +116,7 @@
   \RequirePackage[utf8]{inputenc}
   \RequirePackage{textcomp} % provides euro and other symbols
   \RequirePackage[scaled=0.9,varl]{inconsolata}
-  \RequirePackage[mono=false,sb]{libertinus}
+  \RequirePackage[mono=false,sb]{libertine}
   \RequirePackage{libertinust1math}
 \else % if luatex or xelatex
   \RequirePackage{fontspec}
@@ -162,8 +162,8 @@
   \thispagestyle{empty}
   \begin{center}%
     \hyphenpenalty=10000
-    \Large\bfseries\uppercase\expandafter{\@title}\\
-    \normalsize\mdseries\uppercase\expandafter{\@subtitle}
+    {\Large\libertineDisplay\uppercase\expandafter{\@title}\\ }
+    \libertine\normalsize\mdseries\uppercase\expandafter{\@subtitle}
     \vfill%
   \titlepagebody
   \vfill
@@ -217,7 +217,7 @@
   }}{}
 
 \@ifundefined{titlepagefooter}{
-  \newcommand{\titlepagefooter}{\large\bfseries\uppercase\expandafter{
+  \newcommand{\titlepagefooter}{\large\uppercase\expandafter{
       \textsomels{A~\uppercase\expandafter{\l__documenttype_tl}~submitted~
         for~the~Degree~of~\\\uppercase\expandafter{\l__thesis_candidacy_tl} \\
         in~\uppercase\expandafter{\l__degree_field_tl} \\
