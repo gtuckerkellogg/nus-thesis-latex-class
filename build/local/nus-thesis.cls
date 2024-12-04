@@ -52,6 +52,39 @@
   , qualification .tl_set:N = \l__thesis_qualification_tl
   , qualification .initial:n = { (qualification undefined)  }
   , qualification .code:n = {\qualification{#1}}
+  , strict .bool_set:N = \l__classname_nusstrict_bool
+  , strict .initial:n = { false}
+  , font .choice:
+  , font / strict .code:n = {
+    \RequirePackage{mathptmx}
+  }
+  , font / helvetica .code:n = {
+    \RequirePackage{helvet}
+    \renewcommand{\familydefault}{\sfdefault}
+    \RequirePackage[eulergreek]{sansmath}
+    \sansmath
+  }
+  , font / palatino .code:n = {
+    \RequirePackage[sc]{mathpazo}
+  }
+  , font / libertine .code:n = {
+    \RequirePackage[T1]{fontenc}
+    \RequirePackage[utf8]{inputenc}
+    \RequirePackage[scaled=0.9,varl]{inconsolata}
+    \RequirePackage[mono=false,sb]{libertine}
+    \RequirePackage{libertinust1math}
+    \renewcommand{\nusthesis@chapheadfont}{\sffamily}
+    \renewcommand{\nusthesis@headingfont}{\sffamily}
+  }
+  , font / minionpro .code:n = {
+    \RequirePackage[T1]{fontenc}
+    \RequirePackage[utf8]{inputenc}
+    \RequirePackage[scaled=0.9,varl]{inconsolata}
+    \RequirePackage[lf,fullfamily,opticals,minionint,loosequotes,footnotefigures]{MinionPro}
+    \RequirePackage[sans]{libertinus}
+    \renewcommand{\nusthesis@chapheadfont}{\sffamily}
+    \renewcommand{\nusthesis@headingfont}{\sffamily}
+  }
   % \DeclareDefaultOption
   , unknown .code:n =
   {
@@ -115,14 +148,12 @@
   \RequirePackage[T1]{fontenc}
   \RequirePackage[utf8]{inputenc}
   \RequirePackage{textcomp} % provides euro and other symbols
-  \RequirePackage[scaled=0.9,varl]{inconsolata}
-  \RequirePackage[mono=false,sb]{libertine}
-  \RequirePackage{libertinust1math}
 \else % if luatex or xelatex
   \RequirePackage{fontspec}
   \RequirePackage{xunicode}
-
 \fi
+
+%%%% fonts
 
 \RequirePackage{hyperref}
 \hypersetup{
@@ -162,8 +193,8 @@
   \thispagestyle{empty}
   \begin{center}%
     \hyphenpenalty=10000
-    {\Large\libertineDisplay\uppercase\expandafter{\@title}\\ }
-    \libertine\normalsize\mdseries\uppercase\expandafter{\@subtitle}
+    {\LARGE\nusthesis@titlefont\uppercase\expandafter{\@title}\\ }
+    \normalsize\mdseries\uppercase\expandafter{\@subtitle}
     \vfill%
   \titlepagebody
   \vfill
@@ -177,20 +208,25 @@
 }
 
 \renewcommand{\tablename}{Table}
+\DeclareCaptionLabelFormat{bf}{\bfseries #1~#2}
 \DeclareCaptionFormat{hfillstart}{#1#2#3}
 \DeclareFloatFont{normalsize}{\normalsize}
+\floatsetup[table]{capposition=top}
+
 \captionsetup[table]{
+  font={small,sf},
   format=hfillstart,
+  labelformat=bf,
   labelsep=newline,
   justification=centering,
 }
 
-\renewcommand{\figurename}{Fig.}
+\renewcommand{\figurename}{Figure}
 \captionsetup[figure]{
+  font={small,sf},
+  labelformat=bf,
   labelsep=period,
 }
-
-\floatsetup[table]{capposition=top, font=normalsize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -255,27 +291,14 @@
 %% titlesec
 \definecolor{chaptergrey}{rgb}{0.6,0.6,0.6}
 
+\newcommand{\nusthesis@titlefont}{\normalfont}
+\newcommand{\nusthesis@chapheadfont}{\normalfont}
+\newcommand{\nusthesis@headingfont}{\normalfont}
+
 %%% chapter titles similar to quotchap
 \newcommand*{\chapnum}{%
-  \fontsize{100}{130}\sffamily\bfseries\selectfont%
+  \fontsize{100}{130}\nusthesis@chapheadfont\bfseries\selectfont%
 \color{chaptergrey}\raggedleft}
-
-\titleformat{\chapter}[display]{%
-  %format
-  \sffamily\setstretch{0.9}}{%
-  % label
-  \chapnum{\thechapter}}{%
-  % sep
-  0em}{%
-  % beforecode
-  \raggedleft\Huge}{%
-  % aftercode
-}
-
-\titleformat{\section}{\setstretch{1.2}\sffamily\raggedright\Large}{\thesection}{1em}{}
-\titleformat{\subsection}{\setstretch{1.2}\sffamily\raggedright\large}{\thesubsection}{1em}{}
-
-\titleformat{\subsubsection}{\setstretch{1.2}\sffamily\normalsize}{\thesubsubsection}{1em}{}
 
 \newcommand{\acknowledgements}[1]{
  \chapter*{Acknowledgements}
@@ -287,19 +310,33 @@
   #1\vfill
 }
 
-\@ifundefined{@nusstrict}{}{
-  \chapternumberfont{\centering\mdseries\uppercase}
-  \chaptertitlefont{\centering\mdseries\uppercase}
-  \sectionfont{\raggedright}
-  \renewcommand{\chaptername}{CHAPTER}
-  \renewcommand{\appendixname}{APPENDIX}
+\bool_if:NTF \l__classname_nusstrict_bool
+{
+}{
+  \titleformat{\chapter}[display]{%
+    % format
+    \nusthesis@chapheadfont\setstretch{0.9}}{%
+    % label
+    \chapnum{\thechapter}}{%
+    % sep
+    0em}{%
+    % beforecode
+    \raggedleft\Huge}{%
+    % aftercode
+  }
+
+\titleformat{\section}{\setstretch{1.2}\nusthesis@headingfont\raggedright\Large}{\thesection}{1em}{}
+\titleformat{\subsection}{\setstretch{1.2}\nusthesis@headingfont\raggedright\large}{\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}{\setstretch{1.2}\nusthesis@headingfont\normalsize}{\thesubsubsection}{1em}{}
+
 }
 
 \noappendicestocpagenum
-\renewcommand{\appendixpagename}{\normalfont\sffamily Appendices}
+\renewcommand{\appendixpagename}{\nusthesis@chapheadfont Appendices}
 \g@addto@macro\appendix{%
 \titleformat{\chapter}[display]
-{\sffamily\huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+{\nusthesis@chapheadfont\Huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
 \cleardoublepage
 \addappheadtotoc
 \appendixpage
@@ -309,8 +346,6 @@
 \crefname{figure}{Fig.}{Fig.}
 \crefname{table}{Table}{Tables}
 \crefname{equation}{}{}
-
-\newfloatcommand{capbtabbox}{table}[][\FBwidth]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
