@@ -71,6 +71,7 @@
   }
   , font / palatino .code:n = {
     \RequirePackage[sc]{mathpazo}
+    \RequirePackage{gillius}
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
     \renewcommand{\nusthesis@headingfont}{\sffamily}
   }
@@ -88,6 +89,7 @@
     \RequirePackage[utf8]{inputenc}
     \RequirePackage[scaled=0.9,varl]{inconsolata}
     \RequirePackage[lf,fullfamily,opticals,minionint,loosequotes,footnotefigures]{MinionPro}
+    \RequirePackage{gillius}
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
     \renewcommand{\nusthesis@headingfont}{\sffamily}
     \renewcommand{\nusthesis@titlepagefont}{\sffamily}
