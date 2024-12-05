@@ -129,6 +129,7 @@
 \RequirePackage{epstopdf}
 \RequirePackage{setspace}
 \RequirePackage{titlesec}
+\RequirePackage{titletoc}
 \RequirePackage{ifthen}
 \RequirePackage[top=1in, bottom=1in, left=1.5in, right=1.5in]{geometry}
 \RequirePackage{amsmath}
@@ -315,7 +316,7 @@
 
 \renewenvironment{acknowledgements}{%
   \chapter*{Acknowledgements}
-   \phantomsection\addcontentsline{toc}{chapter}{Acknowledgements}
+   \phantomsection\addcontentsline{toc}{preface}{Acknowledgements}
    }{%
    \cleardoublepage
 }
@@ -330,15 +331,37 @@
 {%
   \IfNoValueTF{#1}{
  \chapter*{Abstract}%
- \phantomsection\addcontentsline{toc}{chapter}{Abstract}%
+ \phantomsection\addcontentsline{toc}{preface}{Abstract}%
   }{
  \chapter*{#1~Abstract}%
- \phantomsection\addcontentsline{toc}{chapter}{#1~Abstract}%
+ \phantomsection\addcontentsline{toc}{preface}{#1~Abstract}%
 }
 
   }{%
     \cleardoublepage%
 }
+
+ \titlecontents{chapter}
+ [0pt]
+ {\addvspace{1pc}%
+     \bfseries%
+ }%
+ {\contentsmargin{0pt}%
+  \thecontentslabel\quad}
+ {\contentsmargin{0pt}%
+ }
+ {\hfill\contentspage}
+
+ \titlecontents{preface}
+ [0pt]
+ {\addvspace{0.5pc}%
+     \normalshape%
+ }%
+ {\contentsmargin{0pt}%
+  \thecontentslabel\quad}
+ {\contentsmargin{0pt}%
+ }
+ {\hfill\contentspage}
 
 \bool_if:NTF \l__classname_nusstrict_bool
 {
@@ -368,7 +391,8 @@
 \titleformat{\chapter}[display]
 {\nusthesis@chapheadfont\Huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
 \cleardoublepage
-\addappheadtotoc
+ \addtocontents{toc}%
+          {\protect\contentsline{part}{\appendixtocname}{}{}}%
 \appendixpage
 }
 
