@@ -66,7 +66,6 @@
   }
   , font / palatino .code:n = {
     \RequirePackage[sc]{mathpazo}
-    \RequirePackage{classico}
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
     \renewcommand{\nusthesis@headingfont}{\sffamily}
   }
