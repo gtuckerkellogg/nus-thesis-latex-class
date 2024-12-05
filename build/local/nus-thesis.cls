@@ -27,6 +27,11 @@
 \str_const:Nn \c__classname_base_class_str { book }
 \PassOptionsToClass{a4paper}{\c__classname_base_class_str}
 \PassOptionsToClass{12pt}{\c__classname_base_class_str}
+
+\newcommand{\nusthesis@titlepagefont}{\normalfont}
+\newcommand{\nusthesis@chapheadfont}{\normalfont}
+\newcommand{\nusthesis@headingfont}{\normalfont}
+
 \keys_define:nn { nus-thesis }
 {
   , openright .bool_set:N = \l__classname_openright_bool
@@ -294,10 +299,6 @@
 
 %% titlesec
 \definecolor{chaptergrey}{rgb}{0.6,0.6,0.6}
-
-\newcommand{\nusthesis@titlepagefont}{\normalfont}
-\newcommand{\nusthesis@chapheadfont}{\normalfont}
-\newcommand{\nusthesis@headingfont}{\normalfont}
 
 %%% chapter titles similar to quotchap
 \newcommand*{\chapnum}{%
