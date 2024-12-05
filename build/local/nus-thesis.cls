@@ -66,6 +66,9 @@
   }
   , font / palatino .code:n = {
     \RequirePackage[sc]{mathpazo}
+    \RequirePackage{classico}
+    \renewcommand{\nusthesis@chapheadfont}{\sffamily}
+    \renewcommand{\nusthesis@headingfont}{\sffamily}
   }
   , font / libertine .code:n = {
     \RequirePackage[T1]{fontenc}
@@ -81,9 +84,10 @@
     \RequirePackage[utf8]{inputenc}
     \RequirePackage[scaled=0.9,varl]{inconsolata}
     \RequirePackage[lf,fullfamily,opticals,minionint,loosequotes,footnotefigures]{MinionPro}
-    \RequirePackage[sans]{libertinus}
+    \RequirePackage{classico}
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
     \renewcommand{\nusthesis@headingfont}{\sffamily}
+    \renewcommand{\nusthesis@titlepagefont}{\sffamily}
   }
   % \DeclareDefaultOption
   , unknown .code:n =
@@ -190,16 +194,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\titlepage}{
+  \nusthesis@titlepagefont
   \thispagestyle{empty}
   \begin{center}%
     \hyphenpenalty=10000
-    {\LARGE\nusthesis@titlefont\uppercase\expandafter{\@title}\\ }
+    {\LARGE\uppercase\expandafter{\@title}\\ }
     \normalsize\mdseries\uppercase\expandafter{\@subtitle}
     \vfill%
   \titlepagebody
   \vfill
   \titlepagefooter
 \end{center}
+\normalfont
 \clearpage{\thispagestyle{empty}\cleardoublepage}}
 
 \renewcommand{\maketitle}{
@@ -234,7 +240,7 @@
   \thispagestyle{empty}\vspace*{0.3in}
   \begin{center}\hyphenpenalty=10000
     \Large\bfseries\uppercase\expandafter{\@title}\\
-    \Large\mdseries\uppercase\expandafter{\@subtitle}
+    \large\mdseries\uppercase\expandafter{\@subtitle}
   \end{center}\vspace*{8cm}
   \begin{center}\hyphenpenalty=10000
     \large\bfseries\uppercase\expandafter{\@author}
@@ -248,7 +254,7 @@
 
 \@ifundefined{titlepagebody}{
   \newcommand{\titlepagebody}{
-    \large\uppercase\expandafter{{\bfseries\@author}}\\
+    \Large\bfseries\uppercase\expandafter{\@author}\\
     \textit{\expandafter{\@qualification}}
   }}{}
 
@@ -264,7 +270,7 @@
 \@ifundefined{declarationpage}{
   \newcommand{\declarationpage}{
     \begin{center}\hyphenpenalty=10000
-      \large\bfseries\uppercase\expandafter{DECLARATION}
+      \nusthesis@titlepagefont\large\bfseries\uppercase\expandafter{DECLARATION}
     \end{center}
     \vspace*{1cm}
     \begin{center}\hyphenpenalty=10000
@@ -291,7 +297,7 @@
 %% titlesec
 \definecolor{chaptergrey}{rgb}{0.6,0.6,0.6}
 
-\newcommand{\nusthesis@titlefont}{\normalfont}
+\newcommand{\nusthesis@titlepagefont}{\normalfont}
 \newcommand{\nusthesis@chapheadfont}{\normalfont}
 \newcommand{\nusthesis@headingfont}{\normalfont}
 
@@ -301,13 +307,36 @@
 \color{chaptergrey}\raggedleft}
 
 \newcommand{\acknowledgements}[1]{
- \chapter*{Acknowledgements}
-  \vspace*{2.75cm} #1\clearpage}
+  \chapter*{Acknowledgements}
+  \phantomsection\addcontentsline{toc}{chapter}{Acknowledgements}
+  #1\cleardoublepage
+}
 
+\renewenvironment{acknowledgements}{%
+  \chapter*{Acknowledgements}
+   \phantomsection\addcontentsline{toc}{chapter}{Acknowledgements}
+   }{%
+   \cleardoublepage
+}
 
 \newcommand{\abstract}[1]{
   \chapter*{Abstract}
-  #1\vfill
+  \phantomsection\addcontentsline{toc}{chapter}{Abstract}
+  #1\cleardoublepage
+}
+
+\RenewDocumentEnvironment{abstract}{o}
+{%
+  \IfNoValueTF{#1}{
+ \chapter*{Abstract}%
+ \phantomsection\addcontentsline{toc}{chapter}{Abstract}%
+  }{
+ \chapter*{#1~Abstract}%
+ \phantomsection\addcontentsline{toc}{chapter}{#1~Abstract}%
+}
+
+  }{%
+    \cleardoublepage%
 }
 
 \bool_if:NTF \l__classname_nusstrict_bool
