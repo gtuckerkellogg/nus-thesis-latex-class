@@ -59,6 +59,11 @@
 % % Make sure a few of these base class options are set properly
 \PassOptionsToClass{a4paper}{\c__classname_base_class_str}
 \PassOptionsToClass{12pt}{\c__classname_base_class_str}
+
+\newcommand{\nusthesis@titlepagefont}{\normalfont}
+\newcommand{\nusthesis@chapheadfont}{\normalfont}
+\newcommand{\nusthesis@headingfont}{\normalfont}
+
 % 
 \keys_define:nn { nus-thesis }
 {
@@ -362,9 +367,6 @@
 %% titlesec
 \definecolor{chaptergrey}{rgb}{0.6,0.6,0.6}
 
-\newcommand{\nusthesis@titlepagefont}{\normalfont}
-\newcommand{\nusthesis@chapheadfont}{\normalfont}
-\newcommand{\nusthesis@headingfont}{\normalfont}
 
 
 %%% chapter titles similar to quotchap
