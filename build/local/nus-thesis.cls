@@ -280,7 +280,7 @@
   format=hfillstart,
   labelformat=bf,
   labelsep=period,
-  width = 0.8\linewidth
+  width = 0.9\linewidth
 }
 
 \renewcommand{\figurename}{Figure}
@@ -288,7 +288,7 @@
   font={small,sf},
   labelformat=bf,
   labelsep=period,
-  width = 0.8\linewidth
+  width = 0.9\linewidth
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
