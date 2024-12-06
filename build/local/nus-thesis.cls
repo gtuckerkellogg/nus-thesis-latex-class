@@ -135,7 +135,7 @@
 \RequirePackage[top=1in, bottom=1in, left=1.5in, right=1.5in]{geometry}
 \RequirePackage{amsmath}
 \RequirePackage{lipsum}
-\RequirePackage{subfig}
+\RequirePackage{subcaption}
 \RequirePackage{longtable}
 \RequirePackage{booktabs}
 \RequirePackage{mathtools}
