@@ -442,8 +442,8 @@
 \cleardoublepage
  \addtocontents{toc}%
  {\protect\contentsline{part}{\appendixtocname}{}{}}%
- \addcontentsline{lot}{chapter}{Supplemental}
-  \addcontentsline{lof}{chapter}{Supplemental}
+ \addtocontents{lot}{\protect\contentsline{chapter}{Supplemental}{}{}}
+ \addtocontents{lof}{\protect\contentsline{chapter}{Supplemental}{}{}}
 \appendixpage
 }
 
