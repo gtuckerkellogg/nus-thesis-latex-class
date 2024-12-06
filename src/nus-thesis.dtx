@@ -290,12 +290,12 @@
     \else
       \@restonecolfalse
     \fi
-    \chapter*{\listtablename}%
+    \chapter*{\listfigurename}%
     \addcontentsline{toc}{preface}{\listfigurename}
       \@mkboth{%
-          \MakeUppercase\listtablename}%
-         {\MakeUppercase\listtablename}%
-    \@starttoc{lot}%
+          \MakeUppercase\listfigurename}%
+         {\MakeUppercase\listfigurename}%
+    \@starttoc{lof}%
     \if@restonecol\twocolumn\fi
     }
 
@@ -524,7 +524,9 @@
 {\nusthesis@chapheadfont\Huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
 \cleardoublepage
  \addtocontents{toc}%
-          {\protect\contentsline{part}{\appendixtocname}{}{}}%
+ {\protect\contentsline{part}{\appendixtocname}{}{}}%
+ \addcontentsline{lot}{chapter}{Supplemental}
+  \addcontentsline{lof}{chapter}{Supplemental}
 %\addappheadtotoc
 \appendixpage
 }
