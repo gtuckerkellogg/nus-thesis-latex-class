@@ -455,8 +455,10 @@
   }}
 
 \pretocmd{\chapter}{%
+  \ExplSyntaxOn
    \bool_set_false:N \l__nusthesis_table_in_chapter_bool
    \bool_set_false:N \l__nusthesis_table_in_chapter_bool
+   \ExplSyntaxOff
 }{}{}
 
 \noappendicestocpagenum
@@ -464,8 +466,11 @@
 
 \g@addto@macro\appendix{%
   \pretocmd{\chapter}{%
+    \ExplSyntaxOn
    \bool_set_false:N \l__nusthesis_table_in_chapter_bool
    \bool_set_false:N \l__nusthesis_table_in_chapter_bool
+    \ExplSyntaxOff
+
 }{}{}
 \titleformat{\chapter}[display]
 {\nusthesis@chapheadfont\Huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
