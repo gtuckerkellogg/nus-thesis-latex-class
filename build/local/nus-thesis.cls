@@ -128,6 +128,7 @@
 \RequirePackage[]{graphicx}
 \RequirePackage{epstopdf}
 \RequirePackage{setspace}
+\RequirePackage{bookmark}
 \RequirePackage{titlesec}
 \RequirePackage{titletoc}
 \RequirePackage{ifthen}
@@ -144,7 +145,6 @@
 \RequirePackage{pbox}
 \RequirePackage{pdflscape}
 \RequirePackage{pstricks}
-\RequirePackage{minitoc}
 \RequirePackage{acronym}
 \RequirePackage[section]{placeins}
 \RequirePackage[nottoc]{tocbibind}
@@ -196,6 +196,26 @@
 \def\keywords#1{\gdef\@keywords{#1}}
 
 \newcommand*{\textsomels}[1]{\textls[50]{#1}}
+
+%% Preface
+\providecommand*{\toclevel@preface}{1}
+\edef\toclevel\@preface{1}
+\gdef\ttll@preface{0}
+
+\titleclass{\preface}{top}
+\newcounter{preface}
+
+\titleformat{\preface}[display]{%
+  % format
+    \nusthesis@chapheadfont\setstretch{0.9}}{%
+    % label
+    }{%
+    % sep
+    0em}{%
+    % beforecode
+    \raggedleft\Huge}{%
+    % aftercode
+  }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -310,20 +330,19 @@
 
 \newcommand{\acknowledgements}[1]{
   \chapter*{Acknowledgements}
-  \phantomsection\addcontentsline{toc}{chapter}{Acknowledgements}
   #1\cleardoublepage
 }
 
 \renewenvironment{acknowledgements}{%
   \chapter*{Acknowledgements}
-   \phantomsection\addcontentsline{toc}{preface}{Acknowledgements}
+   \addcontentsline{toc}{preface}{Acknowledgements}
    }{%
    \cleardoublepage
 }
 
 \newcommand{\abstract}[1]{
   \chapter*{Abstract}
-  \phantomsection\addcontentsline{toc}{chapter}{Abstract}
+  \addcontentsline{toc}{preface}{Abstract}
   #1\cleardoublepage
 }
 
@@ -331,10 +350,10 @@
 {%
   \IfNoValueTF{#1}{
  \chapter*{Abstract}%
- \phantomsection\addcontentsline{toc}{preface}{Abstract}%
+ \addcontentsline{toc}{preface}{Abstract}%
   }{
  \chapter*{#1~Abstract}%
- \phantomsection\addcontentsline{toc}{preface}{#1~Abstract}%
+ \addcontentsline{toc}{preface}{#1~Abstract}%
 }
 
   }{%
