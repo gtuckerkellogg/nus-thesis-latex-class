@@ -456,7 +456,7 @@
 \pretocmd{\chapter}{%
   \ExplSyntaxOn
    \bool_set_false:N \l__nusthesis_table_in_chapter_bool
-   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
+   \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
    \ExplSyntaxOff
 }{}{}
 
@@ -464,13 +464,6 @@
 \renewcommand{\appendixpagename}{\nusthesis@chapheadfont Appendices}
 
 \g@addto@macro\appendix{%
-  \pretocmd{\chapter}{%
-    \ExplSyntaxOn
-   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
-   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
-    \ExplSyntaxOff
-
-}{}{}
 \titleformat{\chapter}[display]
 {\nusthesis@chapheadfont\Huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
 \cleardoublepage
