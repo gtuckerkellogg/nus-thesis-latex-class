@@ -531,6 +531,13 @@
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
   }}
 
+\AddToHook{env/longtable/before}{
+  \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
+  }{%
+    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    \bool_set_true:N \l__nusthesis_table_in_chapter_bool
+  }}
+
 \AddToHook{env/figure/before}{
   \bool_if:NTF \l__nusthesis_figure_in_chapter_bool {%
   }{%
