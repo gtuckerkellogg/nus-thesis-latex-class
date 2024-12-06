@@ -472,7 +472,6 @@
 \cleardoublepage
  \addtocontents{toc}%
  {\protect\contentsline{part}{\appendixtocname}{}{}}%
-
 \appendixpage
 }
 \endgroup
