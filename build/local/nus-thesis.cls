@@ -274,7 +274,7 @@
 \floatsetup[table]{capposition=top}
 
 \captionsetup[table]{
-  font={footnotesize,sf},
+  font={small,sf},
   format=hfillstart,
   labelformat=bf,
   labelsep=period,
@@ -286,6 +286,7 @@
   font={small,sf},
   labelformat=bf,
   labelsep=period,
+  width = 0.8\linewidth
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
