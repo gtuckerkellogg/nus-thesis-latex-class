@@ -129,6 +129,7 @@
 \RequirePackage{epstopdf}
 \RequirePackage{setspace}
 \RequirePackage{bookmark}
+\RequirePackage{etoolbox}
 \RequirePackage{titlesec}
 \RequirePackage{titletoc}
 \RequirePackage{ifthen}
@@ -271,7 +272,33 @@
 \renewcommand{\tablename}{Table}
 \DeclareCaptionLabelFormat{bf}{\bfseries #1~#2}
 \DeclareCaptionFormat{hfillstart}{#1#2#3}
+\def\nusthesis@chapterfigs
 \floatsetup[table]{capposition=top}
+
+\begingroup
+\bool_new:N \l__nusthesis_table_in_chapter_bool  %% has a table already appeared in this chapter
+\bool_new:N \l__nusthesis_figure_in_chapter_bool  %% has a figure already appeared in this chapter
+
+\AddToHook{env/table/before}{
+  \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
+  }{%
+    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    \bool_set_true:N \l__nusthesis_table_in_chapter_bool
+  }}
+
+\AddToHook{env/figure/before}{
+  \bool_if:NTF \l__nusthesis_figure_in_chapter_bool {%
+  }{%
+    \addtocontents{lof}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    \bool_set_true:N \l__nusthesis_figure_in_chapter_bool
+  }}
+
+\pretocmd{\chapter}{%
+   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
+   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
+}{}{}
+
+\endgroup
 
 \captionsetup[table]{
   font={small,sf},
@@ -436,15 +463,20 @@
 
 \noappendicestocpagenum
 \renewcommand{\appendixpagename}{\nusthesis@chapheadfont Appendices}
+
 \g@addto@macro\appendix{%
 \titleformat{\chapter}[display]
 {\nusthesis@chapheadfont\Huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
 \cleardoublepage
  \addtocontents{toc}%
  {\protect\contentsline{part}{\appendixtocname}{}{}}%
- \addtocontents{lot}{\protect\contentsline{chapter}{Supplemental}{}{}}
- \addtocontents{lof}{\protect\contentsline{chapter}{Supplemental}{}{}}
 \appendixpage
+
+\pretocmd{\chapter}{%
+   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
+   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
+}{}{}
+
 }
 
 \crefname{appsec}{Appendix}{Appendices}
