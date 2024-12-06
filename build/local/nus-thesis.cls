@@ -147,7 +147,6 @@
 \RequirePackage{pstricks}
 \RequirePackage{acronym}
 \RequirePackage[section]{placeins}
-\RequirePackage[nottoc]{tocbibind}
 \RequirePackage[title,titletoc]{appendix}
 \RequirePackage{mdwtab}
 \RequirePackage{caption}
@@ -216,6 +215,36 @@
     \raggedleft\Huge}{%
     % aftercode
   }
+
+  \renewcommand\listoftables{%
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse
+    \fi
+    \chapter*{\listtablename}%
+    \addcontentsline{toc}{preface}{\listtablename}
+      \@mkboth{%
+          \MakeUppercase\listtablename}%
+         {\MakeUppercase\listtablename}%
+    \@starttoc{lot}%
+    \if@restonecol\twocolumn\fi
+    }
+
+    \renewcommand\listoffigures{%
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse
+    \fi
+    \chapter*{\listtablename}%
+    \addcontentsline{toc}{preface}{\listfigurename}
+      \@mkboth{%
+          \MakeUppercase\listtablename}%
+         {\MakeUppercase\listtablename}%
+    \@starttoc{lot}%
+    \if@restonecol\twocolumn\fi
+    }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -330,6 +359,7 @@
 
 \newcommand{\acknowledgements}[1]{
   \chapter*{Acknowledgements}
+  \addcontentsline{toc}{preface}{Acknowledgements}
   #1\cleardoublepage
 }
 
