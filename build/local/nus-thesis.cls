@@ -271,15 +271,14 @@
 \renewcommand{\tablename}{Table}
 \DeclareCaptionLabelFormat{bf}{\bfseries #1~#2}
 \DeclareCaptionFormat{hfillstart}{#1#2#3}
-\DeclareFloatFont{normalsize}{\normalsize}
 \floatsetup[table]{capposition=top}
 
 \captionsetup[table]{
-  font={small,sf},
+  font={footnotesize,sf},
   format=hfillstart,
   labelformat=bf,
-  labelsep=newline,
-  justification=centering,
+  labelsep=period,
+  width = 0.8\linewidth
 }
 
 \renewcommand{\figurename}{Figure}
