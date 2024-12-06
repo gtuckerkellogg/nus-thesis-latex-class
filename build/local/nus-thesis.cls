@@ -436,7 +436,6 @@
 
 }
 
-\begingroup
 \bool_new:N \l__nusthesis_table_in_chapter_bool  %% has a table already appeared in this chapter
 \bool_new:N \l__nusthesis_figure_in_chapter_bool  %% has a figure already appeared in this chapter
 
@@ -479,7 +478,6 @@
  {\protect\contentsline{part}{\appendixtocname}{}{}}%
 \appendixpage
 }
-\endgroup
 
 \crefname{appsec}{Appendix}{Appendices}
 \crefname{figure}{Fig.}{Fig.}
