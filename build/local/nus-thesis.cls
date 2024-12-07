@@ -414,6 +414,12 @@
  }
  {\hfill\contentspage}
 
+\RequirePackage[abbreviations,prefix,postpunc={:},automake,toc=false]{glossaries-extra}
+\makeglossaries[abbreviations]
+\setglossarypreamble[abbreviations]{\addcontentsline{toc}{preface}{\glossarytitle}}
+\newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
+\newignoredglossary*{ignored}
+
 \bool_if:NTF \l__classname_nusstrict_bool
 {
 }{
@@ -461,10 +467,8 @@
   }}
 
 \pretocmd{\chapter}{%
-  \ExplSyntaxOn
    \bool_set_false:N \l__nusthesis_table_in_chapter_bool
    \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
-   \ExplSyntaxOff
 }{}{}
 
 \noappendicestocpagenum
