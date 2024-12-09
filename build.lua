@@ -10,15 +10,16 @@ sourcefiledir = "src"
 docfiledir = "doc"
 docfiles =  { "*.tex" }
 
--- typesetdir = "doc"
--- typesetfiles = { "*.tex" }
+-- Add the examples directory
+examplesdir = "examples"
+examplesfiles = { "*.tex", "*.bib", "*.png"}
+
 typesetexe = "pdflatex"
 
 packtdszip = true
 
 checkengines = { "pdftex" }
 checksuppfiles = { "*.tex" }
-
 
 files2tag = {
    {
@@ -31,3 +32,7 @@ files2tag = {
     date_output = module.."}{"..pkgdate.."}{"
    }
 }
+
+-- Include the example documents for typesetting
+typesetdir = examplesdir
+typesetfiles = examplesfiles

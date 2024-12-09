@@ -466,12 +466,12 @@
     \addtocontents{lof}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
   }}
 
-\pretocmd{\chapter}{%
-  \ExplSyntaxOn
+\NewDocumentCommand{\ResetFloatsInChapter}{}{
     \bool_set_false:N \l__nusthesis_table_in_chapter_bool
     \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
-  \ExplSyntaxOff
-}{}{}
+  }
+  \pretocmd{\chapter}{%
+    \ResetFloatsInChapter{}}{}{}
 
 \noappendicestocpagenum
 \renewcommand{\appendixpagename}{\nusthesis@chapheadfont Appendices}
