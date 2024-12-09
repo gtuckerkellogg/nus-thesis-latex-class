@@ -8,11 +8,11 @@ pkgdate = "2024-11-28"
 
 sourcefiledir = "src"
 docfiledir = "doc"
-docfiles =  { "*.tex" }
+docfiles =  { "*.tex" , "*.png" }
 
 -- Add the examples directory
 examplesdir = "examples"
-examplesfiles = { "*.tex", "*.bib", "*.png"}
+examplesfiles = { "*.tex" }
 
 typesetexe = "pdflatex"
 
@@ -35,4 +35,4 @@ files2tag = {
 
 -- Include the example documents for typesetting
 typesetdir = examplesdir
-typesetfiles = examplesfiles
+typesetfiles = { "*.dtx", "*.tex" } 

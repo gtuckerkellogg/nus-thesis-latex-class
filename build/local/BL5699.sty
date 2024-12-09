@@ -1,0 +1,70 @@
+%%
+%% This is file `BL5699.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% BL5699.dtx  (with options: `package')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from BL5699.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file BL5699.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+   \NeedsTeXFormat{LaTeX2e}[2022-06-01]
+   \RequirePackage{l3keys2e}
+   \ProvidesExplPackage{BL5699}
+   {2024-11-29}{0.0.0.a}{BL5699}
+\keys_define:nn { nus-thesis } {
+  , matric .tl_set:N = \l__student_matric_tl
+  , matric .initial:n = { (matric~undefined) }
+  , course .tl_set:N = \l__report_course_tl
+  , course .initial:n = { BL5699 }
+  , batch  .tl_set:N = \l__student_batch_tl
+  , batch  .initial:n = { (batch~undefined) }
+}
+
+\ThesisSetup{%
+  candidacy={Master~of~Science},
+  field = Biotechnology,
+  department = Biological~Sciences
+}
+
+\geometry{left=3.5cm, right=2.5cm,top=2.5cm, bottom=2.5cm}
+
+\renewcommand{\titlepagebody}{
+  \large\uppercase\expandafter{{\bfseries\@author}}\\
+  \textit{\expandafter{\@qualification}}\\
+  \l__student_matric_tl%
+}
+
+  % \renewcommand{\titlepagefooter}{\large\uppercase\expandafter{
+  %     \textsomels{A~\uppercase\expandafter{\l__documenttype_tl}~submitted~
+  %       for~the~Degree~of~\\\uppercase\expandafter{\l__thesis_candidacy_tl} \\
+  %       in~\uppercase\expandafter{\l__degree_field_tl} \\
+  %       Department~of~ \uppercase\expandafter{\l__thesis_department_tl}\\ \uppercase\expandafter{\l__thesis_university_tl}}\\
+  %     \vspace*{2cm}\l__thesis_year_tl
+  %   }}
+
+\renewcommand{\titlepagefooter}{\singlespacing\large\uppercase\expandafter{
+    \textsomels{A~thesis~submitted~to~the\\[\baselineskip]
+      Department~of~{\uppercase\expandafter{\l__thesis_department_tl}}\\
+      \uppercase\expandafter{\l__thesis_university_tl}}\\[\baselineskip]
+    in~partial~fulfillment\\
+    for~the~Degree~of~\uppercase\expandafter{\l__thesis_candidacy_tl}\\
+    in~\uppercase\expandafter{\l__degree_field_tl}\\[\baselineskip]
+    \l__thesis_year_tl
+    }}
+
+\endinput
+%%
+%% End of file `BL5699.sty'.
