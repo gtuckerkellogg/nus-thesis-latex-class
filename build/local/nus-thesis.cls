@@ -467,8 +467,10 @@
   }}
 
 \NewDocumentCommand{\ResetFloatsInChapter}{}{
-    \bool_set_false:N \l__nusthesis_table_in_chapter_bool
-    \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
+  \bool_set_false:N \l__nusthesis_table_in_chapter_bool
+  \relax
+  \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
+  \relax
   }
   \pretocmd{\chapter}{%
     \ResetFloatsInChapter{}}{}{}
