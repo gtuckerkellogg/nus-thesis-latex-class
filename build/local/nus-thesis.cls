@@ -446,29 +446,31 @@
 \bool_new:N \l__nusthesis_figure_in_chapter_bool  %% has a figure already appeared in this chapter
 
 \AddToHook{env/table/before}{
-  \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
-  }{%
-    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
+    }{%
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
-  }}
+    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+      }}
 
-\AddToHook{env/longtable/before}{
-  \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
-  }{%
-    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+ \AddToHook{env/longtable/before}{
+    \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
+    }{%
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
-  }}
+    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    }}
 
 \AddToHook{env/figure/before}{
-  \bool_if:NTF \l__nusthesis_figure_in_chapter_bool {%
-  }{%
-    \addtocontents{lof}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    \bool_if:NTF \l__nusthesis_figure_in_chapter_bool {%
+    }{%
     \bool_set_true:N \l__nusthesis_figure_in_chapter_bool
+    \addtocontents{lof}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
   }}
 
 \pretocmd{\chapter}{%
-   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
-   \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
+  \ExplSyntaxOn
+    \bool_set_false:N \l__nusthesis_table_in_chapter_bool
+    \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
+  \ExplSyntaxOff
 }{}{}
 
 \noappendicestocpagenum
