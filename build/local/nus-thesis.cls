@@ -471,7 +471,7 @@
   \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
 }
 
-\apptocmd{\chapter}{%
+\pretocmd{\chapter}{%
   \ResetFloatsInChapter{}}{}{}
 
 \noappendicestocpagenum
