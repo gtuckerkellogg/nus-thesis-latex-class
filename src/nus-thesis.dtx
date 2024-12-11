@@ -124,7 +124,8 @@
     \RequirePackage[scaled=0.9,varl]{inconsolata}
     \RequirePackage[lf,fullfamily,opticals,minionint,loosequotes,footnotefigures]{MinionPro}
 % \RequirePackage{classico}
-    \RequirePackage{gillius}
+    \RequirePackage[lf,medfamily]{MyriadPro}
+%    \RequirePackage{gillius}
 %    \RequirePackage[sans]{libertinus}
 %    \RequirePackage[medfamily,opticals,lf]{CronosPro}
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
@@ -558,7 +559,7 @@
 }
 
 
-\apptocmd{\@makechapterhead}{%
+\apptocmd{\chapter}{%
   \ResetFloatsInChapter{}}{}{}
 
 

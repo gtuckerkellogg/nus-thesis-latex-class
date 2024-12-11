@@ -89,7 +89,7 @@
     \RequirePackage[utf8]{inputenc}
     \RequirePackage[scaled=0.9,varl]{inconsolata}
     \RequirePackage[lf,fullfamily,opticals,minionint,loosequotes,footnotefigures]{MinionPro}
-    \RequirePackage{gillius}
+    \RequirePackage[lf,medfamily]{MyriadPro}
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
     \renewcommand{\nusthesis@headingfont}{\sffamily}
     \renewcommand{\nusthesis@titlepagefont}{\sffamily}
@@ -471,7 +471,7 @@
   \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
 }
 
-\apptocmd{\@makechapterhead}{%
+\apptocmd{\chapter}{%
   \ResetFloatsInChapter{}}{}{}
 
 \noappendicestocpagenum
