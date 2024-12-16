@@ -84,6 +84,13 @@
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
     \renewcommand{\nusthesis@headingfont}{\sffamily}
   }
+  , font / noto .code:n = {
+    \RequirePackage{notomath}
+    \RequirePackage{inconsolata}
+    \renewcommand{\nusthesis@chapheadfont}{\sffamily}
+    \renewcommand{\nusthesis@headingfont}{\sffamily}
+    \renewcommand{\nusthesis@titlepagefont}{\sffamily}
+  }
   , font / minionpro .code:n = {
     \RequirePackage[T1]{fontenc}
     \RequirePackage[utf8]{inputenc}
@@ -152,15 +159,18 @@
 \RequirePackage{mdwtab}
 \RequirePackage{caption}
 \RequirePackage{floatrow}
-\RequirePackage[tracking=true]{microtype}
 
 \ifPDFTeX%
+
   \RequirePackage[T1]{fontenc}
   \RequirePackage[utf8]{inputenc}
   \RequirePackage{textcomp} % provides euro and other symbols
+\RequirePackage[tracking=true]{microtype}
 \else % if luatex or xelatex
   \RequirePackage{fontspec}
   \RequirePackage{xunicode}
+\RequirePackage{microtype}
+
 \fi
 
 %%%% fonts
