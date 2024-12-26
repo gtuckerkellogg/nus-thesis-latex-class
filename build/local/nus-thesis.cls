@@ -230,6 +230,24 @@
     % aftercode
   }
 
+%%% Ensure that TOC has single spacing within entries, per NUS requirements
+
+ \renewcommand{\tableofcontents}{%
+    \@cfttocstart
+    \par
+    \begingroup
+    \singlespacing
+    \setlength{\cftparskip}{1ex}
+      \parindent\z@ \parskip\cftparskip
+      \@cftmaketoctitle
+      \if@cfttocbibind
+        \@cftdobibtoc
+      \fi
+      \@starttoc{toc}%
+    \endgroup
+    \@cfttocfinish%
+  }
+
   \renewcommand\listoftables{%
     \if@twocolumn
       \@restonecoltrue\onecolumn
