@@ -231,19 +231,21 @@
     % aftercode
   }
 
-  % \AfterEndPreamble{
-  %   \renewcommand{\@starttoc}[1]{%
-  %     \begingroup
-  %     \singlespacing%
-  %     \setlength{\cftparskip}{1ex}
-  %     \setlength{\cftbeforechapskip}{1.5ex}
-  %     \setlength{\cftbeforesecskip}{1ex}
-  %     \setlength{\cftbeforesubsecskip}{1ex}
-  %     \parskip=\cftparskip
-  %     \OLD@starttoc{#1}%
-  %   \endgroup
-  % }
-  % }
+  \AfterEndPreamble{
+    \setlength{\cftparskip}{1ex}
+    \setlength{\cftbeforechapskip}{1.5ex}
+    \setlength{\cftbeforesecskip}{1ex}
+    \setlength{\cftbeforesubsecskip}{1ex}
+    \setlength{\cftbeforefigskip}{1ex}
+    \setlength{\cftbeforetabskip}{1ex}
+    \renewcommand{\@starttoc}[1]{%
+      \begingroup
+      \singlespacing%
+      \parskip=\cftparskip
+      \OLD@starttoc{#1}%
+    \endgroup
+  }
+  }
 
   \renewcommand\listoftables{%
     \if@twocolumn
@@ -254,8 +256,7 @@
     \chapter*{\listtablename}%
     {%
       \singlespacing%
-      \setlength{\cftparskip}{1ex}
-      \setlength{\parskip}{\cftparskip}
+ %     \setlength{\cftparskip}{1ex}
     \addcontentsline{toc}{preface}{\listtablename}
       \@mkboth{%
           \MakeUppercase\listtablename}%
@@ -274,7 +275,6 @@
     \chapter*{\listfigurename}%
     {%
       \singlespacing%
-      \setlength{\cftparskip}{1ex}
     \addcontentsline{toc}{preface}{\listfigurename}
       \@mkboth{%
           \MakeUppercase\listfigurename}%
