@@ -175,6 +175,7 @@
 \RequirePackage{epstopdf}
 \RequirePackage{setspace}
 \RequirePackage[titles]{tocloft}
+\RequirePackage[skip=10pt plus2pt, indent=24pt]{parskip}
 \RequirePackage{bookmark}
 \RequirePackage{etoolbox}
 \RequirePackage{titlesec}
@@ -281,26 +282,20 @@
     % aftercode
   }
 
-%%% Ensure that TOC has single spacing within entries, per NUS requirements
 
- \renewcommand{\tableofcontents}{%
-    \@cfttocstart
-    \par
-    \begingroup
-    \singlespacing
-    \setlength{\cftparskip}{1ex}        
-      \parindent\z@ \parskip\cftparskip
-      \@cftmaketoctitle
-      \if@cfttocbibind
-        \@cftdobibtoc
-      \fi
-      \@starttoc{toc}%
+  \AtBeginDocument{
+    \renewcommand{\@starttoc}[1]{%
+      \begingroup
+      \singlespacing%
+      \setlength{\cftbeforechapskip}{1.5ex}
+      \setlength{\cftbeforesecskip}{1ex}
+      \setlength{\cftbeforesubsecskip}{1ex}
+      \parskip=\cftparskip
+      \OLD@starttoc{#1}%
     \endgroup
-    \@cfttocfinish%
+  }
   }
 
-
-  
 
   \renewcommand\listoftables{%
     \if@twocolumn
@@ -474,14 +469,14 @@
 \newcommand{\acknowledgements}[1]{
   \chapter*{Acknowledgements}
   \addcontentsline{toc}{preface}{Acknowledgements}  
-  #1\cleardoublepage
+  #1\newpage\cleardoublepage
 }
 
 \renewenvironment{acknowledgements}{%
   \chapter*{Acknowledgements}
    \addcontentsline{toc}{preface}{Acknowledgements}
    }{%
-   \cleardoublepage
+     \newpage\cleardoublepage
 }
 
 
