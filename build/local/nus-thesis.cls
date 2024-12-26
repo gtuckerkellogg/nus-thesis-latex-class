@@ -137,6 +137,7 @@
 \RequirePackage[]{graphicx}
 \RequirePackage{epstopdf}
 \RequirePackage{setspace}
+\RequirePackage[titles]{tocloft}
 \RequirePackage{bookmark}
 \RequirePackage{etoolbox}
 \RequirePackage{titlesec}
@@ -236,12 +237,16 @@
       \@restonecolfalse
     \fi
     \chapter*{\listtablename}%
+    {%
+      \singlespacing%
+      \setlength{\cftparskip}{1ex}
     \addcontentsline{toc}{preface}{\listtablename}
       \@mkboth{%
           \MakeUppercase\listtablename}%
          {\MakeUppercase\listtablename}%
     \@starttoc{lot}%
     \if@restonecol\twocolumn\fi
+    }
     }
 
     \renewcommand\listoffigures{%
@@ -251,12 +256,16 @@
       \@restonecolfalse
     \fi
     \chapter*{\listfigurename}%
+    {%
+      \singlespacing%
+      \setlength{\cftparskip}{1ex}
     \addcontentsline{toc}{preface}{\listfigurename}
       \@mkboth{%
           \MakeUppercase\listfigurename}%
          {\MakeUppercase\listfigurename}%
     \@starttoc{lof}%
     \if@restonecol\twocolumn\fi
+    }
     }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
