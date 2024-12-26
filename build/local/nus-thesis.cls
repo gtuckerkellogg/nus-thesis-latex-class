@@ -231,18 +231,19 @@
     % aftercode
   }
 
-  \AtBeginDocument{
-    \renewcommand{\@starttoc}[1]{%
-      \begingroup
-      \singlespacing%
-      \setlength{\cftbeforechapskip}{1.5ex}
-      \setlength{\cftbeforesecskip}{1ex}
-      \setlength{\cftbeforesubsecskip}{1ex}
-      \parskip=\cftparskip
-      \OLD@starttoc{#1}%
-    \endgroup
-  }
-  }
+  % \AfterEndPreamble{
+  %   \renewcommand{\@starttoc}[1]{%
+  %     \begingroup
+  %     \singlespacing%
+  %     \setlength{\cftparskip}{1ex}
+  %     \setlength{\cftbeforechapskip}{1.5ex}
+  %     \setlength{\cftbeforesecskip}{1ex}
+  %     \setlength{\cftbeforesubsecskip}{1ex}
+  %     \parskip=\cftparskip
+  %     \OLD@starttoc{#1}%
+  %   \endgroup
+  % }
+  % }
 
   \renewcommand\listoftables{%
     \if@twocolumn
@@ -254,6 +255,7 @@
     {%
       \singlespacing%
       \setlength{\cftparskip}{1ex}
+      \setlength{\parskip}{\cftparskip}
     \addcontentsline{toc}{preface}{\listtablename}
       \@mkboth{%
           \MakeUppercase\listtablename}%
