@@ -232,12 +232,12 @@
   }
 
   \AfterEndPreamble{
-    \setlength{\cftparskip}{1ex}
-    \setlength{\cftbeforechapskip}{1.5ex}
-    \setlength{\cftbeforesecskip}{1ex}
-    \setlength{\cftbeforesubsecskip}{1ex}
-    \setlength{\cftbeforefigskip}{1ex}
-    \setlength{\cftbeforetabskip}{1ex}
+    \setlength{\cftbeforepartskip}{2.25em \@plus\p@}
+    \setlength{\cftbeforechapskip}{1.5em \@plus.2\p@}
+    \setlength{\cftbeforesecskip}{1em \@plus.2\p@}
+    \setlength{\cftbeforesubsecskip}{1.0em \@plus.2\p@}
+    \setlength{\cftbeforefigskip}{1em}
+    \setlength{\cftbeforetabskip}{1em}
     \renewcommand{\@starttoc}[1]{%
       \begingroup
       \singlespacing%
