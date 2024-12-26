@@ -346,30 +346,27 @@
     \large\uppercase\expandafter{\l__thesis_university_tl}\vspace*{0.2cm} \\
     \large\uppercase\expandafter{\l__thesis_year_tl}
   \end{center}
-  \newpage}
+  \cleardoublepage}
 
 \@ifundefined{titlepagebody}{
   \newcommand{\titlepagebody}{
     \Large\bfseries\uppercase\expandafter{\@author}\\
-    \textit{\expandafter{\@qualification}}
+    \textit{(\expandafter{\@qualification})}
   }}{}
 
 \@ifundefined{titlepagefooter}{
   \newcommand{\titlepagefooter}{\large\uppercase\expandafter{
       \textsomels{A~\uppercase\expandafter{\l__documenttype_tl}~submitted~
         for~the~Degree~of~\\\uppercase\expandafter{\l__thesis_candidacy_tl} \\
-        in~\uppercase\expandafter{\l__degree_field_tl} \\
         Department~of~ \uppercase\expandafter{\l__thesis_department_tl}\\ \uppercase\expandafter{\l__thesis_university_tl}}\\
       \vspace*{2cm}\l__thesis_year_tl\\
     }}}{}
 
-\@ifundefined{declarationpage}{
-  \newcommand{\declarationpage}{
-    \begin{center}\hyphenpenalty=10000
-      \nusthesis@titlepagefont\large\bfseries\uppercase\expandafter{DECLARATION}
-    \end{center}
-    \vspace*{1cm}
-    \begin{center}\hyphenpenalty=10000
+\NewDocumentCommand \DeclarationPage { o }
+{
+  \begin{center}\hyphenpenalty=10000
+    \nusthesis@titlepagefont\large\bfseries\uppercase\expandafter{DECLARATION}\\
+    \vspace*{1cm}%
       I~hereby~declare~that~the~\l__documenttype_tl{}~is~my~original\\
       work~and~it~has~been~written~by~me~in~its~entirety.\\
       I~have~duly~acknowledged~all~the~sources~of\\
@@ -378,17 +375,16 @@
       This~\l__documenttype_tl{}~has~also~not~been~submitted~for~any\\
       degree~in~any~university~previously.\\
       \vspace*{2cm}
-      % \begin{figure}[!h]
-      %   \subfloat{ \includegraphics[width=0.3\textwidth]{signature} }
-      % \end{figure}
+      \IfValueT {#1}{
+        \includegraphics[width=0.6\textwidth]{signature2.png}\\
       \vspace*{-1cm}
-      \begin{center}
-        \rule{8cm}{0.5pt}
-      \end{center}
+    }
+      \rule{8cm}{0.5pt}\\
       \vspace*{-0.5cm}
       \@author \\
       \today
-    \end{center}\newpage}} {}
+    \end{center}\cleardoublepage
+}
 
 %% titlesec
 \definecolor{chaptergrey}{rgb}{0.6,0.6,0.6}
