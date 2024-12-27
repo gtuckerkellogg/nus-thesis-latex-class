@@ -364,7 +364,7 @@
 {
   \begin{center}\hyphenpenalty=10000
     \nusthesis@titlepagefont\large\bfseries\uppercase\expandafter{DECLARATION}\\
-    \vspace*{1cm}%
+    \vspace*{1cm}\mdseries%
       I~hereby~declare~that~the~\l__documenttype_tl{}~is~my~original\\
       work~and~it~has~been~written~by~me~in~its~entirety.\\
       I~have~duly~acknowledged~all~the~sources~of\\
