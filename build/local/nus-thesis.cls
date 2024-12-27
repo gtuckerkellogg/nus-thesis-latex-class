@@ -55,7 +55,7 @@
   , submission-year .tl_set:N = \l__thesis_year_tl
   , submission-year .initial:n =  { \number\year }
   , qualification .tl_set:N = \l__thesis_qualification_tl
-  , qualification .initial:n = { (qualification undefined)  }
+  , qualification .initial:n = { qualification~undefined  }
   , qualification .code:n = {\qualification{#1}}
   , strict .bool_set:N = \l__classname_nusstrict_bool
   , strict .initial:n = { false}
@@ -126,7 +126,7 @@
 
 \LoadClass { \c__classname_base_class_str }
 
-\DeclareDocumentCommand \ThesisSetup { m } {
+\NewDocumentCommand \ThesisSetup { m } {
   \keys_set:nn { nus-thesis } { #1 }
 }
 
@@ -349,7 +349,7 @@
 \@ifundefined{titlepagebody}{
   \newcommand{\titlepagebody}{
     \Large\bfseries\uppercase\expandafter{\@author}\\
-    \textit{(\expandafter{\@qualification})}
+    \textit{\mdseries(\expandafter{\@qualification})}
   }}{}
 
 \@ifundefined{titlepagefooter}{
