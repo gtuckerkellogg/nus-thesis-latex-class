@@ -149,6 +149,7 @@
 \RequirePackage{lipsum}
 \RequirePackage{subcaption}
 \RequirePackage{longtable}
+\RequirePackage{rotating}
 \RequirePackage{booktabs}
 \RequirePackage{mathtools}
 \RequirePackage{multirow}
@@ -475,6 +476,13 @@
       }}
 
  \AddToHook{env/longtable/before}{
+    \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
+    }{%
+    \bool_set_true:N \l__nusthesis_table_in_chapter_bool
+    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    }}
+
+  \AddToHook{env/sidewaystable/before}{
     \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
     }{%
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
