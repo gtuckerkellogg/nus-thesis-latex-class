@@ -375,7 +375,7 @@
       degree~in~any~university~previously.\\
       \vspace*{2cm}
       \IfValueT {#1}{
-        \includegraphics[width=0.6\textwidth]{signature2.png}\\
+        \includegraphics[width=0.6\textwidth]{#1}\\
       \vspace*{-1cm}
     }
       \rule{8cm}{0.5pt}\\
