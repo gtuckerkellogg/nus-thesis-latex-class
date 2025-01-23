@@ -181,12 +181,8 @@
 %%%% fonts
 
 \RequirePackage{hyperref}
-\hypersetup{
-  linkcolor = DarkBlue,
-  citecolor = DarkBlue,
-  plainpages = false,
-  hypertexnames = false,
-  allbordercolors = white,
+\hypersetup{%
+  hidelinks%
 }
 \RequirePackage[nameinlink,noabbrev, capitalise]{cleveref}
 
@@ -292,7 +288,7 @@
   \thispagestyle{empty}
   \begin{center}%
     \hyphenpenalty=10000
-    {\LARGE\uppercase\expandafter{\@title}\\ }
+    {\Large\uppercase\expandafter{\@title}\\ }
     \normalsize\mdseries\uppercase\expandafter{\@subtitle}
     \vfill%
   \titlepagebody
