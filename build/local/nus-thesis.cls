@@ -288,7 +288,7 @@
   \thispagestyle{empty}
   \begin{center}%
     \hyphenpenalty=10000
-    {\Large\uppercase\expandafter{\@title}\\ }
+    {\Large\bfseries\uppercase\expandafter{\@title}\\ }
     \normalsize\mdseries\uppercase\expandafter{\@subtitle}
     \vfill%
   \titlepagebody
