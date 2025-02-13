@@ -68,6 +68,7 @@
     \RequirePackage[utf8]{inputenc}
     \RequirePackage{arev}
     \RequirePackage{helvet}
+    \RequirePackage{mathastext}
     \renewcommand{\familydefault}{\sfdefault}
   }
   , font / palatino .code:n = {
