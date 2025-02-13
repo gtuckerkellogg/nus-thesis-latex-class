@@ -66,10 +66,11 @@
   , font / helvetica .code:n = {
     \RequirePackage[T1]{fontenc}
     \RequirePackage[utf8]{inputenc}
-    \RequirePackage{arev}
-    \RequirePackage{helvet}
-    \RequirePackage{mathastext}
+    \RequirePackage[scaled=0.95]{helvet}
     \renewcommand{\familydefault}{\sfdefault}
+    \RequirePackage{mathastext}
+    \RequirePackage{arevmath}
+    \RequirePackage[varl]{inconsolata}
   }
   , font / palatino .code:n = {
     \RequirePackage[sc]{mathpazo}
