@@ -66,10 +66,11 @@
   , font / helvetica .code:n = {
     \RequirePackage[T1]{fontenc}
     \RequirePackage[utf8]{inputenc}
+    \RequirePackage{cmbright}
+    \RequirePackage{sansmath}
+    \sansmath
     \RequirePackage{helvet}
     \renewcommand{\familydefault}{\sfdefault}
-    \RequirePackage[eulergreek]{sansmath}
-    \sansmath
   }
   , font / palatino .code:n = {
     \RequirePackage[sc]{mathpazo}

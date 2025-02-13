@@ -31,7 +31,7 @@
 % \author{Greg Tucker-Kellogg \\ \texttt{dbsgtk@nus.edu.sg}}
 % \maketitle
 % \begin{abstract}
-%   This is the implementation of the NUS thesis example.
+%   This is the implementation of a thesis at NUS, 
 % \end{abstract}
 % 
 % \tableofcontents
@@ -100,10 +100,11 @@
   , font / helvetica .code:n = {
     \RequirePackage[T1]{fontenc}
     \RequirePackage[utf8]{inputenc}
+    \RequirePackage{cmbright}
+    \RequirePackage{sansmath}
+    \sansmath    
     \RequirePackage{helvet}
     \renewcommand{\familydefault}{\sfdefault}
-    \RequirePackage[eulergreek]{sansmath}
-    \sansmath
   }
   , font / palatino .code:n = {
     \RequirePackage[sc]{mathpazo}
