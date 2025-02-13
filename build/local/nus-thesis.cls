@@ -66,8 +66,7 @@
   , font / helvetica .code:n = {
     \RequirePackage[T1]{fontenc}
     \RequirePackage[utf8]{inputenc}
-    \RequirePackage[eulergreek]{sansmath}
-    \sansmath
+    \RequirePackage{arev}
     \RequirePackage{helvet}
     \renewcommand{\familydefault}{\sfdefault}
   }
