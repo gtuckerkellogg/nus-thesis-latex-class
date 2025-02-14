@@ -70,18 +70,19 @@
     \renewcommand{\familydefault}{\sfdefault}
     \RequirePackage{mathastext}
     \RequirePackage{arevmath}
-    \RequirePackage[varl]{inconsolata}
+    \RequirePackage[mono,varl]{inconsolata}
   }
   , font / palatino .code:n = {
     \RequirePackage[sc]{mathpazo}
-    \RequirePackage{gillius}
+    \RequirePackage[scaled=0.95]{helvet}
+    \RequirePackage[varl]{inconsolata}
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
     \renewcommand{\nusthesis@headingfont}{\sffamily}
   }
   , font / libertine .code:n = {
     \RequirePackage[T1]{fontenc}
     \RequirePackage[utf8]{inputenc}
-    \RequirePackage[scaled=0.9,varl]{inconsolata}
+    \RequirePackage[varl]{inconsolata}
     \RequirePackage[mono=false,sb]{libertine}
     \RequirePackage{libertinust1math}
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
