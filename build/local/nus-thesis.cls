@@ -309,7 +309,6 @@
 \DeclareCaptionLabelFormat{bf}{\bfseries #1~#2}
 \DeclareCaptionFormat{hfillstart}{#1#2#3}
 \def\nusthesis@chapterfigs
-\floatsetup[table]{capposition=top}
 
 \captionsetup[table]{
   font={small,sf},
@@ -318,6 +317,7 @@
   labelsep=period,
   width = 0.9\linewidth
 }
+\floatsetup[table]{capposition=top}
 
 \renewcommand{\figurename}{Figure}
 \captionsetup[figure]{
