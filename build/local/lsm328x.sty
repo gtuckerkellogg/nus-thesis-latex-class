@@ -1,0 +1,65 @@
+%%
+%% This is file `lsm328x.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% lsm328x.dtx  (with options: `package')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from lsm328x.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file lsm328x.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+   \NeedsTeXFormat{LaTeX2e}[2022-06-01]
+   \RequirePackage{l3keys2e}
+   \ProvidesExplPackage{lsm328x}
+   {2024-11-29}{0.0.0.a}{NUS thesis }
+\keys_define:nn { nus-thesis } {
+  , matric .tl_set:N = \l__student_matric_tl
+  , matric .initial:n = { (matric~undefined) }
+  , course .tl_set:N = \l__report_course_tl
+  , course .initial:n = { LSM3288 }
+  , units .tl_set:N = \l__course_units_tl
+  , units .initial:n = { 4 }
+  , submission-month  .tl_set:N = \l__submission_month_tl
+  , submission-month  .initial:n = { (submission-month) }
+  , word-count .tl_set:N = \l__word_count_tl
+  , word-count .initial:n = { (word-count undefined) }
+}
+
+\ThesisSetup{document-type=report,font=strict}
+
+\renewcommand{\maketitle}{\titlepage}
+
+\geometry{left=3.5cm, right=2.5cm,top=2.5cm, bottom=2.5cm}
+
+\renewcommand{\titlepagebody}{
+  \Large\uppercase\expandafter{{\bfseries\@author}}\\
+  \large\uppercase\expandafter{{\bfseries\l__student_matric_tl}}%
+}
+
+\renewcommand{\titlepagefooter}{\singlespacing\Large\expandafter{
+    \textsomels{Undergraduate~Research~Opportunities~in~Science \\
+      PROJECT~REPORT \\
+      submitted~to~the \\
+      Department~of~\expandafter{\l__thesis_department_tl}\\
+      \expandafter{\l__thesis_university_tl}\\[\baselineskip]
+    \vfill%
+    \expandafter{\l__report_course_tl}~(\expandafter{\l__course_units_tl}~Units)\\
+    \expandafter{\l__submission_month_tl}\\
+    \normalsize\expandafter{\l__word_count_tl}~words
+    }}}
+
+\endinput
+%%
+%% End of file `lsm328x.sty'.

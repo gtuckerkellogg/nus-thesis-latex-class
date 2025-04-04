@@ -1,0 +1,65 @@
+% \iffalse meta-comment -------------------------------------------------------
+%   -------------------------------------------------------------------------
+%   Copyright 2024 Greg Tucker-Kellogg 
+%   
+%   This work is licensed under a Creative Commons Attribution-ShareAlike 4.0
+%   International License (https://creativecommons.org/licenses/by-sa/4.0/).
+%   -------------------------------------------------------------------------
+% \fi
+% \iffalse
+%<package>   \NeedsTeXFormat{LaTeX2e}[2022-06-01]
+%<package>   \RequirePackage{l3keys2e}
+%<package>   \ProvidesExplPackage{lsm328x}
+%<package>   {2024-11-29}{0.0.0.a}{NUS thesis }
+%   
+%<*driver>   
+\documentclass{l3doc}
+\usepackage{framed}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+\DocInput{\jobname.dtx}
+\end{document}
+%</driver> 
+% \fi
+%    \begin{macrocode}
+%<*package>      
+\keys_define:nn { nus-thesis } {
+  , matric .tl_set:N = \l__student_matric_tl
+  , matric .initial:n = { (matric~undefined) }
+  , course .tl_set:N = \l__report_course_tl
+  , course .initial:n = { LSM3288 }
+  , units .tl_set:N = \l__course_units_tl
+  , units .initial:n = { 4 }
+  , submission-month  .tl_set:N = \l__submission_month_tl
+  , submission-month  .initial:n = { (submission-month) }
+  , word-count .tl_set:N = \l__word_count_tl
+  , word-count .initial:n = { (word-count undefined) }
+}
+
+\ThesisSetup{document-type=report,font=strict}
+
+\renewcommand{\maketitle}{\titlepage}
+
+\geometry{left=3.5cm, right=2.5cm,top=2.5cm, bottom=2.5cm}
+
+\renewcommand{\titlepagebody}{
+  \Large\uppercase\expandafter{{\bfseries\@author}}\\
+  \large\uppercase\expandafter{{\bfseries\l__student_matric_tl}}%
+}
+
+\renewcommand{\titlepagefooter}{\singlespacing\Large\expandafter{
+    \textsomels{Undergraduate~Research~Opportunities~in~Science \\
+      PROJECT~REPORT \\
+      submitted~to~the \\
+      Department~of~\expandafter{\l__thesis_department_tl}\\
+      \expandafter{\l__thesis_university_tl}\\[\baselineskip]
+    \vfill%
+    \expandafter{\l__report_course_tl}~(\expandafter{\l__course_units_tl}~Units)\\
+    \expandafter{\l__submission_month_tl}\\
+    \normalsize\expandafter{\l__word_count_tl}~words
+    }}}
+
+%</package> 
+%    \end{macrocode}
