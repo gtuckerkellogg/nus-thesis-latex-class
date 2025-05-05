@@ -59,6 +59,13 @@
   , qualification .code:n = {\qualification{#1}}
   , strict .bool_set:N = \l__classname_nusstrict_bool
   , strict .initial:n = { false}
+  , final .bool_set:N = \l__final_submission_bool
+  , final .initial:n = { false }
+  , advisor .tl_set:N = \l__thesis_advisor_tl
+  , advisor .initial:n = {(advisor)}
+  , examiners .tl_set:N = \l__thesis_examiners_tl
+  , exaiminers .initial:n = {(examiners)}
+  , final .initial:n = { false }
   , font .choice:
   , font / strict .code:n = {
     \RequirePackage{mathptmx}
@@ -140,7 +147,7 @@
 \RequirePackage{epstopdf}
 \RequirePackage{setspace}
 \RequirePackage[titles]{tocloft}
-\RequirePackage[skip=10pt plus2pt, indent=24pt]{parskip}
+\RequirePackage[skip=10pt plus2pt]{parskip}
 \RequirePackage{bookmark}
 \RequirePackage{etoolbox}
 \RequirePackage{titlesec}
@@ -165,7 +172,6 @@
 \RequirePackage[title,titletoc]{appendix}
 \RequirePackage{mdwtab}
 \RequirePackage{caption}
-\RequirePackage{floatrow}
 
 \ifPDFTeX%
 
@@ -301,14 +307,19 @@
 \clearpage{\thispagestyle{empty}\cleardoublepage}}
 
 \renewcommand{\maketitle}{
+  \frontmatter
+  \pagestyle{empty}
   \coverpage
   \titlepage
+  \setcounter{page}{1}
+  \pagestyle{plain}
 }
 
 \renewcommand{\tablename}{Table}
 \DeclareCaptionLabelFormat{bf}{\bfseries #1~#2}
 \DeclareCaptionFormat{hfillstart}{#1#2#3}
 \def\nusthesis@chapterfigs
+
 
 \captionsetup[table]{
   font={small,sf},
@@ -317,7 +328,6 @@
   labelsep=period,
   width = 0.9\linewidth
 }
-\floatsetup[table]{capposition=top}
 
 \renewcommand{\figurename}{Figure}
 \captionsetup[figure]{
@@ -356,8 +366,15 @@
       \textsomels{A~\uppercase\expandafter{\l__documenttype_tl}~submitted~
         for~the~Degree~of~\\\uppercase\expandafter{\l__thesis_candidacy_tl} \\
         Department~of~ \uppercase\expandafter{\l__thesis_department_tl}\\ \uppercase\expandafter{\l__thesis_university_tl}}\\
-      \vspace*{2cm}\l__thesis_year_tl\\
-    }}}{}
+      \vspace*{2cm}\l__thesis_year_tl\\}
+      \bool_if:NTF \l__final_submission_bool {
+        {Advisor} \\
+        \l__thesis_advisor_tl \\
+        Examiners \\
+        \l__thesis_examiners_tl
+      }{}
+    }%
+}{}
 
 \NewDocumentCommand \DeclarationPage { o }
 {
