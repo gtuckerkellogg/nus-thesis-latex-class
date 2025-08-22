@@ -70,6 +70,9 @@
   , font / strict .code:n = {
     \RequirePackage{mathptmx}
   }
+  , font / times .code:n = {
+    \RequirePackage{mathptmx}
+  }
   , font / helvetica .code:n = {
     \RequirePackage[T1]{fontenc}
     \RequirePackage[utf8]{inputenc}
@@ -147,7 +150,6 @@
 \RequirePackage{epstopdf}
 \RequirePackage{setspace}
 \RequirePackage[titles]{tocloft}
-\RequirePackage[skip=10pt plus2pt]{parskip}
 \RequirePackage{bookmark}
 \RequirePackage{etoolbox}
 \RequirePackage{titlesec}
