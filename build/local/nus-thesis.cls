@@ -24,18 +24,33 @@
 \RequirePackage{l3keys2e}
 \ProvidesExplClass{nus-thesis}
 {2024-11-29}{0.0.0.a}{NUS thesis class}
+\RequirePackage{iftex}
+
+
+
 \str_const:Nn \c__classname_base_class_str { book }
 \PassOptionsToClass{a4paper}{\c__classname_base_class_str}
 \PassOptionsToClass{12pt}{\c__classname_base_class_str}
+\PassOptionsToClass{oneside}{\c__classname_base_class_str}
+\PassOptionsToClass{openright}{\c__classname_base_class_str}
+\LoadClass { \c__classname_base_class_str }
+\sys_if_engine_pdftex:TF {
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage[utf8]{inputenc}
+  \RequirePackage{textcomp} % provides euro and other symbols
+  } {
+    \RequirePackage{fontspec}
+    \sys_if_engine_xetex:T { \RequirePackage{xunicode} }
+}
+
 
 \newcommand{\nusthesis@titlepagefont}{\normalfont}
 \newcommand{\nusthesis@chapheadfont}{\normalfont}
 \newcommand{\nusthesis@headingfont}{\normalfont}
 
+
 \keys_define:nn { nus-thesis }
 {
-  , openright .bool_set:N = \l__classname_openright_bool
-  , openright .initial:n = { false }
   , author .tl_set:N = \l__thesis_author_tl
   , author .code:n = { \author{#1} }
   , author .initial:n = { (author~undefined)  }
@@ -64,8 +79,7 @@
   , advisor .tl_set:N = \l__thesis_advisor_tl
   , advisor .initial:n = {(advisor)}
   , examiners .tl_set:N = \l__thesis_examiners_tl
-  , exaiminers .initial:n = {(examiners)}
-  , final .initial:n = { false }
+  , examiners .initial:n = {(examiners)}
   , font .choice:
   , font / strict .code:n = {
     \RequirePackage{mathptmx}
@@ -74,8 +88,6 @@
     \RequirePackage{mathptmx}
   }
   , font / helvetica .code:n = {
-    \RequirePackage[T1]{fontenc}
-    \RequirePackage[utf8]{inputenc}
     \RequirePackage[scaled=0.95]{helvet}
     \renewcommand{\familydefault}{\sfdefault}
     \RequirePackage{mathastext}
@@ -90,11 +102,14 @@
     \renewcommand{\nusthesis@headingfont}{\sffamily}
   }
   , font / libertine .code:n = {
-    \RequirePackage[T1]{fontenc}
-    \RequirePackage[utf8]{inputenc}
-    \RequirePackage[varl]{inconsolata}
-    \RequirePackage[mono=false,sb]{libertine}
-    \RequirePackage{libertinust1math}
+    \sys_if_engine_pdftex:TF {
+      \RequirePackage[scaled=0.9,varl]{inconsolata}
+      \RequirePackage[mono=false,sb]{libertinus}
+      \RequirePackage{libertinust1math}
+    } {
+      \RequirePackage{libertinus}
+      \setmonofont[Scale=MatchUppercase]{Inconsolata}
+    }
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
     \renewcommand{\nusthesis@headingfont}{\sffamily}
   }
@@ -106,11 +121,11 @@
     \renewcommand{\nusthesis@titlepagefont}{\sffamily}
   }
   , font / minionpro .code:n = {
-    \RequirePackage[T1]{fontenc}
-    \RequirePackage[utf8]{inputenc}
+
+    \RequirePackage[lf,minionint,loosequotes,footnotefigures]{MinionPro}
+    \microtypesetup{kerning=false,expansion=false}
+    \RequirePackage[lf]{MyriadPro}
     \RequirePackage[scaled=0.9,varl]{inconsolata}
-    \RequirePackage[lf,fullfamily,opticals,minionint,loosequotes,footnotefigures]{MinionPro}
-    \RequirePackage[lf,medfamily]{MyriadPro}
     \renewcommand{\nusthesis@chapheadfont}{\sffamily}
     \renewcommand{\nusthesis@headingfont}{\sffamily}
     \renewcommand{\nusthesis@titlepagefont}{\sffamily}
@@ -129,24 +144,13 @@
 
 \ProcessKeysOptions { nus-thesis }
 
-\bool_if:NTF \l__classname_openright_bool
-{
-  \PassOptionsToClass{openright}{\c__classname_base_class_str}
-}{
-  \PassOptionsToClass{oneside}{\c__classname_base_class_str}
-}
-
-\LoadClass { \c__classname_base_class_str }
-
 \NewDocumentCommand \ThesisSetup { m } {
   \keys_set:nn { nus-thesis } { #1 }
 }
 
 \RequirePackage[UKenglish]{isodate}
-\RequirePackage{color}
-\RequirePackage{iftex}
 \RequirePackage[svgnames]{xcolor}
-\RequirePackage[]{graphicx}
+\RequirePackage{graphicx}
 \RequirePackage{epstopdf}
 \RequirePackage{setspace}
 \RequirePackage[titles]{tocloft}
@@ -157,7 +161,6 @@
 \RequirePackage{ifthen}
 \RequirePackage[top=1in, bottom=1in, left=1.5in, right=1.5in]{geometry}
 \RequirePackage{amsmath}
-\RequirePackage{lipsum}
 \RequirePackage{subcaption}
 \RequirePackage{longtable}
 \RequirePackage{rotating}
@@ -174,21 +177,6 @@
 \RequirePackage[title,titletoc]{appendix}
 \RequirePackage{mdwtab}
 \RequirePackage{caption}
-
-\ifPDFTeX%
-
-  \RequirePackage[T1]{fontenc}
-  \RequirePackage[utf8]{inputenc}
-  \RequirePackage{textcomp} % provides euro and other symbols
-\RequirePackage[tracking=true]{microtype}
-\else % if luatex or xelatex
-  \RequirePackage{fontspec}
-  \RequirePackage{xunicode}
-\RequirePackage{microtype}
-
-\fi
-
-%%%% fonts
 
 \RequirePackage{hyperref}
 \hypersetup{%
@@ -209,18 +197,29 @@
 \gdef\@subtitle{\space}
 \gdef\@qualification{\relax}
 \gdef\@keywords{\space}
-\gdef\nus@abbrev{\space Test \space MAC }
 
 \def\supervisor#1{\gdef\@supervisor{#1}}
 \def\subtitle#1{\gdef\@subtitle{#1}}
 \def\qualification#1{\gdef\@qualification{#1}}
 \def\keywords#1{\gdef\@keywords{#1}}
 
-\newcommand*{\textsomels}[1]{\textls[50]{#1}}
+\RequirePackage{microtype}
+\sys_if_engine_pdftex:TF {
+  \microtypesetup{kerning=true}
+  \SetExtraKerning[unit=character]{encoding=*}{\textemdash={100,100}}
+}{}
+\newcommand*{\textsomels}[1]{%
+  \sys_if_engine_xetex:TF {
+    \relax{#1}
+  }
+  {
+    \textls[50]{#1}
+  }
+}
 
 %% Preface
 \providecommand*{\toclevel@preface}{1}
-\edef\toclevel\@preface{1}
+\edef\toclevel@preface{1}
 \gdef\ttll@preface{0}
 
 \titleclass{\preface}{top}
@@ -239,12 +238,13 @@
   }
 
   \AfterEndPreamble{
-    \setlength{\cftbeforepartskip}{2.25em \@plus\p@}
-    \setlength{\cftbeforechapskip}{1.5em \@plus.2\p@}
-    \setlength{\cftbeforesecskip}{1em \@plus.2\p@}
-    \setlength{\cftbeforesubsecskip}{1.0em \@plus.2\p@}
-    \setlength{\cftbeforefigskip}{1em}
-    \setlength{\cftbeforetabskip}{1em}
+    % Table of contents spacing - hierarchical vertical spacing
+    \setlength{\cftbeforepartskip}{2.25em \@plus\p@}      % Space before parts
+    \setlength{\cftbeforechapskip}{1.5em \@plus.2\p@}     % Space before chapters
+    \setlength{\cftbeforesecskip}{1em \@plus.2\p@}        % Space before sections
+    \setlength{\cftbeforesubsecskip}{1.0em \@plus.2\p@}   % Space before subsections
+    \setlength{\cftbeforefigskip}{1em}                     % Space in list of figures
+    \setlength{\cftbeforetabskip}{1em}                     % Space in list of tables
     \renewcommand{\@starttoc}[1]{%
       \begingroup
       \singlespacing%
@@ -320,7 +320,6 @@
 \renewcommand{\tablename}{Table}
 \DeclareCaptionLabelFormat{bf}{\bfseries #1~#2}
 \DeclareCaptionFormat{hfillstart}{#1#2#3}
-\def\nusthesis@chapterfigs
 
 
 \captionsetup[table]{
@@ -342,17 +341,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\coverpage}{
-  \thispagestyle{empty}\vspace*{0.3in}
+  \thispagestyle{empty}\vspace*{0.3in}  % Top margin for title
   \begin{center}\hyphenpenalty=10000
     \Large\bfseries\uppercase\expandafter{\@title}\\
     \large\mdseries\uppercase\expandafter{\@subtitle}
-  \end{center}\vspace*{8cm}
+  \end{center}\vspace*{8cm}  % Large space pushes author to bottom third
   \begin{center}\hyphenpenalty=10000
     \large\bfseries\uppercase\expandafter{\@author}
   \end{center}\vfill
   \begin{center}\hyphenpenalty=10000
     \normalsize\bfseries
-    \large\uppercase\expandafter{\l__thesis_university_tl}\vspace*{0.2cm} \\
+    \large\uppercase\expandafter{\l__thesis_university_tl}\vspace*{0.2cm} \\  % Small space before year
     \large\uppercase\expandafter{\l__thesis_year_tl}
   \end{center}
   \cleardoublepage}
@@ -382,21 +381,21 @@
 {
   \begin{center}\hyphenpenalty=10000
     \nusthesis@titlepagefont\large\bfseries\uppercase\expandafter{DECLARATION}\\
-    \vspace*{1cm}\mdseries%
+    \vspace*{1cm}\mdseries%  % Space after heading
       I~hereby~declare~that~the~\l__documenttype_tl{}~is~my~original\\
       work~and~it~has~been~written~by~me~in~its~entirety.\\
       I~have~duly~acknowledged~all~the~sources~of\\
       information~which~have~been~used~in~the~\l__documenttype_tl.\\
-      \vspace*{0.5cm}
+      \vspace*{0.5cm}  % Paragraph break in declaration
       This~\l__documenttype_tl{}~has~also~not~been~submitted~for~any\\
       degree~in~any~university~previously.\\
-      \vspace*{2cm}
+      \vspace*{2cm}  % Space for signature
       \IfValueT {#1}{
         \includegraphics[width=0.6\textwidth]{#1}\\
-      \vspace*{-1cm}
+      \vspace*{-1cm}  % Reduce space after signature image
     }
-      \rule{8cm}{0.5pt}\\
-      \vspace*{-0.5cm}
+      \rule{8cm}{0.5pt}\\  % Signature line
+      \vspace*{-0.5cm}  % Bring author name closer to line
       \@author \\
       \today
     \end{center}\cleardoublepage
@@ -486,32 +485,32 @@
 \bool_new:N \l__nusthesis_figure_in_chapter_bool  %% has a figure already appeared in this chapter
 
 \AddToHook{env/table/before}{
-    \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
-    }{%
+  \bool_if:NF \l__nusthesis_table_in_chapter_bool {
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
     \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
-      }}
+  }
+}
 
- \AddToHook{env/longtable/before}{
-    \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
-    }{%
+\AddToHook{env/longtable/before}{
+  \bool_if:NF \l__nusthesis_table_in_chapter_bool {
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
     \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
-    }}
+  }
+}
 
-  \AddToHook{env/sidewaystable/before}{
-    \bool_if:NTF \l__nusthesis_table_in_chapter_bool {%
-    }{%
+\AddToHook{env/sidewaystable/before}{
+  \bool_if:NF \l__nusthesis_table_in_chapter_bool {
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
     \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
-    }}
+  }
+}
 
 \AddToHook{env/figure/before}{
-    \bool_if:NTF \l__nusthesis_figure_in_chapter_bool {%
-    }{%
+  \bool_if:NF \l__nusthesis_figure_in_chapter_bool {
     \bool_set_true:N \l__nusthesis_figure_in_chapter_bool
     \addtocontents{lof}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
-  }}
+  }
+}
 
 \NewDocumentCommand{\ResetFloatsInChapter}{}{
   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
