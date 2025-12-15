@@ -150,12 +150,10 @@
   , examiners .tl_set:N = \l__thesis_examiners_tl
   , examiners .initial:n = {(examiners)}
   , font .choice:
-  , font / strict .code:n = {
-    \RequirePackage{mathptmx}
-  }
   , font / times .code:n = {
     \RequirePackage{mathptmx}
   }
+  , font / strict .meta:n = { font = times }  % Alias for backward compatibility
   , font / helvetica .code:n = {
     \RequirePackage[scaled=0.95]{helvet}
     \renewcommand{\familydefault}{\sfdefault}
@@ -218,39 +216,79 @@
   \keys_set:nn { nus-thesis } { #1 }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Package Loading
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Date and localization
 \RequirePackage[UKenglish]{isodate}
+
+% Graphics and color
 \RequirePackage[svgnames]{xcolor}
 \RequirePackage{graphicx}
 \RequirePackage{epstopdf}
+\RequirePackage{pdflscape}
+\RequirePackage{pstricks}
+
+% Page layout and spacing
 \RequirePackage{setspace}
+\RequirePackage[top=1in, bottom=1in, left=1.5in, right=1.5in]{geometry}
+\RequirePackage{emptypage}
+
+% Table of contents
 \RequirePackage[titles]{tocloft}
-%\RequirePackage[skip=10pt plus2pt, indent=24pt]{parskip}
 \RequirePackage{bookmark}
+
+% Typography
+\RequirePackage{microtype}
+\sys_if_engine_pdftex:TF {
+  \microtypesetup{kerning=true}
+  \SetExtraKerning[unit=character]{encoding=*}{\textemdash={100,100}}
+}{}
+
+% Section formatting
 \RequirePackage{etoolbox}
 \RequirePackage{titlesec}
 \RequirePackage{titletoc}
-\RequirePackage{ifthen}
-\RequirePackage[top=1in, bottom=1in, left=1.5in, right=1.5in]{geometry}
+
+% Math
 \RequirePackage{amsmath}
-\RequirePackage{subcaption}
+\RequirePackage{mathtools}
+
+% Tables
 \RequirePackage{longtable}
 \RequirePackage{rotating}
 \RequirePackage{booktabs}
-\RequirePackage{mathtools}
 \RequirePackage{multirow}
 \RequirePackage{multicol}
-\RequirePackage{fancyvrb}
-\RequirePackage{pbox}
-\RequirePackage{pdflscape}
-\RequirePackage{pstricks}
-\RequirePackage{acronym}
-\RequirePackage[section]{placeins}
-%\RequirePackage[nottoc]{tocbibind}
-\RequirePackage[title,titletoc]{appendix}
 \RequirePackage{mdwtab}
+
+% Figures and captions
+\RequirePackage{subcaption}
 \RequirePackage{caption}
 
+% Floats
+\RequirePackage[section]{placeins}
 
+% Verbatim and code
+\RequirePackage{fancyvrb}
+\RequirePackage{pbox}
+
+% Appendices
+\RequirePackage[title,titletoc]{appendix}
+
+% Acronyms and glossaries
+\RequirePackage{acronym}
+\RequirePackage[abbreviations,prefix,postpunc={:},automake,toc=false]{glossaries-extra}
+\makeglossaries[abbreviations]
+\setglossarypreamble[abbreviations]{\addcontentsline{toc}{preface}{\glossarytitle}}
+\newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
+\newignoredglossary*{ignored}
+
+% Conditional packages (legacy)
+\RequirePackage{ifthen}
+
+% Cross-referencing (load last)
 \RequirePackage{hyperref}
 \hypersetup{%
   hidelinks%
@@ -265,7 +303,7 @@
 
 % Plain Page Style
 \pagestyle{plain}
-\RequirePackage{emptypage}
+
 % Labels Declaration
 \graphicspath{ {./images/} }
 
@@ -283,11 +321,7 @@
 \def\qualification#1{\gdef\@qualification{#1}}
 \def\keywords#1{\gdef\@keywords{#1}}
 
-\RequirePackage{microtype}
-\sys_if_engine_pdftex:TF {
-  \microtypesetup{kerning=true}
-  \SetExtraKerning[unit=character]{encoding=*}{\textemdash={100,100}}
-}{}
+% Helper for letterspacing (XeTeX doesn't need it)
 \newcommand*{\textsomels}[1]{%
   \sys_if_engine_xetex:TF {
     \relax{#1}
@@ -317,8 +351,7 @@
     % aftercode
   }
 
-
-  \AfterEndPreamble{
+\AfterEndPreamble{
     % Table of contents spacing - hierarchical vertical spacing
     \setlength{\cftbeforepartskip}{2.25em \@plus\p@}      % Space before parts
     \setlength{\cftbeforechapskip}{1.5em \@plus.2\p@}     % Space before chapters
@@ -333,10 +366,9 @@
       \OLD@starttoc{#1}%
     \endgroup
   }
-  }
+}
 
-
-  \renewcommand\listoftables{%
+\renewcommand\listoftables{%
     \if@twocolumn
       \@restonecoltrue\onecolumn
     \else
@@ -345,7 +377,6 @@
     \chapter*{\listtablename}%
     {%
       \singlespacing%
- %     \setlength{\cftparskip}{1ex}
     \addcontentsline{toc}{preface}{\listtablename}
       \@mkboth{%
           \MakeUppercase\listtablename}%
@@ -353,9 +384,9 @@
     \@starttoc{lot}%
     \if@restonecol\twocolumn\fi
     }
-    }
+}
 
-    \renewcommand\listoffigures{%
+\renewcommand\listoffigures{%
     \if@twocolumn
       \@restonecoltrue\onecolumn
     \else
@@ -364,7 +395,6 @@
     \chapter*{\listfigurename}%
     {%
       \singlespacing%
-%      \setlength{\cftparskip}{1ex}
     \addcontentsline{toc}{preface}{\listfigurename}
       \@mkboth{%
           \MakeUppercase\listfigurename}%
@@ -372,7 +402,7 @@
     \@starttoc{lof}%
     \if@restonecol\twocolumn\fi
     }
-    }
+}
 
 
 
@@ -410,9 +440,6 @@
 \renewcommand{\tablename}{Table}
 \DeclareCaptionLabelFormat{bf}{\bfseries #1~#2}
 \DeclareCaptionFormat{hfillstart}{#1#2#3}
-% \DeclareFloatFont{normalsize}{\normalsize}
-
-%\floatsetup[table]{capposition=top}
 
 \captionsetup[table]{
   font={small,sf},
@@ -515,28 +542,15 @@
 
 
 % Acknowledgment
-\newcommand{\acknowledgements}[1]{
-  \chapter*{Acknowledgements}
-  \addcontentsline{toc}{preface}{Acknowledgements}  
-  #1\newpage\cleardoublepage
-}
-
-\renewenvironment{acknowledgements}{%
+\newenvironment{acknowledgements}{%
   \chapter*{Acknowledgements}
    \addcontentsline{toc}{preface}{Acknowledgements}
    }{%
      \newpage\cleardoublepage
 }
 
-
-
-\newcommand{\abstract}[1]{
-  \chapter*{Abstract}
-  \addcontentsline{toc}{preface}{Abstract}  
-  #1\cleardoublepage
-}
-
-\RenewDocumentEnvironment{abstract}{o}
+% Abstract
+\NewDocumentEnvironment{abstract}{o}
 {%
   \IfNoValueTF{#1}{
  \chapter*{Abstract}%
@@ -561,14 +575,6 @@
  {\contentsmargin{0pt}%
  }
  {\hfill\contentspage}
-
-
-\RequirePackage[abbreviations,prefix,postpunc={:},automake,toc=false]{glossaries-extra}
-\makeglossaries[abbreviations]
-\setglossarypreamble[abbreviations]{\addcontentsline{toc}{preface}{\glossarytitle}}
-\newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
-\newignoredglossary*{ignored}
-
 
 % Strict Compliant
 \bool_if:NTF \l__classname_nusstrict_bool

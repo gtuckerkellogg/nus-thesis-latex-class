@@ -81,12 +81,10 @@
   , examiners .tl_set:N = \l__thesis_examiners_tl
   , examiners .initial:n = {(examiners)}
   , font .choice:
-  , font / strict .code:n = {
-    \RequirePackage{mathptmx}
-  }
   , font / times .code:n = {
     \RequirePackage{mathptmx}
   }
+  , font / strict .meta:n = { font = times }  % Alias for backward compatibility
   , font / helvetica .code:n = {
     \RequirePackage[scaled=0.95]{helvet}
     \renewcommand{\familydefault}{\sfdefault}
@@ -148,35 +146,62 @@
   \keys_set:nn { nus-thesis } { #1 }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \RequirePackage[UKenglish]{isodate}
+
 \RequirePackage[svgnames]{xcolor}
 \RequirePackage{graphicx}
 \RequirePackage{epstopdf}
+\RequirePackage{pdflscape}
+\RequirePackage{pstricks}
+
 \RequirePackage{setspace}
+\RequirePackage[top=1in, bottom=1in, left=1.5in, right=1.5in]{geometry}
+\RequirePackage{emptypage}
+
 \RequirePackage[titles]{tocloft}
 \RequirePackage{bookmark}
+
+\RequirePackage{microtype}
+\sys_if_engine_pdftex:TF {
+  \microtypesetup{kerning=true}
+  \SetExtraKerning[unit=character]{encoding=*}{\textemdash={100,100}}
+}{}
+
 \RequirePackage{etoolbox}
 \RequirePackage{titlesec}
 \RequirePackage{titletoc}
-\RequirePackage{ifthen}
-\RequirePackage[top=1in, bottom=1in, left=1.5in, right=1.5in]{geometry}
+
 \RequirePackage{amsmath}
-\RequirePackage{subcaption}
+\RequirePackage{mathtools}
+
 \RequirePackage{longtable}
 \RequirePackage{rotating}
 \RequirePackage{booktabs}
-\RequirePackage{mathtools}
 \RequirePackage{multirow}
 \RequirePackage{multicol}
+\RequirePackage{mdwtab}
+
+\RequirePackage{subcaption}
+\RequirePackage{caption}
+
+\RequirePackage[section]{placeins}
+
 \RequirePackage{fancyvrb}
 \RequirePackage{pbox}
-\RequirePackage{pdflscape}
-\RequirePackage{pstricks}
-\RequirePackage{acronym}
-\RequirePackage[section]{placeins}
+
 \RequirePackage[title,titletoc]{appendix}
-\RequirePackage{mdwtab}
-\RequirePackage{caption}
+
+\RequirePackage{acronym}
+\RequirePackage[abbreviations,prefix,postpunc={:},automake,toc=false]{glossaries-extra}
+\makeglossaries[abbreviations]
+\setglossarypreamble[abbreviations]{\addcontentsline{toc}{preface}{\glossarytitle}}
+\newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
+\newignoredglossary*{ignored}
+
+\RequirePackage{ifthen}
 
 \RequirePackage{hyperref}
 \hypersetup{%
@@ -189,7 +214,7 @@
 \doublespacing
 
 \pagestyle{plain}
-\RequirePackage{emptypage}
+
 \graphicspath{ {./images/} }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -203,11 +228,6 @@
 \def\qualification#1{\gdef\@qualification{#1}}
 \def\keywords#1{\gdef\@keywords{#1}}
 
-\RequirePackage{microtype}
-\sys_if_engine_pdftex:TF {
-  \microtypesetup{kerning=true}
-  \SetExtraKerning[unit=character]{encoding=*}{\textemdash={100,100}}
-}{}
 \newcommand*{\textsomels}[1]{%
   \sys_if_engine_xetex:TF {
     \relax{#1}
@@ -237,7 +257,7 @@
     % aftercode
   }
 
-  \AfterEndPreamble{
+\AfterEndPreamble{
     % Table of contents spacing - hierarchical vertical spacing
     \setlength{\cftbeforepartskip}{2.25em \@plus\p@}      % Space before parts
     \setlength{\cftbeforechapskip}{1.5em \@plus.2\p@}     % Space before chapters
@@ -252,9 +272,9 @@
       \OLD@starttoc{#1}%
     \endgroup
   }
-  }
+}
 
-  \renewcommand\listoftables{%
+\renewcommand\listoftables{%
     \if@twocolumn
       \@restonecoltrue\onecolumn
     \else
@@ -263,7 +283,6 @@
     \chapter*{\listtablename}%
     {%
       \singlespacing%
- %     \setlength{\cftparskip}{1ex}
     \addcontentsline{toc}{preface}{\listtablename}
       \@mkboth{%
           \MakeUppercase\listtablename}%
@@ -271,9 +290,9 @@
     \@starttoc{lot}%
     \if@restonecol\twocolumn\fi
     }
-    }
+}
 
-    \renewcommand\listoffigures{%
+\renewcommand\listoffigures{%
     \if@twocolumn
       \@restonecoltrue\onecolumn
     \else
@@ -289,7 +308,7 @@
     \@starttoc{lof}%
     \if@restonecol\twocolumn\fi
     }
-    }
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -320,7 +339,6 @@
 \renewcommand{\tablename}{Table}
 \DeclareCaptionLabelFormat{bf}{\bfseries #1~#2}
 \DeclareCaptionFormat{hfillstart}{#1#2#3}
-
 
 \captionsetup[table]{
   font={small,sf},
@@ -409,26 +427,14 @@
   \fontsize{100}{130}\nusthesis@chapheadfont\bfseries\selectfont%
 \color{chaptergrey}\raggedleft}
 
-\newcommand{\acknowledgements}[1]{
-  \chapter*{Acknowledgements}
-  \addcontentsline{toc}{preface}{Acknowledgements}
-  #1\newpage\cleardoublepage
-}
-
-\renewenvironment{acknowledgements}{%
+\newenvironment{acknowledgements}{%
   \chapter*{Acknowledgements}
    \addcontentsline{toc}{preface}{Acknowledgements}
    }{%
      \newpage\cleardoublepage
 }
 
-\newcommand{\abstract}[1]{
-  \chapter*{Abstract}
-  \addcontentsline{toc}{preface}{Abstract}
-  #1\cleardoublepage
-}
-
-\RenewDocumentEnvironment{abstract}{o}
+\NewDocumentEnvironment{abstract}{o}
 {%
   \IfNoValueTF{#1}{
  \chapter*{Abstract}%
@@ -452,12 +458,6 @@
  {\contentsmargin{0pt}%
  }
  {\hfill\contentspage}
-
-\RequirePackage[abbreviations,prefix,postpunc={:},automake,toc=false]{glossaries-extra}
-\makeglossaries[abbreviations]
-\setglossarypreamble[abbreviations]{\addcontentsline{toc}{preface}{\glossarytitle}}
-\newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
-\newignoredglossary*{ignored}
 
 \bool_if:NTF \l__classname_nusstrict_bool
 {
