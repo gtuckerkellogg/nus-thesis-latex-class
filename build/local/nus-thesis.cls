@@ -44,9 +44,9 @@
 }
 
 
-\cs_new:Npn \nusthesis@titlepagefont { \normalfont }
-\cs_new:Npn \nusthesis@chapheadfont { \normalfont }
-\cs_new:Npn \nusthesis@headingfont { \normalfont }
+\cs_new:Npn \__nusthesis_titlepage_font: { \normalfont }
+\cs_new:Npn \__nusthesis_chaphead_font: { \normalfont }
+\cs_new:Npn \__nusthesis_heading_font: { \normalfont }
 
 \tl_new:N \l__nusthesis_supervisor_tl
 \tl_new:N \l__nusthesis_subtitle_tl
@@ -104,8 +104,8 @@
     \RequirePackage[sc]{mathpazo}
     \RequirePackage[scaled=0.95]{helvet}
     \RequirePackage[varl]{inconsolata}
-    \cs_set:Npn \nusthesis@chapheadfont { \sffamily }
-    \cs_set:Npn \nusthesis@headingfont { \sffamily }
+    \cs_set:Npn \__nusthesis_chaphead_font: { \sffamily }
+    \cs_set:Npn \__nusthesis_heading_font: { \sffamily }
   }
   , font / libertine .code:n = {
     \sys_if_engine_pdftex:TF {
@@ -116,15 +116,15 @@
       \RequirePackage{libertinus}
       \setmonofont[Scale=MatchUppercase]{Inconsolata}
     }
-    \cs_set:Npn \nusthesis@chapheadfont { \sffamily }
-    \cs_set:Npn \nusthesis@headingfont { \sffamily }
+    \cs_set:Npn \__nusthesis_chaphead_font: { \sffamily }
+    \cs_set:Npn \__nusthesis_heading_font: { \sffamily }
   }
   , font / noto .code:n = {
     \RequirePackage{notomath}
     \RequirePackage{inconsolata}
-    \cs_set:Npn \nusthesis@chapheadfont { \sffamily }
-    \cs_set:Npn \nusthesis@headingfont { \sffamily }
-    \cs_set:Npn \nusthesis@titlepagefont { \sffamily }
+    \cs_set:Npn \__nusthesis_chaphead_font: { \sffamily }
+    \cs_set:Npn \__nusthesis_heading_font: { \sffamily }
+    \cs_set:Npn \__nusthesis_titlepage_font: { \sffamily }
   }
   , font / minionpro .code:n = {
 
@@ -132,9 +132,9 @@
     \microtypesetup{kerning=false,expansion=false}
     \RequirePackage[lf]{MyriadPro}
     \RequirePackage[scaled=0.9,varl]{inconsolata}
-    \cs_set:Npn \nusthesis@chapheadfont { \sffamily }
-    \cs_set:Npn \nusthesis@headingfont { \sffamily }
-    \cs_set:Npn \nusthesis@titlepagefont { \sffamily }
+    \cs_set:Npn \__nusthesis_chaphead_font: { \sffamily }
+    \cs_set:Npn \__nusthesis_heading_font: { \sffamily }
+    \cs_set:Npn \__nusthesis_titlepage_font: { \sffamily }
   }
   % \DeclareDefaultOption
   , unknown .code:n =
@@ -303,7 +303,7 @@
 
 \titleformat{\preface}[display]{%
   % format
-    \nusthesis@chapheadfont\setstretch{0.9}}{%
+    \__nusthesis_chaphead_font:\setstretch{0.9}}{%
     % label
     }{%
     % sep
@@ -369,12 +369,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\titlepage}{
-  \nusthesis@titlepagefont
+  \__nusthesis_titlepage_font:
   \thispagestyle{empty}
   \begin{center}%
     \hyphenpenalty=10000
-    {\Large\bfseries\uppercase\expandafter{\@title}\\ }
-    \normalsize\mdseries\uppercase\expandafter{\l__nusthesis_subtitle_tl}
+    {\Large\bfseries\text_uppercase:n {\@title}\\ }
+    \normalsize\mdseries\text_uppercase:n {\l__nusthesis_subtitle_tl}
     \vfill%
   \titlepagebody
   \vfill
@@ -417,30 +417,32 @@
 \newcommand{\coverpage}{
   \thispagestyle{empty}\vspace*{\c__nusthesis_coverpage_title_vspace_dim}
   \begin{center}\hyphenpenalty=10000
-    \Large\bfseries\uppercase\expandafter{\@title}\\
-    \large\mdseries\uppercase\expandafter{\l__nusthesis_subtitle_tl}
+    \Large\bfseries\text_uppercase:n {\@title}\\
+    \large\mdseries\text_uppercase:n {\l__nusthesis_subtitle_tl}
   \end{center}\vspace*{\c__nusthesis_coverpage_author_vspace_dim}
   \begin{center}\hyphenpenalty=10000
-    \large\bfseries\uppercase\expandafter{\@author}
+    \large\bfseries\text_uppercase:n {\@author}
   \end{center}\vfill
   \begin{center}\hyphenpenalty=10000
     \normalsize\bfseries
-    \large\uppercase\expandafter{\l__thesis_university_tl}\vspace*{\c__nusthesis_coverpage_year_vspace_dim} \\
-    \large\uppercase\expandafter{\l__thesis_year_tl}
+    \large\text_uppercase:n {\l__thesis_university_tl}\vspace*{\c__nusthesis_coverpage_year_vspace_dim} \\
+    \large\text_uppercase:n {\l__thesis_year_tl}
   \end{center}
   \cleardoublepage}
 
-\@ifundefined{titlepagebody}{
-  \newcommand{\titlepagebody}{
-    \Large\bfseries\uppercase\expandafter{\@author}\\
-    \textit{\mdseries(\expandafter{\l__nusthesis_qualification_tl})}
-  }}{}
+\cs_if_exist:cF { titlepagebody } {
+  \NewDocumentCommand \titlepagebody { } {
+    \Large\bfseries\text_uppercase:n {\@author}\\
+    \textit{\mdseries(\l__nusthesis_qualification_tl)}
+  }
+}
 
-\@ifundefined{titlepagefooter}{
-  \newcommand{\titlepagefooter}{\large\uppercase\expandafter{
-      \textsomels{A~\uppercase\expandafter{\l__documenttype_tl}~submitted~
-        for~the~Degree~of~\\\uppercase\expandafter{\l__thesis_candidacy_tl} \\
-        Department~of~ \uppercase\expandafter{\l__thesis_department_tl}\\ \uppercase\expandafter{\l__thesis_university_tl}}\\
+\cs_if_exist:cF { titlepagefooter } {
+  \NewDocumentCommand \titlepagefooter { } {
+    \large\text_uppercase:n {
+      \textsomels{A~\text_uppercase:n {\l__documenttype_tl}~submitted~
+        for~the~Degree~of~\\\text_uppercase:n {\l__thesis_candidacy_tl} \\
+        Department~of~ \text_uppercase:n {\l__thesis_department_tl}\\ \text_uppercase:n {\l__thesis_university_tl}}\\
       \vspace*{\c__nusthesis_titlepage_footer_vspace_dim}\l__thesis_year_tl\\}
       \bool_if:NTF \l__final_submission_bool {
         {Advisor} \\
@@ -448,13 +450,13 @@
         Examiners \\
         \l__thesis_examiners_tl
       }{}
-    }%
-}{}
+  }
+}
 
 \NewDocumentCommand \DeclarationPage { o }
 {
   \begin{center}\hyphenpenalty=10000
-    \nusthesis@titlepagefont\large\bfseries\uppercase\expandafter{DECLARATION}\\
+    \__nusthesis_titlepage_font:\large\bfseries\text_uppercase:n {DECLARATION}\\
     \vspace*{\c__nusthesis_declaration_heading_vspace_dim}\mdseries%
       I~hereby~declare~that~the~\l__documenttype_tl{}~is~my~original\\
       work~and~it~has~been~written~by~me~in~its~entirety.\\
@@ -480,7 +482,7 @@
 
 %%% chapter titles similar to quotchap
 \cs_new:Npn \chapnum {
-  \fontsize{\c__nusthesis_chapnum_fontsize_int}{\c__nusthesis_chapnum_baseline_int}\nusthesis@chapheadfont\bfseries\selectfont
+  \fontsize{\c__nusthesis_chapnum_fontsize_int}{\c__nusthesis_chapnum_baseline_int}\__nusthesis_chaphead_font:\bfseries\selectfont
   \color{chaptergrey}\raggedleft
 }
 
@@ -521,7 +523,7 @@
 }{
   \titleformat{\chapter}[display]{%
     % format
-    \nusthesis@chapheadfont\setstretch{0.9}}{%
+    \__nusthesis_chaphead_font:\setstretch{0.9}}{%
     % label
     \chapnum{\thechapter}}{%
     % sep
@@ -531,10 +533,10 @@
     % aftercode
   }
 
-\titleformat{\section}{\setstretch{1.2}\nusthesis@headingfont\raggedright\Large}{\thesection}{1em}{}
-\titleformat{\subsection}{\setstretch{1.2}\nusthesis@headingfont\raggedright\large}{\thesubsection}{1em}{}
+\titleformat{\section}{\setstretch{1.2}\__nusthesis_heading_font:\raggedright\Large}{\thesection}{1em}{}
+\titleformat{\subsection}{\setstretch{1.2}\__nusthesis_heading_font:\raggedright\large}{\thesubsection}{1em}{}
 
-\titleformat{\subsubsection}{\setstretch{1.2}\nusthesis@headingfont\normalsize}{\thesubsubsection}{1em}{}
+\titleformat{\subsubsection}{\setstretch{1.2}\__nusthesis_heading_font:\normalsize}{\thesubsubsection}{1em}{}
 
 }
 
@@ -578,11 +580,11 @@
   \ResetFloatsInChapter{}}{}{}
 
 \noappendicestocpagenum
-\renewcommand{\appendixpagename}{\nusthesis@chapheadfont Appendices}
+\renewcommand{\appendixpagename}{\__nusthesis_chaphead_font: Appendices}
 
 \g@addto@macro\appendix{%
 \titleformat{\chapter}[display]
-{\nusthesis@chapheadfont\Huge}{\chaptertitlename\ \thechapter}{\c__nusthesis_appendix_title_sep_dim}{\Huge}
+{\__nusthesis_chaphead_font:\Huge}{\chaptertitlename\ \thechapter}{\c__nusthesis_appendix_title_sep_dim}{\Huge}
 \cleardoublepage
  \addtocontents{toc}%
  {\protect\contentsline{part}{\appendixtocname}{}{}}%
