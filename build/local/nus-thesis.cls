@@ -44,9 +44,17 @@
 }
 
 
-\newcommand{\nusthesis@titlepagefont}{\normalfont}
-\newcommand{\nusthesis@chapheadfont}{\normalfont}
-\newcommand{\nusthesis@headingfont}{\normalfont}
+\cs_new:Npn \nusthesis@titlepagefont { \normalfont }
+\cs_new:Npn \nusthesis@chapheadfont { \normalfont }
+\cs_new:Npn \nusthesis@headingfont { \normalfont }
+
+\tl_new:N \l__nusthesis_supervisor_tl
+\tl_new:N \l__nusthesis_subtitle_tl
+\tl_new:N \l__nusthesis_qualification_tl
+\tl_new:N \l__nusthesis_keywords_tl
+
+\seq_new:N \g__nusthesis_symbol_seq
+\seq_new:N \g__nusthesis_abbrev_seq
 
 
 \keys_define:nn { nus-thesis }
@@ -96,8 +104,8 @@
     \RequirePackage[sc]{mathpazo}
     \RequirePackage[scaled=0.95]{helvet}
     \RequirePackage[varl]{inconsolata}
-    \renewcommand{\nusthesis@chapheadfont}{\sffamily}
-    \renewcommand{\nusthesis@headingfont}{\sffamily}
+    \cs_set:Npn \nusthesis@chapheadfont { \sffamily }
+    \cs_set:Npn \nusthesis@headingfont { \sffamily }
   }
   , font / libertine .code:n = {
     \sys_if_engine_pdftex:TF {
@@ -108,15 +116,15 @@
       \RequirePackage{libertinus}
       \setmonofont[Scale=MatchUppercase]{Inconsolata}
     }
-    \renewcommand{\nusthesis@chapheadfont}{\sffamily}
-    \renewcommand{\nusthesis@headingfont}{\sffamily}
+    \cs_set:Npn \nusthesis@chapheadfont { \sffamily }
+    \cs_set:Npn \nusthesis@headingfont { \sffamily }
   }
   , font / noto .code:n = {
     \RequirePackage{notomath}
     \RequirePackage{inconsolata}
-    \renewcommand{\nusthesis@chapheadfont}{\sffamily}
-    \renewcommand{\nusthesis@headingfont}{\sffamily}
-    \renewcommand{\nusthesis@titlepagefont}{\sffamily}
+    \cs_set:Npn \nusthesis@chapheadfont { \sffamily }
+    \cs_set:Npn \nusthesis@headingfont { \sffamily }
+    \cs_set:Npn \nusthesis@titlepagefont { \sffamily }
   }
   , font / minionpro .code:n = {
 
@@ -124,9 +132,9 @@
     \microtypesetup{kerning=false,expansion=false}
     \RequirePackage[lf]{MyriadPro}
     \RequirePackage[scaled=0.9,varl]{inconsolata}
-    \renewcommand{\nusthesis@chapheadfont}{\sffamily}
-    \renewcommand{\nusthesis@headingfont}{\sffamily}
-    \renewcommand{\nusthesis@titlepagefont}{\sffamily}
+    \cs_set:Npn \nusthesis@chapheadfont { \sffamily }
+    \cs_set:Npn \nusthesis@headingfont { \sffamily }
+    \cs_set:Npn \nusthesis@titlepagefont { \sffamily }
   }
   % \DeclareDefaultOption
   , unknown .code:n =
@@ -201,13 +209,50 @@
 \newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
 \newignoredglossary*{ignored}
 
-\RequirePackage{ifthen}
-
 \RequirePackage{hyperref}
 \hypersetup{%
   hidelinks%
 }
 \RequirePackage[nameinlink,noabbrev, capitalise]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\dim_const:Nn \c__nusthesis_toc_part_skip_dim { 2.25em }
+\dim_const:Nn \c__nusthesis_toc_chapter_skip_dim { 1.5em }
+\dim_const:Nn \c__nusthesis_toc_section_skip_dim { 1em }
+\dim_const:Nn \c__nusthesis_toc_subsection_skip_dim { 1em }
+\dim_const:Nn \c__nusthesis_toc_figure_skip_dim { 1em }
+\dim_const:Nn \c__nusthesis_toc_table_skip_dim { 1em }
+
+\dim_const:Nn \c__nusthesis_coverpage_title_vspace_dim { 0.3in }
+\dim_const:Nn \c__nusthesis_coverpage_author_vspace_dim { 8cm }
+\dim_const:Nn \c__nusthesis_coverpage_year_vspace_dim { 0.2cm }
+
+\dim_const:Nn \c__nusthesis_titlepage_footer_vspace_dim { 2cm }
+
+\dim_const:Nn \c__nusthesis_declaration_heading_vspace_dim { 1cm }
+\dim_const:Nn \c__nusthesis_declaration_para_vspace_dim { 0.5cm }
+\dim_const:Nn \c__nusthesis_declaration_signature_vspace_dim { 2cm }
+\dim_const:Nn \c__nusthesis_declaration_sig_adjust_dim { -1cm }
+\dim_const:Nn \c__nusthesis_declaration_author_adjust_dim { -0.5cm }
+\dim_const:Nn \c__nusthesis_declaration_line_width_dim { 8cm }
+\dim_const:Nn \c__nusthesis_declaration_line_thickness_dim { 0.5pt }
+\dim_const:Nn \c__nusthesis_declaration_sig_image_width_dim { 0.6\textwidth }
+
+\int_const:Nn \c__nusthesis_chapnum_fontsize_int { 100 }
+\int_const:Nn \c__nusthesis_chapnum_baseline_int { 130 }
+\dim_const:Nn \c__nusthesis_appendix_title_sep_dim { 20pt }
+
+\dim_const:Nn \c__nusthesis_section_before_dim { 3.5ex }
+\dim_const:Nn \c__nusthesis_section_after_dim { 2.3ex }
+\dim_const:Nn \c__nusthesis_subsection_before_dim { 3.25ex }
+\dim_const:Nn \c__nusthesis_subsection_after_dim { 1.5ex }
+\dim_const:Nn \c__nusthesis_subsubsection_before_dim { 3.25ex }
+\dim_const:Nn \c__nusthesis_subsubsection_after_dim { 1.5ex }
+
+\dim_const:Nn \c__nusthesis_symbol_leftcol_dim { 2cm }   % Symbol/abbreviation column
+\dim_const:Nn \c__nusthesis_symbol_midcol_dim { 1cm }    % Spacing column
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -219,18 +264,29 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\gdef\@subtitle{\space}
-\gdef\@qualification{\relax}
-\gdef\@keywords{\space}
+\tl_set:Nn \l__nusthesis_subtitle_tl { \space }
+\tl_set:Nn \l__nusthesis_qualification_tl { }
+\tl_set:Nn \l__nusthesis_keywords_tl { \space }
 
-\def\supervisor#1{\gdef\@supervisor{#1}}
-\def\subtitle#1{\gdef\@subtitle{#1}}
-\def\qualification#1{\gdef\@qualification{#1}}
-\def\keywords#1{\gdef\@keywords{#1}}
+\NewDocumentCommand \supervisor { m } {
+  \tl_set:Nn \l__nusthesis_supervisor_tl { #1 }
+}
 
-\newcommand*{\textsomels}[1]{%
+\NewDocumentCommand \subtitle { m } {
+  \tl_set:Nn \l__nusthesis_subtitle_tl { #1 }
+}
+
+\NewDocumentCommand \qualification { m } {
+  \tl_set:Nn \l__nusthesis_qualification_tl { #1 }
+}
+
+\NewDocumentCommand \keywords { m } {
+  \tl_set:Nn \l__nusthesis_keywords_tl { #1 }
+}
+
+\cs_new:Npn \textsomels #1 {
   \sys_if_engine_xetex:TF {
-    \relax{#1}
+    #1
   }
   {
     \textls[50]{#1}
@@ -258,13 +314,13 @@
   }
 
 \AfterEndPreamble{
-    % Table of contents spacing - hierarchical vertical spacing
-    \setlength{\cftbeforepartskip}{2.25em \@plus\p@}      % Space before parts
-    \setlength{\cftbeforechapskip}{1.5em \@plus.2\p@}     % Space before chapters
-    \setlength{\cftbeforesecskip}{1em \@plus.2\p@}        % Space before sections
-    \setlength{\cftbeforesubsecskip}{1.0em \@plus.2\p@}   % Space before subsections
-    \setlength{\cftbeforefigskip}{1em}                     % Space in list of figures
-    \setlength{\cftbeforetabskip}{1em}                     % Space in list of tables
+    % Table of contents spacing - using constants defined above
+    \setlength{\cftbeforepartskip}{\c__nusthesis_toc_part_skip_dim \@plus\p@}
+    \setlength{\cftbeforechapskip}{\c__nusthesis_toc_chapter_skip_dim \@plus.2\p@}
+    \setlength{\cftbeforesecskip}{\c__nusthesis_toc_section_skip_dim \@plus.2\p@}
+    \setlength{\cftbeforesubsecskip}{\c__nusthesis_toc_subsection_skip_dim \@plus.2\p@}
+    \setlength{\cftbeforefigskip}{\c__nusthesis_toc_figure_skip_dim}
+    \setlength{\cftbeforetabskip}{\c__nusthesis_toc_table_skip_dim}
     \renewcommand{\@starttoc}[1]{%
       \begingroup
       \singlespacing%
@@ -318,7 +374,7 @@
   \begin{center}%
     \hyphenpenalty=10000
     {\Large\bfseries\uppercase\expandafter{\@title}\\ }
-    \normalsize\mdseries\uppercase\expandafter{\@subtitle}
+    \normalsize\mdseries\uppercase\expandafter{\l__nusthesis_subtitle_tl}
     \vfill%
   \titlepagebody
   \vfill
@@ -359,17 +415,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\coverpage}{
-  \thispagestyle{empty}\vspace*{0.3in}  % Top margin for title
+  \thispagestyle{empty}\vspace*{\c__nusthesis_coverpage_title_vspace_dim}
   \begin{center}\hyphenpenalty=10000
     \Large\bfseries\uppercase\expandafter{\@title}\\
-    \large\mdseries\uppercase\expandafter{\@subtitle}
-  \end{center}\vspace*{8cm}  % Large space pushes author to bottom third
+    \large\mdseries\uppercase\expandafter{\l__nusthesis_subtitle_tl}
+  \end{center}\vspace*{\c__nusthesis_coverpage_author_vspace_dim}
   \begin{center}\hyphenpenalty=10000
     \large\bfseries\uppercase\expandafter{\@author}
   \end{center}\vfill
   \begin{center}\hyphenpenalty=10000
     \normalsize\bfseries
-    \large\uppercase\expandafter{\l__thesis_university_tl}\vspace*{0.2cm} \\  % Small space before year
+    \large\uppercase\expandafter{\l__thesis_university_tl}\vspace*{\c__nusthesis_coverpage_year_vspace_dim} \\
     \large\uppercase\expandafter{\l__thesis_year_tl}
   \end{center}
   \cleardoublepage}
@@ -377,7 +433,7 @@
 \@ifundefined{titlepagebody}{
   \newcommand{\titlepagebody}{
     \Large\bfseries\uppercase\expandafter{\@author}\\
-    \textit{\mdseries(\expandafter{\@qualification})}
+    \textit{\mdseries(\expandafter{\l__nusthesis_qualification_tl})}
   }}{}
 
 \@ifundefined{titlepagefooter}{
@@ -385,7 +441,7 @@
       \textsomels{A~\uppercase\expandafter{\l__documenttype_tl}~submitted~
         for~the~Degree~of~\\\uppercase\expandafter{\l__thesis_candidacy_tl} \\
         Department~of~ \uppercase\expandafter{\l__thesis_department_tl}\\ \uppercase\expandafter{\l__thesis_university_tl}}\\
-      \vspace*{2cm}\l__thesis_year_tl\\}
+      \vspace*{\c__nusthesis_titlepage_footer_vspace_dim}\l__thesis_year_tl\\}
       \bool_if:NTF \l__final_submission_bool {
         {Advisor} \\
         \l__thesis_advisor_tl \\
@@ -399,21 +455,21 @@
 {
   \begin{center}\hyphenpenalty=10000
     \nusthesis@titlepagefont\large\bfseries\uppercase\expandafter{DECLARATION}\\
-    \vspace*{1cm}\mdseries%  % Space after heading
+    \vspace*{\c__nusthesis_declaration_heading_vspace_dim}\mdseries%
       I~hereby~declare~that~the~\l__documenttype_tl{}~is~my~original\\
       work~and~it~has~been~written~by~me~in~its~entirety.\\
       I~have~duly~acknowledged~all~the~sources~of\\
       information~which~have~been~used~in~the~\l__documenttype_tl.\\
-      \vspace*{0.5cm}  % Paragraph break in declaration
+      \vspace*{\c__nusthesis_declaration_para_vspace_dim}
       This~\l__documenttype_tl{}~has~also~not~been~submitted~for~any\\
       degree~in~any~university~previously.\\
-      \vspace*{2cm}  % Space for signature
+      \vspace*{\c__nusthesis_declaration_signature_vspace_dim}
       \IfValueT {#1}{
-        \includegraphics[width=0.6\textwidth]{#1}\\
-      \vspace*{-1cm}  % Reduce space after signature image
+        \includegraphics[width=\c__nusthesis_declaration_sig_image_width_dim]{#1}\\
+      \vspace*{\c__nusthesis_declaration_sig_adjust_dim}
     }
-      \rule{8cm}{0.5pt}\\  % Signature line
-      \vspace*{-0.5cm}  % Bring author name closer to line
+      \rule{\c__nusthesis_declaration_line_width_dim}{\c__nusthesis_declaration_line_thickness_dim}\\
+      \vspace*{\c__nusthesis_declaration_author_adjust_dim}
       \@author \\
       \today
     \end{center}\cleardoublepage
@@ -423,9 +479,10 @@
 \definecolor{chaptergrey}{rgb}{0.6,0.6,0.6}
 
 %%% chapter titles similar to quotchap
-\newcommand*{\chapnum}{%
-  \fontsize{100}{130}\nusthesis@chapheadfont\bfseries\selectfont%
-\color{chaptergrey}\raggedleft}
+\cs_new:Npn \chapnum {
+  \fontsize{\c__nusthesis_chapnum_fontsize_int}{\c__nusthesis_chapnum_baseline_int}\nusthesis@chapheadfont\bfseries\selectfont
+  \color{chaptergrey}\raggedleft
+}
 
 \newenvironment{acknowledgements}{%
   \chapter*{Acknowledgements}
@@ -525,7 +582,7 @@
 
 \g@addto@macro\appendix{%
 \titleformat{\chapter}[display]
-{\nusthesis@chapheadfont\Huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+{\nusthesis@chapheadfont\Huge}{\chaptertitlename\ \thechapter}{\c__nusthesis_appendix_title_sep_dim}{\Huge}
 \cleardoublepage
  \addtocontents{toc}%
  {\protect\contentsline{part}{\appendixtocname}{}{}}%
@@ -551,26 +608,31 @@
     \@starttoc{loab}
   \end{acronym}
 }
-\def\addsymbol#1#2{%
-  \addtocontents{los}{\protect \makenicesymbolline{#1}{#2}}}
-\def\addabbrev#1#2{%
-  \addtocontents{loab}{\protect \makeniceabbrevline{#1}{#2}}}
-\newdimen\@lcsym %width of left column
-\@lcsym=2cm      %default 3cm
-\newdimen\@mcsym %width of mid column (space)
-\@mcsym=1cm      %default 2cm
-\newdimen\@rcsym %width of right column
-\@rcsym=\hsize   %initial width=textwidth
-\advance\@rcsym by -\@lcsym %subtract lcsym
-\advance\@rcsym by -\@mcsym %subtract mid
+\NewDocumentCommand \addsymbol { m m } {
+  \addtocontents{los}{\protect \makenicesymbolline{#1}{#2}}
+}
+
+\NewDocumentCommand \addabbrev { m m } {
+  \addtocontents{loab}{\protect \makeniceabbrevline{#1}{#2}}
+}
+\dim_new:N \l__nusthesis_symbol_leftcol_working_dim
+\dim_set:Nn \l__nusthesis_symbol_leftcol_working_dim { \c__nusthesis_symbol_leftcol_dim }
+
+\dim_new:N \l__nusthesis_symbol_midcol_working_dim
+\dim_set:Nn \l__nusthesis_symbol_midcol_working_dim { \c__nusthesis_symbol_midcol_dim }
+
+\dim_new:N \l__nusthesis_symbol_rightcol_working_dim
+\dim_set:Nn \l__nusthesis_symbol_rightcol_working_dim {
+  \hsize - \l__nusthesis_symbol_leftcol_working_dim - \l__nusthesis_symbol_midcol_working_dim
+}
 \def\makenicesymbolline#1#2{%
-  \begin{minipage}[t]{\@lcsym}#1\end{minipage}%
-  $\hspace{\@mcsym}$%
-  \begin{minipage}[t]{\@rcsym}#2\end{minipage}\newline}
+  \begin{minipage}[t]{\l__nusthesis_symbol_leftcol_working_dim}#1\end{minipage}%
+  $\hspace{\l__nusthesis_symbol_midcol_working_dim}$%
+  \begin{minipage}[t]{\l__nusthesis_symbol_rightcol_working_dim}#2\end{minipage}\newline}
 \def\makeniceabbrevline#1#2{%
-  % \begin{minipage}[t]{\@lcsym}#1\end{minipage}%
-  % $\hspace{\@mcsym}$%
-  % \begin{minipage}[t]{\@rcsym}#2\end{minipage}\newline
+  % \begin{minipage}[t]{\l__nusthesis_symbol_leftcol_working_dim}#1\end{minipage}%
+  % $\hspace{\l__nusthesis_symbol_midcol_working_dim}$%
+  % \begin{minipage}[t]{\l__nusthesis_symbol_rightcol_working_dim}#2\end{minipage}\newline
   \acro{#1}{#2}}
 \endinput
 %%
