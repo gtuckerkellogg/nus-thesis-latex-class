@@ -44,9 +44,241 @@
 }
 
 
-\cs_new:Npn \__nusthesis_titlepage_font: { \normalfont }
-\cs_new:Npn \__nusthesis_chaphead_font: { \normalfont }
-\cs_new:Npn \__nusthesis_heading_font: { \normalfont }
+\cs_new:Npn \__nusthesis_body_font: { \normalfont }          % Body text (main content)
+\cs_new:Npn \__nusthesis_titlepage_font: { \normalfont }     % Title page elements
+\cs_new:Npn \__nusthesis_chaphead_font: { \normalfont }      % Chapter headings
+\cs_new:Npn \__nusthesis_heading_font: { \normalfont }       % Section/subsection headings
+\cs_new:Npn \__nusthesis_caption_font: { \normalfont }       % Figure/table captions
+\cs_new:Npn \__nusthesis_verbatim_font: { \ttfamily }        % Code/verbatim blocks
+\cs_new:Npn \__nusthesis_math_setup: { }                     % Math font configuration hook
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\prop_new:N \g__nusthesis_fontthemes_prop
+
+\str_new:N \l__nusthesis_engine_str
+\sys_if_engine_pdftex:TF {
+  \str_set:Nn \l__nusthesis_engine_str { pdftex }
+} {
+  \sys_if_engine_xetex:TF {
+    \str_set:Nn \l__nusthesis_engine_str { xetex }
+  } {
+    \str_set:Nn \l__nusthesis_engine_str { luatex }
+  }
+}
+
+\tl_new:N \l__nusthesis_theme_config_tl
+\tl_new:N \l__nusthesis_theme_pdftex_tl
+\tl_new:N \l__nusthesis_theme_xetex_tl
+\tl_new:N \l__nusthesis_theme_luatex_tl
+\tl_new:N \l__nusthesis_theme_fontspec_tl
+\tl_new:N \l__nusthesis_hook_body_tl
+\tl_new:N \l__nusthesis_hook_titlepage_tl
+\tl_new:N \l__nusthesis_hook_chaphead_tl
+\tl_new:N \l__nusthesis_hook_heading_tl
+\tl_new:N \l__nusthesis_hook_caption_tl
+\tl_new:N \l__nusthesis_hook_verbatim_tl
+\tl_new:N \l__nusthesis_hook_math_tl
+
+\keys_define:nn { nus-thesis / fonttheme }
+{
+  , pdftex .tl_set:N = \l__nusthesis_theme_pdftex_tl
+  , pdftex .initial:n = { }
+  , xetex .tl_set:N = \l__nusthesis_theme_xetex_tl
+  , xetex .initial:n = { }
+  , luatex .tl_set:N = \l__nusthesis_theme_luatex_tl
+  , luatex .initial:n = { }
+  , fontspec .tl_set:N = \l__nusthesis_theme_fontspec_tl
+  , fontspec .initial:n = { }  % Common code for XeTeX/LuaTeX
+  , hooks / body .code:n = { \cs_gset:Npn \__nusthesis_body_font: { #1 } }
+  , hooks / titlepage .code:n = { \cs_gset:Npn \__nusthesis_titlepage_font: { #1 } }
+  , hooks / chaphead .code:n = { \cs_gset:Npn \__nusthesis_chaphead_font: { #1 } }
+  , hooks / heading .code:n = { \cs_gset:Npn \__nusthesis_heading_font: { #1 } }
+  , hooks / caption .code:n = { \cs_gset:Npn \__nusthesis_caption_font: { #1 } }
+  , hooks / verbatim .code:n = { \cs_gset:Npn \__nusthesis_verbatim_font: { #1 } }
+  , hooks / math .code:n = { \cs_gset:Npn \__nusthesis_math_setup: { #1 } }
+}
+
+\msg_new:nnn { nus-thesis } { unknown-fonttheme } {
+  Font~theme~'#1'~is~not~defined.~Available~themes~are~stored~in~
+  \prop_map_function:NN \g__nusthesis_fontthemes_prop \__nusthesis_show_theme:nn
+}
+
+\cs_new:Npn \__nusthesis_show_theme:nn #1 #2 { #1,~ }
+
+\cs_new:Npn \__nusthesis_load_fonttheme:n #1 {
+  % Check if theme exists in property list
+  \prop_if_in:NnTF \g__nusthesis_fontthemes_prop { #1 } {
+    % Get theme configuration
+    \prop_get:NnN \g__nusthesis_fontthemes_prop { #1 } \l__nusthesis_theme_config_tl
+
+    % Parse the configuration and set temporary variables
+    % NOTE: No group here - packages must be loaded at top level
+    \keys_set:nV { nus-thesis / fonttheme } \l__nusthesis_theme_config_tl
+
+    % Load engine-specific fonts
+    \str_case:Vn \l__nusthesis_engine_str {
+      { pdftex } {
+        \tl_if_empty:NF \l__nusthesis_theme_pdftex_tl {
+          \tl_use:N \l__nusthesis_theme_pdftex_tl
+        }
+      }
+      { xetex } {
+        % Try fontspec first (common code for XeTeX/LuaTeX), then xetex-specific
+        \tl_if_empty:NTF \l__nusthesis_theme_fontspec_tl {
+          \tl_if_empty:NF \l__nusthesis_theme_xetex_tl {
+            \tl_use:N \l__nusthesis_theme_xetex_tl
+          }
+        } {
+          \tl_use:N \l__nusthesis_theme_fontspec_tl
+        }
+      }
+      { luatex } {
+        % Try fontspec first (common code for XeTeX/LuaTeX), then luatex-specific
+        \tl_if_empty:NTF \l__nusthesis_theme_fontspec_tl {
+          \tl_if_empty:NF \l__nusthesis_theme_luatex_tl {
+            \tl_use:N \l__nusthesis_theme_luatex_tl
+          }
+        } {
+          \tl_use:N \l__nusthesis_theme_fontspec_tl
+        }
+      }
+    }
+    % Note: Font hooks are set globally during key processing (using \cs_gset:Npn)
+  } {
+    % Theme not found - show error
+    \msg_error:nnn { nus-thesis } { unknown-fonttheme } { #1 }
+  }
+}
+
+\cs_generate_variant:Nn \__nusthesis_load_fonttheme:n { V }
+
+\tl_new:N \g__nusthesis_selected_fonttheme_tl
+
+\NewDocumentCommand \DeclareThesisFontTheme { m m } {
+  % Store the theme configuration in the property list
+  \prop_gput:Nnn \g__nusthesis_fontthemes_prop { #1 } { #2 }
+
+  % Also register this theme as a choice in the font key
+  % Load the theme immediately when selected (must be in preamble)
+  \keys_define:nn { nus-thesis } {
+    , font / #1 .code:n = {
+        \bool_if:NF \g__nusthesis_fonttheme_loaded_bool {
+          \__nusthesis_load_fonttheme:n { #1 }
+          \bool_gset_true:N \g__nusthesis_fonttheme_loaded_bool
+        }
+      }
+  }
+}
+
+\NewDocumentCommand \UseFontTheme { m } {
+  \__nusthesis_load_fonttheme:n { #1 }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\keys_define:nn { nus-thesis / usertheme }
+{
+  , main-font .tl_set:N = \l__nusthesis_user_mainfont_tl
+  , main-font .initial:n = { }
+  , sans-font .tl_set:N = \l__nusthesis_user_sansfont_tl
+  , sans-font .initial:n = { }
+  , mono-font .tl_set:N = \l__nusthesis_user_monofont_tl
+  , mono-font .initial:n = { }
+  , math-font .tl_set:N = \l__nusthesis_user_mathfont_tl
+  , math-font .initial:n = { }
+  , chaphead-style .tl_set:N = \l__nusthesis_user_chaphead_tl
+  , chaphead-style .initial:n = { }
+  , heading-style .tl_set:N = \l__nusthesis_user_heading_tl
+  , heading-style .initial:n = { }
+  , titlepage-style .tl_set:N = \l__nusthesis_user_titlepage_tl
+  , titlepage-style .initial:n = { }
+  , caption-style .tl_set:N = \l__nusthesis_user_caption_tl
+  , caption-style .initial:n = { }
+}
+
+\NewDocumentCommand \ThesisDefineFontTheme { m m } {
+  % Parse user options
+  \group_begin:
+    \keys_set:nn { nus-thesis / usertheme } { #2 }
+
+    % Build fontspec configuration
+    \tl_clear:N \l_tmpa_tl
+
+    % Load unicode-math if math font specified (must come before font setup)
+    \tl_if_empty:NF \l__nusthesis_user_mathfont_tl {
+      \tl_put_right:Nn \l_tmpa_tl { \RequirePackage{unicode-math} }
+    }
+
+    \tl_if_empty:NF \l__nusthesis_user_mainfont_tl {
+      \tl_put_right:Nn \l_tmpa_tl { \setmainfont }
+      \tl_put_right:NV \l_tmpa_tl \l__nusthesis_user_mainfont_tl
+    }
+    \tl_if_empty:NF \l__nusthesis_user_sansfont_tl {
+      \tl_put_right:Nn \l_tmpa_tl { \setsansfont }
+      \tl_put_right:NV \l_tmpa_tl \l__nusthesis_user_sansfont_tl
+    }
+    \tl_if_empty:NF \l__nusthesis_user_monofont_tl {
+      \tl_put_right:Nn \l_tmpa_tl { \setmonofont }
+      \tl_put_right:NV \l_tmpa_tl \l__nusthesis_user_monofont_tl
+    }
+    \tl_if_empty:NF \l__nusthesis_user_mathfont_tl {
+      \tl_put_right:Nn \l_tmpa_tl { \setmathfont }
+      \tl_put_right:NV \l_tmpa_tl \l__nusthesis_user_mathfont_tl
+    }
+
+    % Build hooks configuration
+    \tl_clear:N \l_tmpb_tl
+    \tl_if_empty:NF \l__nusthesis_user_chaphead_tl {
+      \tl_put_right:Nn \l_tmpb_tl { hooks/chaphead = }
+      \str_case:Vn \l__nusthesis_user_chaphead_tl {
+        { serif } { \tl_put_right:Nn \l_tmpb_tl { \normalfont } }
+        { sans } { \tl_put_right:Nn \l_tmpb_tl { \sffamily } }
+        { mono } { \tl_put_right:Nn \l_tmpb_tl { \ttfamily } }
+      }
+      \tl_put_right:Nn \l_tmpb_tl { , }
+    }
+    \tl_if_empty:NF \l__nusthesis_user_heading_tl {
+      \tl_put_right:Nn \l_tmpb_tl { hooks/heading = }
+      \str_case:Vn \l__nusthesis_user_heading_tl {
+        { serif } { \tl_put_right:Nn \l_tmpb_tl { \normalfont } }
+        { sans } { \tl_put_right:Nn \l_tmpb_tl { \sffamily } }
+        { mono } { \tl_put_right:Nn \l_tmpb_tl { \ttfamily } }
+      }
+      \tl_put_right:Nn \l_tmpb_tl { , }
+    }
+    \tl_if_empty:NF \l__nusthesis_user_titlepage_tl {
+      \tl_put_right:Nn \l_tmpb_tl { hooks/titlepage = }
+      \str_case:Vn \l__nusthesis_user_titlepage_tl {
+        { serif } { \tl_put_right:Nn \l_tmpb_tl { \normalfont } }
+        { sans } { \tl_put_right:Nn \l_tmpb_tl { \sffamily } }
+        { mono } { \tl_put_right:Nn \l_tmpb_tl { \ttfamily } }
+      }
+      \tl_put_right:Nn \l_tmpb_tl { , }
+    }
+    \tl_if_empty:NF \l__nusthesis_user_caption_tl {
+      \tl_put_right:Nn \l_tmpb_tl { hooks/caption = }
+      \str_case:Vn \l__nusthesis_user_caption_tl {
+        { serif } { \tl_put_right:Nn \l_tmpb_tl { \normalfont } }
+        { sans } { \tl_put_right:Nn \l_tmpb_tl { \sffamily } }
+        { mono } { \tl_put_right:Nn \l_tmpb_tl { \ttfamily } }
+      }
+      \tl_put_right:Nn \l_tmpb_tl { , }
+    }
+
+    % Store for use outside group
+    \tl_gset_eq:NN \g_tmpa_tl \l_tmpa_tl
+    \tl_gset_eq:NN \g_tmpb_tl \l_tmpb_tl
+  \group_end:
+
+  % Call low-level \DeclareThesisFontTheme with generated configuration
+  \exp_args:Nnx \DeclareThesisFontTheme { #1 } {
+    fontspec = { \exp_not:V \g_tmpa_tl },
+    \exp_not:V \g_tmpb_tl
+  }
+}
 
 \tl_new:N \l__nusthesis_supervisor_tl
 \tl_new:N \l__nusthesis_subtitle_tl
@@ -89,53 +321,8 @@
   , examiners .tl_set:N = \l__thesis_examiners_tl
   , examiners .initial:n = {(examiners)}
   , font .choice:
-  , font / times .code:n = {
-    \RequirePackage{mathptmx}
-  }
+  % Font themes are defined below using \DeclareThesisFontTheme
   , font / strict .meta:n = { font = times }  % Alias for backward compatibility
-  , font / helvetica .code:n = {
-    \RequirePackage[scaled=0.95]{helvet}
-    \renewcommand{\familydefault}{\sfdefault}
-    \RequirePackage{mathastext}
-    \RequirePackage{arevmath}
-    \RequirePackage[mono,varl]{inconsolata}
-  }
-  , font / palatino .code:n = {
-    \RequirePackage[sc]{mathpazo}
-    \RequirePackage[scaled=0.95]{helvet}
-    \RequirePackage[varl]{inconsolata}
-    \cs_set:Npn \__nusthesis_chaphead_font: { \sffamily }
-    \cs_set:Npn \__nusthesis_heading_font: { \sffamily }
-  }
-  , font / libertine .code:n = {
-    \sys_if_engine_pdftex:TF {
-      \RequirePackage[scaled=0.9,varl]{inconsolata}
-      \RequirePackage[mono=false,sb]{libertinus}
-      \RequirePackage{libertinust1math}
-    } {
-      \RequirePackage{libertinus}
-      \setmonofont[Scale=MatchUppercase]{Inconsolata}
-    }
-    \cs_set:Npn \__nusthesis_chaphead_font: { \sffamily }
-    \cs_set:Npn \__nusthesis_heading_font: { \sffamily }
-  }
-  , font / noto .code:n = {
-    \RequirePackage{notomath}
-    \RequirePackage{inconsolata}
-    \cs_set:Npn \__nusthesis_chaphead_font: { \sffamily }
-    \cs_set:Npn \__nusthesis_heading_font: { \sffamily }
-    \cs_set:Npn \__nusthesis_titlepage_font: { \sffamily }
-  }
-  , font / minionpro .code:n = {
-
-    \RequirePackage[lf,minionint,loosequotes,footnotefigures]{MinionPro}
-    \microtypesetup{kerning=false,expansion=false}
-    \RequirePackage[lf]{MyriadPro}
-    \RequirePackage[scaled=0.9,varl]{inconsolata}
-    \cs_set:Npn \__nusthesis_chaphead_font: { \sffamily }
-    \cs_set:Npn \__nusthesis_heading_font: { \sffamily }
-    \cs_set:Npn \__nusthesis_titlepage_font: { \sffamily }
-  }
   % \DeclareDefaultOption
   , unknown .code:n =
   {
@@ -146,6 +333,119 @@
     }
     \PassOptionsToClass { \CurrentOption } { \c__classname_base_class_str }
   }
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareThesisFontTheme{times}{
+  pdftex = {
+    \RequirePackage{mathptmx}  % Times + math support
+  },
+  fontspec = {
+    \RequirePackage{unicode-math}
+    \setmainfont{TeX~Gyre~Termes}[Ligatures=TeX]
+    \setsansfont{TeX~Gyre~Heros}[Scale=0.95]
+    \setmonofont{Latin~Modern~Mono}[Scale=MatchLowercase]
+    \setmathfont{TeX~Gyre~Termes~Math}
+  },
+  % All hooks use defaults (serif body, serif headings)
+}
+
+\DeclareThesisFontTheme{helvetica}{
+  pdftex = {
+    \RequirePackage[scaled=0.95]{helvet}
+    \renewcommand{\familydefault}{\sfdefault}
+    \RequirePackage{mathastext}
+    \RequirePackage{arevmath}
+    \RequirePackage[mono,varl]{inconsolata}
+  },
+  fontspec = {
+    \RequirePackage{unicode-math}
+    \setsansfont{TeX~Gyre~Heros}[Scale=0.95]
+    \setmainfont{TeX~Gyre~Heros}[Scale=0.95]
+    \setmonofont{Inconsolata}[Scale=MatchLowercase]
+    \setmathfont{Fira~Math}  % Sans-serif math font
+  },
+  hooks/body = \sffamily,
+  hooks/titlepage = \sffamily,
+  hooks/chaphead = \sffamily,
+  hooks/heading = \sffamily,
+  hooks/caption = \sffamily,
+}
+
+\DeclareThesisFontTheme{palatino}{
+  pdftex = {
+    \RequirePackage[sc]{mathpazo}  % Palatino + smallcaps
+    \RequirePackage[scaled=0.95]{helvet}
+    \RequirePackage[varl]{inconsolata}
+  },
+  fontspec = {
+    \RequirePackage{unicode-math}
+    \setmainfont{TeX~Gyre~Pagella}[Ligatures=TeX]
+    \setsansfont{TeX~Gyre~Heros}[Scale=0.95]
+    \setmonofont{Inconsolata}[Scale=MatchLowercase]
+    \setmathfont{TeX~Gyre~Pagella~Math}
+  },
+  hooks/chaphead = \sffamily,
+  hooks/heading = \sffamily,
+  hooks/caption = \sffamily,
+}
+
+\DeclareThesisFontTheme{libertine}{
+  pdftex = {
+    \RequirePackage[scaled=0.9,varl]{inconsolata}
+    \RequirePackage[mono=false,sb]{libertinus}
+    \RequirePackage{libertinust1math}
+  },
+  fontspec = {
+    \RequirePackage{unicode-math}
+    \RequirePackage{libertinus}
+    \setmonofont[Scale=MatchUppercase]{Inconsolata}
+    \setmathfont{Libertinus~Math}
+  },
+  hooks/chaphead = \sffamily,
+  hooks/heading = \sffamily,
+  hooks/caption = \sffamily,
+}
+
+\DeclareThesisFontTheme{noto}{
+  pdftex = {
+    \RequirePackage{notomath}
+    \RequirePackage{inconsolata}
+  },
+  fontspec = {
+    \RequirePackage{unicode-math}
+    \setmainfont{Noto~Serif}
+    \setsansfont{Noto~Sans}
+    \setmonofont{Noto~Sans~Mono}[Scale=MatchLowercase]
+    \setmathfont{STIXTwoMath-Regular.otf}  % Noto doesn't have a math font yet
+  },
+  hooks/titlepage = \sffamily,
+  hooks/chaphead = \sffamily,
+  hooks/heading = \sffamily,
+  hooks/caption = \sffamily,
+}
+
+\DeclareThesisFontTheme{minionpro}{
+  pdftex = {
+    \RequirePackage[lf,minionint,loosequotes,footnotefigures]{MinionPro}
+    \microtypesetup{kerning=false,expansion=false}
+    \RequirePackage[lf]{MyriadPro}
+    \RequirePackage[scaled=0.9,varl]{inconsolata}
+  },
+  fontspec = {
+    \RequirePackage{unicode-math}
+    \setmainfont{Minion~Pro}
+    \setsansfont{Myriad~Pro}
+    \setmonofont{Inconsolata}[Scale=0.9]
+    \setmathfont{TeX~Gyre~Pagella~Math}  % Minion Math is commercial
+  },
+  %hooks/titlepage = \sffamily,
+  hooks/chaphead = \sffamily,
+  hooks/heading = \sffamily,
+  hooks/caption = \sffamily,
 }
 
 \ProcessKeysOptions { nus-thesis }
@@ -184,6 +484,9 @@
 
 \RequirePackage{amsmath}
 \RequirePackage{mathtools}
+\sys_if_engine_pdftex:F {
+  \RequirePackage{unicode-math}
+}
 
 \RequirePackage{longtable}
 \RequirePackage{rotating}
@@ -214,6 +517,10 @@
   hidelinks%
 }
 \RequirePackage[nameinlink,noabbrev, capitalise]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bool_new:N \g__nusthesis_fonttheme_loaded_bool
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

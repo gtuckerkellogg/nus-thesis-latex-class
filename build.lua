@@ -15,6 +15,7 @@ examplesdir = "examples"
 examplesfiles = { "*.tex" }
 
 typesetexe = "pdflatex"
+typesetruns = 4  -- Run pdflatex multiple times to resolve cross-references
 
 packtdszip = true
 
@@ -33,6 +34,11 @@ files2tag = {
    }
 }
 
--- Include the example documents for typesetting
-typesetdir = examplesdir
-typesetfiles = { "*.dtx", "*.tex" } 
+-- Typeset documentation - builds two separate PDFs
+-- nus-thesis-manual.pdf: User documentation
+-- nus-thesis-impl.pdf: Implementation documentation
+typesetfiles = {
+  "nus-thesis-manual.tex",  -- User documentation
+  "nus-thesis-impl.tex"     -- Implementation documentation
+}
+typesetdemofiles = { "examples/*.tex" }
