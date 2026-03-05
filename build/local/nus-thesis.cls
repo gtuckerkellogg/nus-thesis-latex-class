@@ -483,7 +483,7 @@
 \RequirePackage[titles]{tocloft}
 \RequirePackage{bookmark}
 
-\RequirePackage{microtype}
+\RequirePackage[verbose=false]{microtype}
 \sys_if_engine_pdftex:TF {
   \microtypesetup{kerning=true}
   \SetExtraKerning[unit=character]{encoding=*}{\textemdash={100,100}}
