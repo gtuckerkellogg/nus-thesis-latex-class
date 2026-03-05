@@ -27,6 +27,7 @@
 \author{Greg Tucker-Kellogg \\ \texttt{dbsgtk@nus.edu.sg}}
 %</manual,driver-impl>
 %<*manual>
+\DisableCrossrefs  % Don't index internal commands in user manual
 \OnlyDescription  % Stop at \StopEventually - user docs only
 \title{User guide to the \texttt{nus-thesis} class for theses
  and dissertations at the National University of Singapore%
@@ -42,6 +43,7 @@
 \end{document}
 %</manual>
 %<*driver-impl>
+\CodeLineIndex  % Index with page numbers (not verbose line numbers)
 \EnableCrossrefs  % Function cross-references for implementation
 \title{Implementation of the \texttt{nus-thesis} class for theses
  and dissertations at the National University of Singapore%
@@ -53,6 +55,7 @@
   This is the implementation of a thesis at NUS,
 \end{abstract}
   \DocInput{nus-thesis.dtx}
+  \PrintIndex  % Generate code line index
 \end{document}
 %</driver-impl>
 % \fi
@@ -129,6 +132,9 @@
 \cs_new:Npn \__nusthesis_caption_font: { \normalfont }       % Figure/table captions
 \cs_new:Npn \__nusthesis_verbatim_font: { \ttfamily }        % Code/verbatim blocks
 \cs_new:Npn \__nusthesis_math_setup: { }                     % Math font configuration hook
+
+% Boolean flag for optional package loading
+\bool_new:N \l__thesis_use_glossaries_bool
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Phase 2: Font Theme Management System
@@ -435,6 +441,8 @@
   , font .choice:
   % Font themes are defined below using \DeclareThesisFontTheme
   , font / strict .meta:n = { font = times }  % Alias for backward compatibility
+  , glossaries .bool_set:N = \l__thesis_use_glossaries_bool
+  , glossaries .initial:n = { false }  % Default: don't load glossaries
   % \DeclareDefaultOption
   , unknown .code:n =
   {
@@ -456,6 +464,15 @@
 % with pdfTeX, XeTeX, and LuaTeX, automatically selecting appropriate fonts for the engine.
 %
 % \subsection{Built-in Themes}
+%
+% \begin{function}{computermodern}
+%   \begin{syntax}
+%     |font| = |computermodern|
+%   \end{syntax}
+% Classic Computer Modern typography (Knuth's original TeX design).
+% Uses Latin Modern fonts for improved quality and Unicode support.
+% Math fonts: Computer Modern Math (pdfTeX) or Latin Modern Math (XeTeX/LuaTeX).
+% \end{function}
 %
 % \begin{function}{times}
 %   \begin{syntax}
@@ -585,7 +602,48 @@
 % For detailed information about math fonts and advanced configuration, see
 % |FONT_THEME_IMPLEMENTATION.md| and |MATH_FONT_SYSTEM.md| in the package distribution.
 %
-% \StopEventually{\PrintIndex}
+% \section{Optional Features}
+%
+% \subsection{Glossaries and Acronyms}
+%
+% \begin{function}{glossaries}
+%   \begin{syntax}
+%     |glossaries| = \meta{true,false}
+%   \end{syntax}
+% Controls whether the |glossaries-extra| package is loaded for managing glossaries and acronyms.
+%
+% When set to |false| (the default), glossaries support is not loaded. This avoids warnings
+% about missing |\printglossary| commands when you don't need glossaries functionality.
+%
+% When set to |true|, the |glossaries-extra| package is loaded with support for abbreviations,
+% enabling commands like |\newacronym|, |\gls|, and |\printglossary|.
+%
+% Example without glossaries (default):
+% \begin{verbatim}
+% \documentclass{nus-thesis}
+% \ThesisSetup{
+%   title = My Thesis,
+%   author = John Doe,
+% }
+% \end{verbatim}
+%
+% Example with glossaries enabled:
+% \begin{verbatim}
+% \documentclass{nus-thesis}
+% \ThesisSetup{
+%   glossaries = true,
+%   title = My Thesis,
+%   author = John Doe,
+% }
+% \begin{document}
+% \newacronym{api}{API}{Application Programming Interface}
+% First use: \gls{api}. Second use: \gls{api}.
+% \printglossary[type=abbreviations]
+% \end{document}
+% \end{verbatim}
+% \end{function}
+%
+% \StopEventually{}  % No index in user manual - it's a short guide
 %
 % \section{Implementation}
 %
@@ -599,6 +657,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define built-in font themes using the new theme system
 % Each theme specifies engine-specific font loading and hook customization
+
+% Computer Modern theme: Classic TeX typography (Knuth's original design)
+% Uses CM (pdfTeX) or Latin Modern (XeTeX/LuaTeX)
+\DeclareThesisFontTheme{computermodern}{
+  pdftex = {
+    % Computer Modern is the default - no packages needed
+    % Optionally load Latin Modern for better quality
+    \RequirePackage{lmodern}
+  },
+  fontspec = {
+    \RequirePackage{unicode-math}
+    \setmainfont{Latin~Modern~Roman}[Ligatures=TeX]
+    \setsansfont{Latin~Modern~Sans}[Scale=MatchLowercase]
+    \setmonofont{Latin~Modern~Mono}[Scale=MatchLowercase]
+    \setmathfont{Latin~Modern~Math}
+  },
+  % All hooks use defaults (serif body, serif headings)
+}
 
 % Times theme: Classic serif font (Times Roman)
 % Uses defaults for all hooks (serif throughout)
@@ -736,7 +812,7 @@
 \RequirePackage[UKenglish]{isodate}
 
 % Graphics and color
-\RequirePackage[svgnames]{xcolor}
+\RequirePackage[svgnames,table]{xcolor}
 \RequirePackage{graphicx}
 \RequirePackage{epstopdf}
 \RequirePackage{pdflscape}
@@ -793,13 +869,19 @@
 % Appendices
 \RequirePackage[title,titletoc]{appendix}
 
-% Acronyms and glossaries
+% Acronyms (always loaded)
 \RequirePackage{acronym}
-\RequirePackage[abbreviations,prefix,postpunc={:},automake,toc=false]{glossaries-extra}
-\makeglossaries[abbreviations]
-\setglossarypreamble[abbreviations]{\addcontentsline{toc}{preface}{\glossarytitle}}
-\newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
-\newignoredglossary*{ignored}
+
+% Glossaries (optional - loaded at end of preamble if requested)
+\AtEndPreamble{
+  \bool_if:NT \l__thesis_use_glossaries_bool {
+    \RequirePackage[abbreviations,prefix,postpunc={:},automake,toc=false]{glossaries-extra}
+    \makeglossaries[abbreviations]
+    \setglossarypreamble[abbreviations]{\addcontentsline{toc}{preface}{\glossarytitle}}
+    \newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
+    \newignoredglossary*{ignored}
+  }
+}
 
 % Cross-referencing (load last)
 \RequirePackage{hyperref}

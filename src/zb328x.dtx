@@ -1,20 +1,30 @@
-%%
-%% This is file `zb328x.sty',
-%% generated with the docstrip utility.
-%%
-%% The original source files were:
-%%
-%% zb328x.dtx  (with options: `package')
-%% -------------------------------------------------------------------------
-%%   Copyright 2024 Greg Tucker-Kellogg
-%% 
-%%   This work is licensed under a Creative Commons Attribution-ShareAlike 4.0
-%%   International License (https://creativecommons.org/licenses/by-sa/4.0/).
-%% -------------------------------------------------------------------------
-   \NeedsTeXFormat{LaTeX2e}[2022-06-01]
-   \RequirePackage{l3keys2e}
-   \ProvidesExplPackage{zb328x}
-   {2024-11-29}{0.0.0.a}{NUS thesis }
+% \iffalse meta-comment -------------------------------------------------------
+%   -------------------------------------------------------------------------
+%   Copyright 2024 Greg Tucker-Kellogg 
+%   
+%   This work is licensed under a Creative Commons Attribution-ShareAlike 4.0
+%   International License (https://creativecommons.org/licenses/by-sa/4.0/).
+%   -------------------------------------------------------------------------
+% \fi
+% \iffalse
+%<package>   \NeedsTeXFormat{LaTeX2e}[2022-06-01]
+%<package>   \RequirePackage{l3keys2e}
+%<package>   \ProvidesExplPackage{zb328x}
+%<package>   {2024-11-29}{0.0.0.a}{NUS thesis }
+%   
+%<*driver>   
+\documentclass{l3doc}
+\usepackage{framed}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+\DocInput{\jobname.dtx}
+\end{document}
+%</driver> 
+% \fi
+%    \begin{macrocode}
+%<*package>      
 \keys_define:nn { nus-thesis } {
   , matric .tl_set:N = \l__student_matric_tl
   , matric .initial:n = { (matric~undefined) }
@@ -51,6 +61,5 @@
     \normalsize\expandafter{\l__word_count_tl}~words
     }}}
 
-\endinput
-%%
-%% End of file `zb328x.sty'.
+%</package> 
+%    \end{macrocode}

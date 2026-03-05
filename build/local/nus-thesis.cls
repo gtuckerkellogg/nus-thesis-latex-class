@@ -5,21 +5,12 @@
 %% The original source files were:
 %%
 %% nus-thesis.dtx  (with options: `class')
+%% -------------------------------------------------------------------------
+%%   Copyright 2024 Greg Tucker-Kellogg
 %% 
-%% IMPORTANT NOTICE:
-%% 
-%% For the copyright see the source file.
-%% 
-%% Any modified versions of this file must be renamed
-%% with new filenames distinct from nus-thesis.cls.
-%% 
-%% For distribution of the original source see the terms
-%% for copying and modification in the file nus-thesis.dtx.
-%% 
-%% This generated file may be distributed as long as the
-%% original source files, as listed above, are part of the
-%% same distribution. (The sources need not necessarily be
-%% in the same archive or directory.)
+%%   This work is licensed under a Creative Commons Attribution-ShareAlike 4.0
+%%   International License (https://creativecommons.org/licenses/by-sa/4.0/).
+%% -------------------------------------------------------------------------
 \NeedsTeXFormat{LaTeX2e}[2022-06-01]
 \RequirePackage{l3keys2e}
 \ProvidesExplClass{nus-thesis}
@@ -51,6 +42,8 @@
 \cs_new:Npn \__nusthesis_caption_font: { \normalfont }       % Figure/table captions
 \cs_new:Npn \__nusthesis_verbatim_font: { \ttfamily }        % Code/verbatim blocks
 \cs_new:Npn \__nusthesis_math_setup: { }                     % Math font configuration hook
+
+\bool_new:N \l__thesis_use_glossaries_bool
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -323,6 +316,8 @@
   , font .choice:
   % Font themes are defined below using \DeclareThesisFontTheme
   , font / strict .meta:n = { font = times }  % Alias for backward compatibility
+  , glossaries .bool_set:N = \l__thesis_use_glossaries_bool
+  , glossaries .initial:n = { false }  % Default: don't load glossaries
   % \DeclareDefaultOption
   , unknown .code:n =
   {
@@ -338,6 +333,22 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareThesisFontTheme{computermodern}{
+  pdftex = {
+    % Computer Modern is the default - no packages needed
+    % Optionally load Latin Modern for better quality
+    \RequirePackage{lmodern}
+  },
+  fontspec = {
+    \RequirePackage{unicode-math}
+    \setmainfont{Latin~Modern~Roman}[Ligatures=TeX]
+    \setsansfont{Latin~Modern~Sans}[Scale=MatchLowercase]
+    \setmonofont{Latin~Modern~Mono}[Scale=MatchLowercase]
+    \setmathfont{Latin~Modern~Math}
+  },
+  % All hooks use defaults (serif body, serif headings)
+}
 
 \DeclareThesisFontTheme{times}{
   pdftex = {
@@ -459,7 +470,7 @@
 
 \RequirePackage[UKenglish]{isodate}
 
-\RequirePackage[svgnames]{xcolor}
+\RequirePackage[svgnames,table]{xcolor}
 \RequirePackage{graphicx}
 \RequirePackage{epstopdf}
 \RequirePackage{pdflscape}
@@ -506,11 +517,16 @@
 \RequirePackage[title,titletoc]{appendix}
 
 \RequirePackage{acronym}
-\RequirePackage[abbreviations,prefix,postpunc={:},automake,toc=false]{glossaries-extra}
-\makeglossaries[abbreviations]
-\setglossarypreamble[abbreviations]{\addcontentsline{toc}{preface}{\glossarytitle}}
-\newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
-\newignoredglossary*{ignored}
+
+\AtEndPreamble{
+  \bool_if:NT \l__thesis_use_glossaries_bool {
+    \RequirePackage[abbreviations,prefix,postpunc={:},automake,toc=false]{glossaries-extra}
+    \makeglossaries[abbreviations]
+    \setglossarypreamble[abbreviations]{\addcontentsline{toc}{preface}{\glossarytitle}}
+    \newcommand{\glsxtrfootnote}[1]{\glsxtrshort{#1}\footnote{\Glsxtrlong{#1}.}\glsunset{#1}}
+    \newignoredglossary*{ignored}
+  }
+}
 
 \RequirePackage{hyperref}
 \hypersetup{%
