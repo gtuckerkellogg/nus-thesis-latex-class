@@ -780,7 +780,7 @@
 \DeclareThesisFontTheme{minionpro}{
   pdftex = {
     \RequirePackage[lf,minionint,loosequotes,footnotefigures]{MinionPro}
-    \microtypesetup{kerning=false,expansion=false,verbose=false}
+    \microtypesetup{kerning=false,expansion=false}
     \RequirePackage[lf]{MyriadPro}
     \RequirePackage[scaled=0.9,varl]{inconsolata}
   },
@@ -828,7 +828,7 @@
 \RequirePackage{bookmark}
 
 % Typography
-\RequirePackage{microtype}
+\RequirePackage[verbose=false]{microtype}
 \sys_if_engine_pdftex:TF {
   \microtypesetup{kerning=true}
   \SetExtraKerning[unit=character]{encoding=*}{\textemdash={100,100}}
