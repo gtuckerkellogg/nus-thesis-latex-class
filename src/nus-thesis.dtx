@@ -43,7 +43,6 @@
 \end{document}
 %</manual>
 %<*driver-impl>
-\CodeLineIndex  % Index with page numbers (not verbose line numbers)
 \EnableCrossrefs  % Function cross-references for implementation
 \title{Implementation of the \texttt{nus-thesis} class for theses
  and dissertations at the National University of Singapore%
@@ -643,6 +642,33 @@
 % \end{verbatim}
 % \end{function}
 %
+% \section{Front Matter Environments}
+%
+% \begin{environment}{abstract}
+%   \begin{syntax}
+%     |\begin{abstract}| \oarg{prefix}
+%     \meta{abstract text}
+%     |\end{abstract}|
+%   \end{syntax}
+% Typesets an abstract as an unnumbered chapter and adds it to the table of contents.
+% The optional \meta{prefix} argument prepends a word to the chapter title. Without a
+% prefix, the chapter is titled ``Abstract''. With a prefix, for example |[Lay]|, the
+% chapter is titled ``Lay Abstract''.
+%
+% Some degree programmes require both a technical abstract and a lay abstract
+% (a plain-language summary for a general audience). Both can be included in the
+% front matter:
+% \begin{verbatim}
+% \begin{abstract}
+%   This thesis investigates \dots
+% \end{abstract}
+%
+% \begin{abstract}[Lay]
+%   In plain language, this thesis is about \dots
+% \end{abstract}
+% \end{verbatim}
+% \end{environment}
+%
 % \StopEventually{}  % No index in user manual - it's a short guide
 %
 % \section{Implementation}
@@ -828,6 +854,8 @@
 \RequirePackage{bookmark}
 
 % Typography
+\RequirePackage{silence}
+\WarningFilter{microtype}{kerning codes list}
 \RequirePackage[verbose=false]{microtype}
 \sys_if_engine_pdftex:TF {
   \microtypesetup{kerning=true}
@@ -868,9 +896,6 @@
 
 % Appendices
 \RequirePackage[title,titletoc]{appendix}
-
-% Acronyms (always loaded)
-\RequirePackage{acronym}
 
 % Glossaries (optional - loaded at end of preamble if requested)
 \AtEndPreamble{

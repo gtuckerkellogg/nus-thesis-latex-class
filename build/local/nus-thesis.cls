@@ -483,6 +483,8 @@
 \RequirePackage[titles]{tocloft}
 \RequirePackage{bookmark}
 
+\RequirePackage{silence}
+\WarningFilter{microtype}{kerning codes list}
 \RequirePackage[verbose=false]{microtype}
 \sys_if_engine_pdftex:TF {
   \microtypesetup{kerning=true}
@@ -515,8 +517,6 @@
 \RequirePackage{pbox}
 
 \RequirePackage[title,titletoc]{appendix}
-
-\RequirePackage{acronym}
 
 \AtEndPreamble{
   \bool_if:NT \l__thesis_use_glossaries_bool {
