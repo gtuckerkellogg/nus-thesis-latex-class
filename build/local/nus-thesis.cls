@@ -920,13 +920,12 @@
     \raggedleft\Huge}{%
     % aftercode
   }
+}
 
 \titleformat{\section}{\setstretch{1.2}\__nusthesis_heading_font:\raggedright\Large}{\thesection}{1em}{}
 \titleformat{\subsection}{\setstretch{1.2}\__nusthesis_heading_font:\raggedright\large}{\thesubsection}{1em}{}
 
 \titleformat{\subsubsection}{\setstretch{1.2}\__nusthesis_heading_font:\normalsize}{\thesubsubsection}{1em}{}
-
-}
 
 \bool_new:N \l__nusthesis_table_in_chapter_bool  %% has a table already appeared in this chapter
 \bool_new:N \l__nusthesis_figure_in_chapter_bool  %% has a figure already appeared in this chapter
