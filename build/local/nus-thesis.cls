@@ -556,7 +556,9 @@
 
 \dim_const:Nn \c__nusthesis_declaration_heading_vspace_dim { 1cm }
 \dim_const:Nn \c__nusthesis_declaration_para_vspace_dim { 0.5cm }
+\dim_const:Nn \c__nusthesis_declaration_genai_vspace_dim { 0.7cm }
 \dim_const:Nn \c__nusthesis_declaration_signature_vspace_dim { 2cm }
+\dim_const:Nn \c__nusthesis_declaration_date_vspace_dim { 1cm }
 \dim_const:Nn \c__nusthesis_declaration_sig_adjust_dim { -1cm }
 \dim_const:Nn \c__nusthesis_declaration_author_adjust_dim { -0.5cm }
 \dim_const:Nn \c__nusthesis_declaration_line_width_dim { 8cm }
@@ -776,28 +778,91 @@
   }
 }
 
-\NewDocumentCommand \DeclarationPage { o }
-{
+%% Declaration Page Environment and Sub-commands
+%%
+%% Usage:
+%%   \begin{declaration}
+%%     \DeclarationStatement
+%%     \DeclarationGenAI          % template B: AI used (default)
+%%     \DeclarationGenAI[none]    % template A: no AI used
+%%     \DeclarationGenAICustom{custom text}  % custom AI statement
+%%     \DeclarationSignature[sig.png]  % optional signature image
+%%   \end{declaration}
+%%
+%% Backward-compatible shorthand: \DeclarationPage[sig.png]
+
+\NewDocumentEnvironment{declaration}{}
+{%
+  \clearpage
+  \thispagestyle{plain}
+  \setlength{\parindent}{0pt}%
   \begin{center}\hyphenpenalty=10000
-    \__nusthesis_titlepage_font:\large\bfseries\text_uppercase:n {DECLARATION}\\
-    \vspace*{\c__nusthesis_declaration_heading_vspace_dim}\mdseries%
-      I~hereby~declare~that~the~\l__documenttype_tl{}~is~my~original\\
-      work~and~it~has~been~written~by~me~in~its~entirety.\\
-      I~have~duly~acknowledged~all~the~sources~of\\
-      information~which~have~been~used~in~the~\l__documenttype_tl.\\
-      \vspace*{\c__nusthesis_declaration_para_vspace_dim}
-      This~\l__documenttype_tl{}~has~also~not~been~submitted~for~any\\
-      degree~in~any~university~previously.\\
-      \vspace*{\c__nusthesis_declaration_signature_vspace_dim}
-      \IfValueT {#1}{
-        \includegraphics[width=\c__nusthesis_declaration_sig_image_width_dim]{#1}\\
+    \__nusthesis_titlepage_font:\large\bfseries
+    \text_uppercase:n{DECLARATION}
+  \end{center}
+  \vspace*{\c__nusthesis_declaration_heading_vspace_dim}
+}{%
+  \cleardoublepage
+}
+
+\NewDocumentCommand \DeclarationStatement {}
+{
+  \noindent
+  I~hereby~declare~that~this~\l__documenttype_tl{}~is~my~original~work~and~has~been~written~by~me~in~its~entirety.
+  I~have~duly~acknowledged~all~sources~of~information~which~have~been~used~in~the~\l__documenttype_tl.
+  \par\vspace*{\c__nusthesis_declaration_para_vspace_dim}\noindent
+  This~\l__documenttype_tl{}~has~not~been~submitted~for~any~degree~or~examination~in~any~other~university~or~institution~previously.
+  \par
+}
+
+\NewDocumentCommand \DeclarationGenAI { O{used} }
+{
+  \vspace*{\c__nusthesis_declaration_genai_vspace_dim}
+  \noindent{\bfseries Use~of~Generative~AI}\par\noindent
+  \str_if_eq:nnTF {#1} {none}
+    {
+      I~declare~that~no~generative~artificial~intelligence~(AI)~tools~were~used~in~the~preparation~of~the~\l__documenttype_tl.
+    }
+    {
+      I~acknowledge~the~use~of~generative~artificial~intelligence~(AI)~tools~in~the~preparation~of~this~\l__documenttype_tl,~solely~for~language~refinement,~structuring~and~proofreading~purposes.~All~AI-generated~outputs~have~been~critically~reviewed,~edited,~and~verified~by~me.~I~confirm~that~the~intellectual~content,~analysis,~and~conclusions~presented~are~entirely~my~own,~and~I~take~full~responsibility~for~the~work~submitted.
+    }
+  \par
+}
+
+\NewDocumentCommand \DeclarationGenAICustom { +m }
+{
+  \vspace*{\c__nusthesis_declaration_genai_vspace_dim}
+  \noindent{\bfseries Use~of~Generative~AI}\par\noindent
+  #1\par
+}
+
+\NewDocumentCommand \DeclarationSignature { o }
+{
+  \vspace*{\c__nusthesis_declaration_signature_vspace_dim}
+  \begin{center}
+    \IfValueT{#1}{
+      \includegraphics[width=\c__nusthesis_declaration_sig_image_width_dim]{#1}\\
       \vspace*{\c__nusthesis_declaration_sig_adjust_dim}
     }
-      \rule{\c__nusthesis_declaration_line_width_dim}{\c__nusthesis_declaration_line_thickness_dim}\\
-      \vspace*{\c__nusthesis_declaration_author_adjust_dim}
-      \@author \\
-      \today
-    \end{center}\cleardoublepage
+    \rule{\c__nusthesis_declaration_line_width_dim}{\c__nusthesis_declaration_line_thickness_dim}\\
+    \vspace*{\c__nusthesis_declaration_author_adjust_dim}
+    \@author\\
+    \vspace*{\c__nusthesis_declaration_date_vspace_dim}
+    \rule{\c__nusthesis_declaration_line_width_dim}{\c__nusthesis_declaration_line_thickness_dim}\\
+    \vspace*{\c__nusthesis_declaration_author_adjust_dim}
+    \today
+  \end{center}
+}
+
+%% Backward-compatible \DeclarationPage wrapper
+\NewDocumentCommand \DeclarationPage { o }
+{
+  \begin{declaration}
+    \DeclarationStatement
+    \IfValueTF{#1}
+      { \DeclarationSignature[#1] }
+      { \DeclarationSignature }
+  \end{declaration}
 }
 
 %% titlesec
