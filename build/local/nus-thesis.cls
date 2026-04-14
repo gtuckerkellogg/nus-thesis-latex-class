@@ -808,7 +808,7 @@
 \NewDocumentCommand \DeclarationStatement {}
 {
   \noindent
-  I~hereby~declare~that~this~\l__documenttype_tl{}~is~my~original~work~and~has~been~written~by~me~in~its~entirety.
+  I~hereby~declare~that~this~\l__documenttype_tl{}~is~my~original~work~and~has~been~written~by~me~in~its~entirety.~
   I~have~duly~acknowledged~all~sources~of~information~which~have~been~used~in~the~\l__documenttype_tl.
   \par\vspace*{\c__nusthesis_declaration_para_vspace_dim}\noindent
   This~\l__documenttype_tl{}~has~not~been~submitted~for~any~degree~or~examination~in~any~other~university~or~institution~previously.
