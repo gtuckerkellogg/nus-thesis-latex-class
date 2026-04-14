@@ -848,7 +848,7 @@
     \vspace*{\c__nusthesis_declaration_author_adjust_dim}
     \@author\\
     \vspace*{\c__nusthesis_declaration_date_vspace_dim}
-    \rule{\c__nusthesis_declaration_line_width_dim}{\c__nusthesis_declaration_line_thickness_dim}\\
+    %\rule{\c__nusthesis_declaration_line_width_dim}{\c__nusthesis_declaration_line_thickness_dim}\\
     \vspace*{\c__nusthesis_declaration_author_adjust_dim}
     \today
   \end{center}
