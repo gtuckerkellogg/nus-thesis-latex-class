@@ -240,6 +240,7 @@
 }
 \bool_new:N \l__classname_nusstrict_bool
 \bool_new:N \l__final_submission_bool
+\bool_new:N \l__nusthesis_openright_bool
 
 \tl_new:N \l__nusthesis_supervisor_tl
 \tl_new:N \l__nusthesis_subtitle_tl
@@ -283,6 +284,9 @@
     }
   , strict .default:n = { true }
   , strict .initial:n = { false }
+  , openright .bool_set:N = \l__nusthesis_openright_bool
+  , openright .default:n = { true }
+  , openright .initial:n = { true }
   , final .bool_set:N = \l__final_submission_bool
   , final .initial:n = { false }
   , advisor .tl_set:N = \l__thesis_advisor_tl
@@ -536,6 +540,14 @@
 \doublespacing
 \pagestyle{plain}
 \graphicspath{ {./images/} }
+\renewcommand{\cleardoublepage}{%
+  \clearpage
+  \bool_if:NT \l__nusthesis_openright_bool {
+    \ifodd\c@page\else
+      \hbox{}\thispagestyle{empty}\newpage
+    \fi
+  }
+}
 \tl_set:Nn \l__nusthesis_subtitle_tl { \space }
 \tl_set:Nn \l__nusthesis_qualification_tl { }
 \tl_set:Nn \l__nusthesis_keywords_tl { \space }
