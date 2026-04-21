@@ -1,7 +1,7 @@
 % \iffalse meta-comment -------------------------------------------------------
 %   -------------------------------------------------------------------------
-%   Copyright 2024 Greg Tucker-Kellogg 
-%   
+%   Copyright 2024 Greg Tucker-Kellogg
+%
 %   This work is licensed under a Creative Commons Attribution-ShareAlike 4.0
 %   International License (https://creativecommons.org/licenses/by-sa/4.0/).
 %   -------------------------------------------------------------------------
@@ -27,8 +27,8 @@
 \author{Greg Tucker-Kellogg \\ \texttt{dbsgtk@nus.edu.sg}}
 %</manual,driver-impl>
 %<*manual>
-\DisableCrossrefs  % Don't index internal commands in user manual
-\OnlyDescription  % Stop at \StopEventually - user docs only
+\DisableCrossrefs
+\OnlyDescription
 \title{User guide to the \texttt{nus-thesis} class for theses
  and dissertations at the National University of Singapore%
  \thanks{This document
@@ -37,13 +37,16 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-  This is the user guide for the nus-thesis class.
+  This is the user guide for the \textsf{nus-thesis} class, which typesets
+  theses and dissertations according to the submission requirements of the
+  National University of Singapore. This corresponds to
+  \textit{Guidelines on Format of Research Thesis} NUSGS.073/22, issued 1 April 2026.
 \end{abstract}
 \DocInput{nus-thesis.dtx}
 \end{document}
 %</manual>
 %<*driver-impl>
-\EnableCrossrefs  % Function cross-references for implementation
+\EnableCrossrefs
 \title{Implementation of the \texttt{nus-thesis} class for theses
  and dissertations at the National University of Singapore%
  \thanks{This document corresponds to \textsf{nus-thesis}~\fileversion,
@@ -51,99 +54,667 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-  This is the implementation of a thesis at NUS,
+  This document describes the internal implementation of the
+  \textsf{nus-thesis} class.  It is intended for developers and maintainers.
+  For usage instructions, see the user guide.
 \end{abstract}
   \DocInput{nus-thesis.dtx}
-  \PrintIndex  % Generate code line index
+  \PrintIndex
 \end{document}
 %</driver-impl>
 % \fi
 % \tableofcontents
-% 
+%
 % \section{Introduction}
 %
-% Based on book
-
-
-% \section{Class options}
-% Class options can be set with the \cs{documentclass}, later as keys, or in some cases in dedicated commands.
+% The \textsf{nus-thesis} class typesets theses and dissertations conforming
+% to the submission requirements of the National University of Singapore.
+% It is built on top of the standard \textsf{book} class and uses
+% \LaTeX3 (\textsf{expl3}) internally.  A document formatted using this class will be compatible with the
+% guidelines issued by the NUS Graduate School as of NUSGS.073/22 (1 April 2026).
+%
+% The class sets A4 paper, 12\,pt font size, one-sided layout, and double
+% line spacing by default.  Page margins follow NUS requirements:
+% 1.5\,in left and right, 1\,in top and bottom.
+%
+% \subsection{Quick Start}
+%
+% A minimal working document:
+%
+% \begin{verbatim}
+% \documentclass{nus-thesis}
+% \ThesisSetup{
+%   author          = Jane Smith,
+%   title           = My Dissertation,
+%   candidacy       = Doctor of Philosophy,
+%   department      = Department of Biological Sciences,
+%   field           = Biology,
+%   submission-year = 2025,
+% }
+% \begin{document}
+% \maketitle
+% \begin{declaration}
+%   \DeclarationStatement
+%   \DeclarationGenAI
+%   \DeclarationSignature
+% \end{declaration}
+% \begin{acknowledgements}
+%   I thank \ldots
+% \end{acknowledgements}
+% \begin{abstract}
+%   This thesis investigates \ldots
+% \end{abstract}
+% \tableofcontents
+% \mainmatter
+% \chapter{Introduction}
+% \ldots
+% \end{document}
+% \end{verbatim}
+%
+% \section{Class Options}
+%
+% Class options can be passed via \cs{documentclass} or as keys in
+% \cs{ThesisSetup}.  Unknown options are forwarded to the underlying
+% \textsf{book} class.
+%
 % \begin{function}{oneside}
 %   \begin{syntax}
 %     |oneside| = \meta{true,false}
 %   \end{syntax}
-% Format as one-sided so that there is no distinction between left and right hand pages. This is passed to the
-% \cs{book} class. Defaults to true if used.
+% Format as one-sided so that there is no distinction between left and right
+% hand pages.  Defaults to \texttt{true}.
 % \end{function}
-
+%
 % \begin{function}{openright}
 %   \begin{syntax}
 %     |openright| = \meta{true,false}
 %   \end{syntax}
-% Ensure that new chapters open on the right hand side, as common in printed books. This is passed to the
-% \cs{book} class. Defaults to true if used.
+% Ensure that new chapters open on the right-hand side.  Defaults to
+% \texttt{true} because good typesetting usually sets chapters in a printed book to begin on the right-hand side.
+% Some examiners may not appreciate good typesetting and may complain about blank pages. Set this option to \texttt{false}
+% to address or anticipate this complaint.
 % \end{function}
-
 %
-% \DescribeOption{document-type}
-% thesis, report
+% \section{Thesis Configuration}
 %
-% \DescribeOption{candidacy}
-% degree candidacy
+% All thesis metadata and behaviour is controlled through
+% \cs{ThesisSetup}\marg{key=value, \ldots}, which may be called once or
+% multiple times in the document preamble.
+%
+% \begin{function}{\ThesisSetup}
+%   \begin{syntax}
+%     |\ThesisSetup|\marg{key=value, \ldots}
+%   \end{syntax}
+% The main configuration command.  All keys described in this section are
+% accepted.
+% \end{function}
+%
+% \subsection{Author and Title}
+%
+% \begin{function}{author}
+%   \begin{syntax}
+%     |author| = \meta{name}
+%   \end{syntax}
+% The full name of the author.  Required; appears on the cover page, title
+% page, declaration, and signature block.
+% \end{function}
+%
+% \begin{function}{title}
+%   \begin{syntax}
+%     |title| = \meta{title text}
+%   \end{syntax}
+% The title of the thesis.  Required; displayed in uppercase on the cover and
+% title pages.
+% \end{function}
+%
+% \subsection{Institutional Details}
+%
+% \begin{function}{university}
+%   \begin{syntax}
+%     |university| = \meta{name}
+%   \end{syntax}
+% University name.  Defaults to \textit{National University of Singapore}.
+% \end{function}
+%
+% \begin{function}{department}
+%   \begin{syntax}
+%     |department| = \meta{name}
+%   \end{syntax}
+% Department or faculty name, as it should appear on the title page.
+% \end{function}
+%
+% \begin{function}{field}
+%   \begin{syntax}
+%     |field| = \meta{field}
+%   \end{syntax}
+% The field or discipline of the thesis.
+% \end{function}
+%
+% \subsection{Document Classification}
+%
+% \begin{function}{document-type}
+%   \begin{syntax}
+%     |document-type| = \meta{type}
+%   \end{syntax}
+% The type of document, used throughout the declaration text.  Common values
+% are |thesis| (default) and |report|.
+% \end{function}
+%
+% \begin{function}{candidacy}
+%   \begin{syntax}
+%     |candidacy| = \meta{degree}
+%   \end{syntax}
+% The degree being sought, e.g.\ |Doctor of Philosophy| or
+% |Master of Science|.  Appears on the title page.
+% \end{function}
+%
+% \begin{function}{qualification}
+%   \begin{syntax}
+%     |qualification| = \meta{text}
+%   \end{syntax}
+% Prior qualifications of the author, shown in parentheses below the author
+% name on the title page, e.g.\ |B.Sc.\ (Hons.), University of X|.
+% \end{function}
+%
+% \subsection{Submission Details}
+%
+% \begin{function}{submission-year}
+%   \begin{syntax}
+%     |submission-year| = \meta{year}
+%   \end{syntax}
+% The four-digit submission year.  Defaults to the current year.
+% \end{function}
+%
+% \begin{function}{advisor}
+%   \begin{syntax}
+%     |advisor| = \meta{name(s)}
+%   \end{syntax}
+% Supervisor name(s).  Printed on the title page only when |final = true|.
+% \end{function}
+%
+% \begin{function}{examiners}
+%   \begin{syntax}
+%     |examiners| = \meta{name(s)}
+%   \end{syntax}
+% Examiner name(s).  Printed on the title page only when |final = true|.
+% \end{function}
+%
+% \subsection{Submission Mode}
+%
+% \begin{function}{strict}
+%   \begin{syntax}
+%     |strict| = \meta{true,false}
+%   \end{syntax}
+% When |true|, enforces old-school NUS compliance: plain chapter heading style
+% (no decorative large chapter number) \emph{and} the Times font theme.
+% The Times font is forced even if a different |font| key was set earlier.
+% Defaults to |false|.
+% \end{function}
+%
+% \begin{function}{final}
+%   \begin{syntax}
+%     |final| = \meta{true,false}
+%   \end{syntax}
+% When |true|, adds the advisor and examiner names to the title page.
+% Intended for the final hard-bound submission copy.  Defaults to |false|.
+% \end{function}
+%
+% \section{Font Themes}
+%
+% The |font| key selects a pre-configured font theme that controls body
+% text, headings, captions, and mathematics throughout the document.
+% Each theme works with pdf\/TeX, \XeTeX, and Lua\TeX, automatically
+% selecting appropriate fonts for the current engine.
+%
+% The current NUS Guidelines on Format of Research Thesis do not require any
+% specific font. The guidelines instead provide recommendations: ``Fonts should be
+% clear and easy to read. Acceptable fonts include Times New Roman and Helvetica.''
+% The built-in font themes listed below include both a Times-based theme and a Helvetica-based
+% theme. along with other themes based on the class author's strongly held beliefs
+% about good typography. In each case, mathematical fonts are chosen to complement the main font.
+%
+% \subsection{Built-in Themes}
+%
+% \begin{function}{computermodern}
+%   \begin{syntax}
+%     |font| = |computermodern|
+%   \end{syntax}
+% Classic Computer Modern typography (Knuth's original design), using Latin
+% Modern for improved quality and Unicode support.
+% Math fonts: Computer Modern Math (pdf\/TeX) or Latin Modern Math
+% (\XeTeX/Lua\TeX).
+% \end{function}
+%
+% \begin{function}{times}
+%   \begin{syntax}
+%     |font| = |times|
+%   \end{syntax}
+% Classic Times Roman serif for all document elements.
+% Math fonts: \textsf{mathptmx} (pdf\/TeX) or TeX Gyre Termes Math
+% (\XeTeX/Lua\TeX).
+% \end{function}
+%
+% \begin{function}{helvetica}
+%   \begin{syntax}
+%     |font| = |helvetica|
+%   \end{syntax}
+% Modern sans-serif theme using Helvetica throughout, including mathematics.
+% Math fonts: \textsf{arevmath} (pdf\/TeX) or Fira Math (\XeTeX/Lua\TeX).
+% \end{function}
+%
+% \begin{function}{palatino}
+%   \begin{syntax}
+%     |font| = |palatino|
+%   \end{syntax}
+% Palatino serif for body text with Helvetica for headings. Palatino is an 
+% Math fonts: \textsf{mathpazo} (pdf\/TeX) or TeX Gyre Pagella Math
+% (\XeTeX/Lua\TeX).
+% \end{function}
+%
+% \begin{function}{libertine}
+%   \begin{syntax}
+%     |font| = |libertine|
+%   \end{syntax}
+% Linux Libertine serif with sans-serif headings.  Excellent Unicode coverage.
+% Math fonts: \textsf{libertinust1math} (pdf\/TeX) or Libertinus Math
+% (\XeTeX/Lua\TeX).
+% \end{function}
+%
+% \begin{function}{noto}
+%   \begin{syntax}
+%     |font| = |noto|
+%   \end{syntax}
+% Google Noto fonts with comprehensive language support.
+% Math fonts: \textsf{notomath} (pdf\/TeX) or STIX Two Math (\XeTeX/Lua\TeX).
+% \end{function}
+%
+% \begin{function}{minionpro}
+%   \begin{syntax}
+%     |font| = |minionpro|
+%   \end{syntax}
+% Adobe Minion Pro serif with Myriad Pro sans (requires commercial fonts).
+% Math fonts: \textsf{MinionPro} (pdf\/TeX) or TeX Gyre Pagella Math
+% (\XeTeX/Lua\TeX).
+% \end{function}
+%
+% \subsection{Defining Custom Themes}
+% 
+% Class users may not be satisfied with the available themes, and may define custom themes
+% for different font classes. Because Xe\LaTeX{} and Lua\LaTeX{} can access system fonts,
+% a simplified theme definition is sufficient for these engines.
+%
+% \begin{function}{\ThesisDefineFontTheme}
+%   \begin{syntax}
+%     |\ThesisDefineFontTheme|\marg{name}\marg{options}
+%   \end{syntax}
+% User-friendly command for defining custom font themes using OpenType font
+% names.  Works with Xe\LaTeX{} and Lua\LaTeX{} via \textsf{fontspec}.
+%
+% Available options: |main-font|, |sans-font|, |mono-font|, |math-font|,
+% |chaphead-style|, |heading-style|, |titlepage-style|, |caption-style|.
+% Style values are |serif|, |sans|, or |mono|.
+%
+% \begin{verbatim}
+% \ThesisDefineFontTheme{mytheme}{
+%   main-font = {Palatino},
+%   sans-font = {Helvetica},
+%   mono-font = {Inconsolata},
+%   math-font = {TeX Gyre Pagella Math},
+%   heading-style = sans,
+% }
+% \ThesisSetup{font = mytheme}
+% \end{verbatim}
+% \end{function}
+%
+% \begin{function}{\DeclareThesisFontTheme}
+%   \begin{syntax}
+%     |\DeclareThesisFontTheme|\marg{name}\marg{config}
+%   \end{syntax}
+% Advanced command for defining themes that work on all \TeX\ engines.
+% Allows explicit configuration for pdf\/TeX, \XeTeX, and Lua\TeX.
+%
+% Configuration keys: |pdftex|, |xetex|, |luatex|, |fontspec|,
+% |hooks/body|, |hooks/titlepage|, |hooks/chaphead|, |hooks/heading|,
+% |hooks/caption|, |hooks/verbatim|, |hooks/math|.
+%
+% \begin{verbatim}
+% \DeclareThesisFontTheme{advanced}{
+%   pdftex = {
+%     \RequirePackage[sc]{mathpazo}
+%     \RequirePackage[scaled=0.95]{helvet}
+%   },
+%   fontspec = {
+%     \RequirePackage{unicode-math}
+%     \setmainfont{TeX Gyre Pagella}
+%     \setmathfont{TeX Gyre Pagella Math}
+%   },
+%   hooks/chaphead = \sffamily,
+% }
+% \end{verbatim}
+% \end{function}
+%
+% \section{Optional Features}
+%
+% \subsection{Glossaries and Acronyms}
+%
+% \begin{function}{glossaries}
+%   \begin{syntax}
+%     |glossaries| = \meta{true,false}
+%   \end{syntax}
+% Controls whether the \textsf{glossaries-extra} package is loaded.
+% Defaults to |false| to avoid warnings when glossaries are not needed.
+%
+% When |true|, loads \textsf{glossaries-extra} with abbreviation support,
+% enabling |\newacronym|, |\gls|, and |\printglossary|.
+%
+% \begin{verbatim}
+% \ThesisSetup{glossaries = true}
+% \newacronym{api}{API}{Application Programming Interface}
+% First use: \gls{api}. Second use: \gls{api}.
+% \printglossary[type=abbreviations]
+% \end{verbatim}
+% \end{function}
+%
+% \section{Document Structure}
+%
+% A typical NUS thesis follows this structure:
+%
+% \begin{verbatim}
+% \documentclass{nus-thesis}
+% \ThesisSetup{ ... }
+% \begin{document}
+%   \maketitle                % cover page + title page
+%   \begin{declaration}...\end{declaration}
+%   \begin{acknowledgements}...\end{acknowledgements}
+%   \begin{abstract}...\end{abstract}
+%   \tableofcontents
+%   \listoftables             % if needed
+%   \listoffigures            % if needed
+%   \mainmatter
+%   \chapter{Introduction}
+%   ...
+%   \appendix
+%   \bibliographystyle{...}
+%   \bibliography{refs}
+% \end{document}
+% \end{verbatim}
+%
+% \cs{maketitle} calls \cs{frontmatter} internally, so you do not need to
+% issue \cs{frontmatter} yourself.  Call \cs{mainmatter} before your first
+% numbered chapter.
+%
+% \section{Front Matter}
+%
+% \subsection{Cover and Title Pages}
+%
+% \begin{function}{\maketitle}
+%   \begin{syntax}
+%     |\maketitle|
+%   \end{syntax}
+% Generates a cover page followed by a title page, and calls
+% \cs{frontmatter} automatically.  It should be the first command inside
+% \cs{document}.
+%
+% The cover page shows the title, author, university, and year.
+% The title page adds the degree candidacy and department, and when
+% |final = true| also the advisor and examiner names.
+% \end{function}
+%
+% \subsection{Declaration Page}
+%
+% NUS requires all theses to include a signed declaration of originality.
+% The class provides a composable environment supporting the mandatory
+% originality statement, an optional generative-AI disclosure, and a
+% signature block.
+%
+% \begin{environment}{declaration}
+%   \begin{syntax}
+%     |\begin{declaration}|
+%     \quad|\DeclarationStatement|
+%     \quad|\DeclarationGenAI| \oarg{none}
+%     \quad|\DeclarationSignature| \oarg{image}
+%     |\end{declaration}|
+%   \end{syntax}
+% Opens a self-contained declaration page.  A typical usage when AI tools
+% were used:
+% \begin{verbatim}
+% \begin{declaration}
+%   \DeclarationStatement
+%   \DeclarationGenAI           % template B: AI used
+%   \DeclarationSignature       % add [sig.png] for a signature image
+% \end{declaration}
+% \end{verbatim}
+% \end{environment}
+%
+% \begin{function}{\DeclarationStatement}
+%   \begin{syntax}
+%     |\DeclarationStatement|
+%   \end{syntax}
+% Typesets the mandatory NUS originality statement.  The word
+% \meta{document-type} tracks the |document-type| key.
+% \end{function}
+%
+% \begin{function}{\DeclarationGenAI}
+%   \begin{syntax}
+%     |\DeclarationGenAI|
+%     |\DeclarationGenAI| \oarg{none}
+%   \end{syntax}
+% Typesets a \textbf{Use of Generative AI} disclosure.  Without an argument,
+% emits Template~B (AI used for language refinement and proofreading).
+% With |[none]|, emits Template~A (no AI tools used).
+%
+% \begin{verbatim}
+% \DeclarationGenAI           % template B: AI used
+% \DeclarationGenAI[none]     % template A: no AI used
+% \end{verbatim}
+%
+% For situations not covered by either template, use
+% \cs{DeclarationGenAICustom}.
+% \end{function}
+%
+% \begin{function}{\DeclarationGenAICustom}
+%   \begin{syntax}
+%     |\DeclarationGenAICustom|\marg{text}
+%   \end{syntax}
+% Typesets a \textbf{Use of Generative AI} heading followed by arbitrary
+% \meta{text}.
+% \begin{verbatim}
+% \DeclarationGenAICustom{I used LLM tools to generate initial outlines
+%   for Chapters~3 and~5, which I subsequently rewrote entirely.}
+% \end{verbatim}
+% \end{function}
+%
+% \begin{function}{\DeclarationSignature}
+%   \begin{syntax}
+%     |\DeclarationSignature|
+%     |\DeclarationSignature| \oarg{image}
+%   \end{syntax}
+% Typesets a centred signature block with the author name and date.
+% When the optional \meta{image} path is supplied, the image is placed
+% above the signature line.
+%
+% \begin{verbatim}
+% \DeclarationSignature                    % unsigned
+% \DeclarationSignature[./signature.png]   % with image
+% \end{verbatim}
+% \end{function}
+%
+% \begin{function}{\DeclarationPage}
+%   \begin{syntax}
+%     |\DeclarationPage|
+%     |\DeclarationPage| \oarg{image}
+%   \end{syntax}
+% A backward-compatible shorthand that emits a |declaration| environment
+% containing only \cs{DeclarationStatement} and \cs{DeclarationSignature}
+% (no AI disclosure).  New documents should prefer the full environment.
+% \end{function}
+%
+% \subsection{Acknowledgements}
+%
+% \begin{environment}{acknowledgements}
+%   \begin{syntax}
+%     |\begin{acknowledgements}|
+%     \meta{text}
+%     |\end{acknowledgements}|
+%   \end{syntax}
+% Typesets an unnumbered chapter titled ``Acknowledgements'' and adds an
+% entry to the table of contents.
+% \begin{verbatim}
+% \begin{acknowledgements}
+%   I thank my supervisor for their guidance \ldots
+% \end{acknowledgements}
+% \end{verbatim}
+% \end{environment}
+%
+% \subsection{Abstract}
+%
+% \begin{environment}{abstract}
+%   \begin{syntax}
+%     |\begin{abstract}| \oarg{prefix}
+%     \meta{abstract text}
+%     |\end{abstract}|
+%   \end{syntax}
+% Typesets an unnumbered chapter and adds it to the table of contents.
+% Without a \meta{prefix} the chapter is titled ``Abstract''; with a prefix
+% such as |[Lay]| it is titled ``Lay Abstract''.
+%
+% \begin{verbatim}
+% \begin{abstract}
+%   This thesis investigates \dots
+% \end{abstract}
+%
+% \begin{abstract}[Lay]
+%   In plain language, this thesis is about \dots
+% \end{abstract}
+% \end{verbatim}
+% \end{environment}
+%
+% \subsection{Lists of Tables and Figures}
+%
+% Use the standard \cs{listoftables} and \cs{listoffigures} commands.
+% Both are redefined to use single spacing internally and to add a table of
+% contents entry.  The class automatically inserts a chapter-level heading
+% into these lists whenever a float first appears in a new chapter.
+%
+% \section{Main Matter}
+%
+% \subsection{Chapter Headings}
+%
+% By default, chapters display a large decorative chapter number in grey.
+% Setting |strict = true| in \cs{ThesisSetup} reverts to a plain heading.
+%
+% \subsection{Floats and Captions}
+%
+% Table and figure captions are styled in small sans-serif with a bold label
+% and period separator.
+%
+% \begin{function}{\ResetFloatsInChapter}
+%   \begin{syntax}
+%     |\ResetFloatsInChapter|
+%   \end{syntax}
+% Resets the internal tracking that inserts chapter headings into the list
+% of tables and list of figures.  Called automatically at the start of each
+% chapter; exposed here for use in exceptional circumstances.
+% \end{function}
+%
+% \section{Back Matter}
+%
+% \subsection{Appendices}
+%
+% Use the standard |\appendix| command (or the |appendices| environment from
+% the \textsf{appendix} package, which is loaded by the class).
+% Chapter headings in the appendix section are reformatted as
+% \textit{Appendix~A}, \textit{Appendix~B}, etc., and an ``Appendices''
+% part entry is added to the table of contents.
+%
+% \begin{verbatim}
+% \appendix
+% \chapter{Supplementary Data}
+% \end{verbatim}
+%
+% \subsection{List of Symbols and Abbreviations}
+%
+% \begin{function}{\listofsymbolsnabbrev}
+%   \begin{syntax}
+%     |\listofsymbolsnabbrev|
+%   \end{syntax}
+% Typesets a list of symbols followed by a list of abbreviations.  Entries
+% are added with \cs{addsymbol} and \cs{addabbrev} throughout the document.
+% \end{function}
+%
+% \begin{function}{\addsymbol}
+%   \begin{syntax}
+%     |\addsymbol|\marg{symbol}\marg{description}
+%   \end{syntax}
+% Adds an entry to the list of symbols.
+% \begin{verbatim}
+% \addsymbol{$\alpha$}{Significance level}
+% \addsymbol{$\mu$}{Population mean}
+% \end{verbatim}
+% \end{function}
+%
+% \begin{function}{\addabbrev}
+%   \begin{syntax}
+%     |\addabbrev|\marg{abbreviation}\marg{expansion}
+%   \end{syntax}
+% Adds an entry to the list of abbreviations.
+% \begin{verbatim}
+% \addabbrev{DNA}{Deoxyribonucleic Acid}
+% \addabbrev{PCR}{Polymerase Chain Reaction}
+% \end{verbatim}
+% \end{function}
+%
+% \StopEventually{}
+%
+% \section{Implementation}
+%
+% This section documents the internal implementation of the
+% \textsf{nus-thesis} class.  It is intended for class maintainers.
+%
+% \subsection{Base Class Setup}
+%
+% Load \textsf{book} with NUS-required defaults, then handle engine-specific
+% font encoding.
 %
 %    \begin{macrocode}
-%<*class>      
-%
+%<*class>
 \str_const:Nn \c__classname_base_class_str { book }
-%
-% % Make sure a few of these base class options are set properly
+
 \PassOptionsToClass{a4paper}{\c__classname_base_class_str}
 \PassOptionsToClass{12pt}{\c__classname_base_class_str}
 \PassOptionsToClass{oneside}{\c__classname_base_class_str}
 \PassOptionsToClass{openright}{\c__classname_base_class_str}
 \LoadClass { \c__classname_base_class_str }
-%
-%</class>
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-%<*class>
+
 \sys_if_engine_pdftex:TF {
   \RequirePackage[T1]{fontenc}
   \RequirePackage[utf8]{inputenc}
-  \RequirePackage{textcomp} % provides euro and other symbols
+  \RequirePackage{textcomp}
   } {
     \RequirePackage{fontspec}
     \sys_if_engine_xetex:T { \RequirePackage{xunicode} }
 }
-
 %    \end{macrocode}
-% \section{Thesis Setup keys}
 %
-% Font hook commands (defined before keys so they can be used in font choices)
+% \subsection{Font Theme System}
+%
+% Font hooks allow themes to override font families in specific contexts.
+% Each hook is a zero-argument command that switches font family; the
+% defaults use \cs{normalfont}.
+%
 %    \begin{macrocode}
+\cs_new:Npn \__nusthesis_body_font: { \normalfont }
+\cs_new:Npn \__nusthesis_titlepage_font: { \normalfont }
+\cs_new:Npn \__nusthesis_chaphead_font: { \normalfont }
+\cs_new:Npn \__nusthesis_heading_font: { \normalfont }
+\cs_new:Npn \__nusthesis_caption_font: { \normalfont }
+\cs_new:Npn \__nusthesis_verbatim_font: { \ttfamily }
+\cs_new:Npn \__nusthesis_math_setup: { }
 
-% Internal functions for font control (can be redefined by font options)
-% These hooks provide granular control over fonts in different document contexts
-\cs_new:Npn \__nusthesis_body_font: { \normalfont }          % Body text (main content)
-\cs_new:Npn \__nusthesis_titlepage_font: { \normalfont }     % Title page elements
-\cs_new:Npn \__nusthesis_chaphead_font: { \normalfont }      % Chapter headings
-\cs_new:Npn \__nusthesis_heading_font: { \normalfont }       % Section/subsection headings
-\cs_new:Npn \__nusthesis_caption_font: { \normalfont }       % Figure/table captions
-\cs_new:Npn \__nusthesis_verbatim_font: { \ttfamily }        % Code/verbatim blocks
-\cs_new:Npn \__nusthesis_math_setup: { }                     % Math font configuration hook
-
-% Boolean flag for optional package loading
 \bool_new:N \l__thesis_use_glossaries_bool
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Phase 2: Font Theme Management System
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Property list to store font theme definitions
-% Each theme is stored as a property with its configuration
 \prop_new:N \g__nusthesis_fontthemes_prop
 
-% Detect and cache the current TeX engine
 \str_new:N \l__nusthesis_engine_str
 \sys_if_engine_pdftex:TF {
   \str_set:Nn \l__nusthesis_engine_str { pdftex }
@@ -155,7 +726,8 @@
   }
 }
 
-% Token lists for theme configuration storage
+\bool_new:N \g__nusthesis_fonttheme_loaded_bool
+
 \tl_new:N \l__nusthesis_theme_config_tl
 \tl_new:N \l__nusthesis_theme_pdftex_tl
 \tl_new:N \l__nusthesis_theme_xetex_tl
@@ -169,8 +741,6 @@
 \tl_new:N \l__nusthesis_hook_verbatim_tl
 \tl_new:N \l__nusthesis_hook_math_tl
 
-% Keys for font theme definition
-% These keys are used within \DeclareThesisFontTheme to configure themes
 \keys_define:nn { nus-thesis / fonttheme }
 {
   , pdftex .tl_set:N = \l__nusthesis_theme_pdftex_tl
@@ -180,7 +750,7 @@
   , luatex .tl_set:N = \l__nusthesis_theme_luatex_tl
   , luatex .initial:n = { }
   , fontspec .tl_set:N = \l__nusthesis_theme_fontspec_tl
-  , fontspec .initial:n = { }  % Common code for XeTeX/LuaTeX
+  , fontspec .initial:n = { }
   , hooks / body .code:n = { \cs_gset:Npn \__nusthesis_body_font: { #1 } }
   , hooks / titlepage .code:n = { \cs_gset:Npn \__nusthesis_titlepage_font: { #1 } }
   , hooks / chaphead .code:n = { \cs_gset:Npn \__nusthesis_chaphead_font: { #1 } }
@@ -190,28 +760,17 @@
   , hooks / math .code:n = { \cs_gset:Npn \__nusthesis_math_setup: { #1 } }
 }
 
-% Error message for unknown font theme
 \msg_new:nnn { nus-thesis } { unknown-fonttheme } {
   Font~theme~'#1'~is~not~defined.~Available~themes~are~stored~in~
   \prop_map_function:NN \g__nusthesis_fontthemes_prop \__nusthesis_show_theme:nn
 }
 
-% Helper to show available themes in error message
 \cs_new:Npn \__nusthesis_show_theme:nn #1 #2 { #1,~ }
 
-% Load fonts for a theme based on current engine
-% #1 = theme name
 \cs_new:Npn \__nusthesis_load_fonttheme:n #1 {
-  % Check if theme exists in property list
   \prop_if_in:NnTF \g__nusthesis_fontthemes_prop { #1 } {
-    % Get theme configuration
     \prop_get:NnN \g__nusthesis_fontthemes_prop { #1 } \l__nusthesis_theme_config_tl
-
-    % Parse the configuration and set temporary variables
-    % NOTE: No group here - packages must be loaded at top level
     \keys_set:nV { nus-thesis / fonttheme } \l__nusthesis_theme_config_tl
-
-    % Load engine-specific fonts
     \str_case:Vn \l__nusthesis_engine_str {
       { pdftex } {
         \tl_if_empty:NF \l__nusthesis_theme_pdftex_tl {
@@ -219,7 +778,6 @@
         }
       }
       { xetex } {
-        % Try fontspec first (common code for XeTeX/LuaTeX), then xetex-specific
         \tl_if_empty:NTF \l__nusthesis_theme_fontspec_tl {
           \tl_if_empty:NF \l__nusthesis_theme_xetex_tl {
             \tl_use:N \l__nusthesis_theme_xetex_tl
@@ -229,7 +787,6 @@
         }
       }
       { luatex } {
-        % Try fontspec first (common code for XeTeX/LuaTeX), then luatex-specific
         \tl_if_empty:NTF \l__nusthesis_theme_fontspec_tl {
           \tl_if_empty:NF \l__nusthesis_theme_luatex_tl {
             \tl_use:N \l__nusthesis_theme_luatex_tl
@@ -239,28 +796,17 @@
         }
       }
     }
-    % Note: Font hooks are set globally during key processing (using \cs_gset:Npn)
   } {
-    % Theme not found - show error
     \msg_error:nnn { nus-thesis } { unknown-fonttheme } { #1 }
   }
 }
 
-% Generate variant to allow passing token list variables
 \cs_generate_variant:Nn \__nusthesis_load_fonttheme:n { V }
 
-% Variable to store the selected font theme name (for deferred loading)
 \tl_new:N \g__nusthesis_selected_fonttheme_tl
 
-% Public command to declare a font theme (for class maintainers and advanced users)
-% #1 = theme name
-% #2 = key-value configuration using nus-thesis/fonttheme keys
 \NewDocumentCommand \DeclareThesisFontTheme { m m } {
-  % Store the theme configuration in the property list
   \prop_gput:Nnn \g__nusthesis_fontthemes_prop { #1 } { #2 }
-
-  % Also register this theme as a choice in the font key
-  % Load the theme immediately when selected (must be in preamble)
   \keys_define:nn { nus-thesis } {
     , font / #1 .code:n = {
         \bool_if:NF \g__nusthesis_fonttheme_loaded_bool {
@@ -271,17 +817,10 @@
   }
 }
 
-% Public command to use a font theme directly
-% Alternative to setting font key in \ThesisSetup
 \NewDocumentCommand \UseFontTheme { m } {
   \__nusthesis_load_fonttheme:n { #1 }
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Phase 4: User-Friendly Theme Definition API
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Keys for user-friendly theme definition
 \keys_define:nn { nus-thesis / usertheme }
 {
   , main-font .tl_set:N = \l__nusthesis_user_mainfont_tl
@@ -302,23 +841,13 @@
   , caption-style .initial:n = { }
 }
 
-% User-friendly command for defining custom font themes
-% Works with fontspec (XeTeX/LuaTeX) - uses OpenType font names
-% #1 = theme name
-% #2 = key-value options (main-font, sans-font, mono-font, math-font, *-style)
 \NewDocumentCommand \ThesisDefineFontTheme { m m } {
-  % Parse user options
   \group_begin:
     \keys_set:nn { nus-thesis / usertheme } { #2 }
-
-    % Build fontspec configuration
     \tl_clear:N \l_tmpa_tl
-
-    % Load unicode-math if math font specified (must come before font setup)
     \tl_if_empty:NF \l__nusthesis_user_mathfont_tl {
       \tl_put_right:Nn \l_tmpa_tl { \RequirePackage{unicode-math} }
     }
-
     \tl_if_empty:NF \l__nusthesis_user_mainfont_tl {
       \tl_put_right:Nn \l_tmpa_tl { \setmainfont }
       \tl_put_right:NV \l_tmpa_tl \l__nusthesis_user_mainfont_tl
@@ -335,8 +864,6 @@
       \tl_put_right:Nn \l_tmpa_tl { \setmathfont }
       \tl_put_right:NV \l_tmpa_tl \l__nusthesis_user_mathfont_tl
     }
-
-    % Build hooks configuration
     \tl_clear:N \l_tmpb_tl
     \tl_if_empty:NF \l__nusthesis_user_chaphead_tl {
       \tl_put_right:Nn \l_tmpb_tl { hooks/chaphead = }
@@ -374,46 +901,38 @@
       }
       \tl_put_right:Nn \l_tmpb_tl { , }
     }
-
-    % Store for use outside group
     \tl_gset_eq:NN \g_tmpa_tl \l_tmpa_tl
     \tl_gset_eq:NN \g_tmpb_tl \l_tmpb_tl
   \group_end:
-
-  % Call low-level \DeclareThesisFontTheme with generated configuration
   \exp_args:Nnx \DeclareThesisFontTheme { #1 } {
     fontspec = { \exp_not:V \g_tmpa_tl },
     \exp_not:V \g_tmpb_tl
   }
 }
+%    \end{macrocode}
+%
+% \subsection{Thesis Configuration Keys}
+%
+%    \begin{macrocode}
+\bool_new:N \l__classname_nusstrict_bool
+\bool_new:N \l__final_submission_bool
 
-% Internal token list variables for thesis metadata
 \tl_new:N \l__nusthesis_supervisor_tl
 \tl_new:N \l__nusthesis_subtitle_tl
 \tl_new:N \l__nusthesis_qualification_tl
 \tl_new:N \l__nusthesis_keywords_tl
 
-% Sequences for symbol and abbreviation lists
 \seq_new:N \g__nusthesis_symbol_seq
 \seq_new:N \g__nusthesis_abbrev_seq
-
-%    \end{macrocode}
-% \begin{function}{author}
-%   \begin{syntax}
-%     |author| = The author name
-%   \end{syntax}
-% This is a required parameter to set the author name
-% \end{function}
-%    \begin{macrocode}
 
 \keys_define:nn { nus-thesis }
 {
   , author .tl_set:N = \l__thesis_author_tl
   , author .code:n = { \author{#1} }
   , author .initial:n = { (author~undefined)  }
-  , title .tl_set:N = \l__thesis_title_tl  
+  , title .tl_set:N = \l__thesis_title_tl
   , title .code:n = { \title{#1} }
-  , title .initial:n = { (title~undefined) }  
+  , title .initial:n = { (title~undefined) }
   , university .tl_set:N = \l__thesis_university_tl
   , university .initial:n = { National~University~of~Singapore }
   , department .tl_set:N = \l__thesis_department_tl
@@ -429,8 +948,17 @@
   , qualification .tl_set:N = \l__thesis_qualification_tl
   , qualification .initial:n = { qualification~undefined  }
   , qualification .code:n = {\qualification{#1}}
-  , strict .bool_set:N = \l__classname_nusstrict_bool
-  , strict .initial:n = { false}
+  , strict .code:n = {
+      \str_if_eq:nnTF { #1 } { true }
+        { \bool_set_true:N \l__classname_nusstrict_bool }
+        { \bool_set_false:N \l__classname_nusstrict_bool }
+      \bool_if:NT \l__classname_nusstrict_bool {
+        \bool_gset_false:N \g__nusthesis_fonttheme_loaded_bool
+        \keys_set:nn { nus-thesis } { font = times }
+      }
+    }
+  , strict .default:n = { true }
+  , strict .initial:n = { false }
   , final .bool_set:N = \l__final_submission_bool
   , final .initial:n = { false }
   , advisor .tl_set:N = \l__thesis_advisor_tl
@@ -441,8 +969,7 @@
   % Font themes are defined below using \DeclareThesisFontTheme
   , font / strict .meta:n = { font = times }  % Alias for backward compatibility
   , glossaries .bool_set:N = \l__thesis_use_glossaries_bool
-  , glossaries .initial:n = { false }  % Default: don't load glossaries
-  % \DeclareDefaultOption
+  , glossaries .initial:n = { false }
   , unknown .code:n =
   {
     \iow_term:x
@@ -453,376 +980,16 @@
     \PassOptionsToClass { \CurrentOption } { \c__classname_base_class_str }
   }
 }
-
 %    \end{macrocode}
 %
-% \section{Font Themes}
+% \subsection{Font Theme Definitions}
 %
-% The |font| key allows selection of pre-configured font themes that control the appearance of
-% text, headings, captions, and mathematical expressions throughout the document. Each theme works
-% with pdfTeX, XeTeX, and LuaTeX, automatically selecting appropriate fonts for the engine.
-%
-% \subsection{Built-in Themes}
-%
-% \begin{function}{computermodern}
-%   \begin{syntax}
-%     |font| = |computermodern|
-%   \end{syntax}
-% Classic Computer Modern typography (Knuth's original TeX design).
-% Uses Latin Modern fonts for improved quality and Unicode support.
-% Math fonts: Computer Modern Math (pdfTeX) or Latin Modern Math (XeTeX/LuaTeX).
-% \end{function}
-%
-% \begin{function}{times}
-%   \begin{syntax}
-%     |font| = |times|
-%   \end{syntax}
-% Classic Times Roman serif font for all document elements.
-% Math fonts: mathptmx (pdfTeX) or TeX Gyre Termes Math (XeTeX/LuaTeX).
-% \end{function}
-%
-% \begin{function}{helvetica}
-%   \begin{syntax}
-%     |font| = |helvetica|
-%   \end{syntax}
-% Modern sans-serif theme using Helvetica throughout, including mathematical expressions.
-% Math fonts: arevmath (pdfTeX) or Fira Math (XeTeX/LuaTeX).
-% \end{function}
-%
-% \begin{function}{palatino}
-%   \begin{syntax}
-%     |font| = |palatino|
-%   \end{syntax}
-% Palatino serif for body text with Helvetica for headings. Professional combination.
-% Math fonts: mathpazo (pdfTeX) or TeX Gyre Pagella Math (XeTeX/LuaTeX).
-% \end{function}
-%
-% \begin{function}{libertine}
-%   \begin{syntax}
-%     |font| = |libertine|
-%   \end{syntax}
-% Linux Libertine serif with sans-serif headings. Excellent Unicode coverage.
-% Math fonts: libertinust1math (pdfTeX) or Libertinus Math (XeTeX/LuaTeX).
-% \end{function}
-%
-% \begin{function}{noto}
-%   \begin{syntax}
-%     |font| = |noto|
-%   \end{syntax}
-% Google Noto fonts with comprehensive language support.
-% Math fonts: notomath (pdfTeX) or Latin Modern Math (XeTeX/LuaTeX).
-% \end{function}
-%
-% \begin{function}{minionpro}
-%   \begin{syntax}
-%     |font| = |minionpro|
-%   \end{syntax}
-% Adobe Minion Pro serif with Myriad Pro sans (requires commercial fonts).
-% Math fonts: MinionPro (pdfTeX) or TeX Gyre Pagella Math (XeTeX/LuaTeX).
-% \end{function}
-%
-% \subsection{Defining Custom Themes}
-%
-% \begin{function}{\ThesisDefineFontTheme}
-%   \begin{syntax}
-%     |\ThesisDefineFontTheme|\marg{name}\marg{options}
-%   \end{syntax}
-% User-friendly command for defining custom font themes using OpenType fonts. Works with XeTeX
-% and LuaTeX via fontspec.
-%
-% Available options: |main-font|, |sans-font|, |mono-font|, |math-font|,
-% |chaphead-style|, |heading-style|, |titlepage-style|, |caption-style|
-%
-% Style values: |serif|, |sans|, or |mono|
-%
-% Example:
-% \begin{verbatim}
-% \ThesisDefineFontTheme{mytheme}{
-%   main-font = {Palatino},
-%   sans-font = {Helvetica},
-%   mono-font = {Inconsolata},
-%   math-font = {TeX Gyre Pagella Math},
-%   heading-style = sans,
-% }
-% \ThesisSetup{font = mytheme}
-% \end{verbatim}
-% \end{function}
-%
-% \begin{function}{\DeclareThesisFontTheme}
-%   \begin{syntax}
-%     |\DeclareThesisFontTheme|\marg{name}\marg{config}
-%   \end{syntax}
-% Advanced command for defining themes that work on all TeX engines. Allows explicit configuration
-% for pdfTeX, XeTeX, and LuaTeX.
-%
-% Configuration keys: |pdftex|, |xetex|, |luatex|, |fontspec|,
-% |hooks/body|, |hooks/titlepage|, |hooks/chaphead|, |hooks/heading|,
-% |hooks/caption|, |hooks/verbatim|, |hooks/math|
-%
-% Example:
-% \begin{verbatim}
-% \DeclareThesisFontTheme{advanced}{
-%   pdftex = {
-%     \RequirePackage[sc]{mathpazo}
-%     \RequirePackage[scaled=0.95]{helvet}
-%   },
-%   fontspec = {
-%     \RequirePackage{unicode-math}
-%     \setmainfont{TeX Gyre Pagella}
-%     \setmathfont{TeX Gyre Pagella Math}
-%   },
-%   hooks/chaphead = \sffamily,
-% }
-% \end{verbatim}
-% \end{function}
-%
-% \subsection{Usage Examples}
-%
-% Using a built-in theme:
-% \begin{verbatim}
-% \documentclass{nus-thesis}
-% \ThesisSetup{
-%   font = palatino,
-%   title = My Thesis,
-%   author = John Doe,
-% }
-% \end{verbatim}
-%
-% Using a custom theme (XeTeX/LuaTeX):
-% \begin{verbatim}
-% \ThesisDefineFontTheme{research}{
-%   main-font = {STIX Two Text},
-%   math-font = {STIX Two Math},
-%   heading-style = sans,
-% }
-% \ThesisSetup{font = research}
-% \end{verbatim}
-%
-% For detailed information about math fonts and advanced configuration, see
-% |FONT_THEME_IMPLEMENTATION.md| and |MATH_FONT_SYSTEM.md| in the package distribution.
-%
-% \section{Optional Features}
-%
-% \subsection{Glossaries and Acronyms}
-%
-% \begin{function}{glossaries}
-%   \begin{syntax}
-%     |glossaries| = \meta{true,false}
-%   \end{syntax}
-% Controls whether the |glossaries-extra| package is loaded for managing glossaries and acronyms.
-%
-% When set to |false| (the default), glossaries support is not loaded. This avoids warnings
-% about missing |\printglossary| commands when you don't need glossaries functionality.
-%
-% When set to |true|, the |glossaries-extra| package is loaded with support for abbreviations,
-% enabling commands like |\newacronym|, |\gls|, and |\printglossary|.
-%
-% Example without glossaries (default):
-% \begin{verbatim}
-% \documentclass{nus-thesis}
-% \ThesisSetup{
-%   title = My Thesis,
-%   author = John Doe,
-% }
-% \end{verbatim}
-%
-% Example with glossaries enabled:
-% \begin{verbatim}
-% \documentclass{nus-thesis}
-% \ThesisSetup{
-%   glossaries = true,
-%   title = My Thesis,
-%   author = John Doe,
-% }
-% \begin{document}
-% \newacronym{api}{API}{Application Programming Interface}
-% First use: \gls{api}. Second use: \gls{api}.
-% \printglossary[type=abbreviations]
-% \end{document}
-% \end{verbatim}
-% \end{function}
-%
-% \section{Front Matter Environments}
-%
-% \subsection{Declaration Page}
-%
-% NUS requires all theses to include a signed declaration of originality.
-% The class provides a composable environment that supports the required
-% originality statement, an optional generative-AI disclosure, and a
-% signature block.
-%
-% \begin{environment}{declaration}
-%   \begin{syntax}
-%     |\begin{declaration}|
-%     \quad|\DeclarationStatement|
-%     \quad|\DeclarationGenAI| \oarg{template}
-%     \quad|\DeclarationSignature| \oarg{image}
-%     |\end{declaration}|
-%   \end{syntax}
-% Opens a self-contained declaration page (plain page style, no running
-% header). The page is cleared before the environment begins and a
-% |\cleardoublepage| is issued at the end so that the following front-matter
-% content always starts on a recto page.
-%
-% The body is built up from three sub-commands described below.
-% A typical usage for a thesis where the student used AI tools is:
-% \begin{verbatim}
-% \begin{declaration}
-%   \DeclarationStatement
-%   \DeclarationGenAI           % template B: AI used
-%   \DeclarationSignature       % unsigned; add [sig.png] for image
-% \end{declaration}
-% \end{verbatim}
-% \end{environment}
-%
-% \begin{function}{\DeclarationStatement}
-%   \begin{syntax}
-%     |\DeclarationStatement|
-%   \end{syntax}
-% Typesets the mandatory NUS originality statement:
-% \textit{``I hereby declare that this \meta{document-type} is my original
-% work and has been written by me in its entirety.  I have duly acknowledged
-% all the sources of information which have been used in this
-% \meta{document-type}. This \meta{document-type} has also not been
-% submitted for any degree in any university previously.''}
-%
-% The word \meta{document-type} is taken from the |document-type| key (default
-% |thesis|); it tracks the value set in |\ThesisSetup|.
-% This command must appear inside a |declaration| environment.
-% \end{function}
-%
-% \begin{function}{\DeclarationGenAI}
-%   \begin{syntax}
-%     |\DeclarationGenAI|
-%     |\DeclarationGenAI| \oarg{none}
-%   \end{syntax}
-% Typesets a \textbf{Use of Generative AI} disclosure paragraph.
-% Two templates are available, selected via the optional argument:
-%
-% \begin{description}
-%   \item[Template B (default, no argument)] Use when generative AI tools
-%     \emph{were} used, solely for language refinement, structuring, and
-%     proofreading. Produces the text: \textit{``I acknowledge the use of
-%     generative artificial intelligence (AI) tools in the preparation of
-%     this \meta{document-type}, solely for language refinement, structuring
-%     and proofreading purposes. All AI-generated outputs have been
-%     critically reviewed, edited, and verified by me. I confirm that the
-%     intellectual content, analysis, and conclusions presented are entirely
-%     my own, and I take full responsibility for the work submitted.''}
-%
-%   \item[Template A (\texttt{[none]})] Use when \emph{no} generative AI tools
-%     were used. Produces the text: \textit{``I declare that no generative
-%     artificial intelligence (AI) tools were used in the preparation of the
-%     \meta{document-type}.''}
-% \end{description}
-%
-% \begin{verbatim}
-% \DeclarationGenAI         % template B: AI used for language/proofreading
-% \DeclarationGenAI[none]   % template A: no AI used
-% \end{verbatim}
-%
-% For situations not covered by either template, use
-% |\DeclarationGenAICustom| instead.
-% \end{function}
-%
-% \begin{function}{\DeclarationGenAICustom}
-%   \begin{syntax}
-%     |\DeclarationGenAICustom| \marg{text}
-%   \end{syntax}
-% Typesets a \textbf{Use of Generative AI} heading followed by the
-% arbitrary \meta{text} supplied by the user. Use this command when the
-% built-in templates in |\DeclarationGenAI| do not match the disclosure
-% required by your programme or supervisor.
-%
-% \begin{verbatim}
-% \DeclarationGenAICustom{%
-%   I used large-language-model tools to generate initial outlines for
-%   Chapters~3 and~5, which I subsequently rewrote in their entirety.
-% }
-% \end{verbatim}
-% \end{function}
-%
-% \begin{function}{\DeclarationSignature}
-%   \begin{syntax}
-%     |\DeclarationSignature|
-%     |\DeclarationSignature| \oarg{image}
-%   \end{syntax}
-% Typesets a centred signature block consisting of two ruled lines labelled
-% with the author name and the submission date, respectively. When the
-% optional \meta{image} path is supplied, the referenced image is placed
-% above the signature line (useful for electronic submissions that carry a
-% scanned or digital signature).
-%
-% \begin{verbatim}
-% \DeclarationSignature                    % unsigned block
-% \DeclarationSignature[./signature.png]   % with signature image
-% \end{verbatim}
-% \end{function}
-%
-% \begin{function}{\DeclarationPage}
-%   \begin{syntax}
-%     |\DeclarationPage|
-%     |\DeclarationPage| \oarg{image}
-%   \end{syntax}
-% A backward-compatible shorthand that emits a |declaration| environment
-% containing only |\DeclarationStatement| and |\DeclarationSignature|
-% (no AI disclosure). New documents should prefer the full environment so
-% that the AI disclosure can be included.
-%
-% \begin{verbatim}
-% \DeclarationPage                       % no signature image
-% \DeclarationPage[./signature.png]      % with signature image
-% \end{verbatim}
-% \end{function}
-%
-% \subsection{Abstract}
-%
-% \begin{environment}{abstract}
-%   \begin{syntax}
-%     |\begin{abstract}| \oarg{prefix}
-%     \meta{abstract text}
-%     |\end{abstract}|
-%   \end{syntax}
-% Typesets an abstract as an unnumbered chapter and adds it to the table of contents.
-% The optional \meta{prefix} argument prepends a word to the chapter title. Without a
-% prefix, the chapter is titled ``Abstract''. With a prefix, for example |[Lay]|, the
-% chapter is titled ``Lay Abstract''.
-%
-% Some degree programmes require both a technical abstract and a lay abstract
-% (a plain-language summary for a general audience). Both can be included in the
-% front matter:
-% \begin{verbatim}
-% \begin{abstract}
-%   This thesis investigates \dots
-% \end{abstract}
-%
-% \begin{abstract}[Lay]
-%   In plain language, this thesis is about \dots
-% \end{abstract}
-% \end{verbatim}
-% \end{environment}
-%
-% \StopEventually{}  % No index in user manual - it's a short guide
-%
-% \section{Implementation}
-%
-% This section documents the internal implementation of the nus-thesis class.
-% It is intended for developers and maintainers.
+% Built-in themes defined via \cs{DeclareThesisFontTheme}.
 %
 %    \begin{macrocode}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Font Theme Definitions
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Define built-in font themes using the new theme system
-% Each theme specifies engine-specific font loading and hook customization
-
-% Computer Modern theme: Classic TeX typography (Knuth's original design)
-% Uses CM (pdfTeX) or Latin Modern (XeTeX/LuaTeX)
 \DeclareThesisFontTheme{computermodern}{
   pdftex = {
-    % Computer Modern is the default - no packages needed
-    % Optionally load Latin Modern for better quality
     \RequirePackage{lmodern}
   },
   fontspec = {
@@ -832,14 +999,11 @@
     \setmonofont{Latin~Modern~Mono}[Scale=MatchLowercase]
     \setmathfont{Latin~Modern~Math}
   },
-  % All hooks use defaults (serif body, serif headings)
 }
 
-% Times theme: Classic serif font (Times Roman)
-% Uses defaults for all hooks (serif throughout)
 \DeclareThesisFontTheme{times}{
   pdftex = {
-    \RequirePackage{mathptmx}  % Times + math support
+    \RequirePackage{mathptmx}
   },
   fontspec = {
     \RequirePackage{unicode-math}
@@ -848,11 +1012,8 @@
     \setmonofont{Latin~Modern~Mono}[Scale=MatchLowercase]
     \setmathfont{TeX~Gyre~Termes~Math}
   },
-  % All hooks use defaults (serif body, serif headings)
 }
 
-% Helvetica theme: Sans-serif throughout
-% Clean, modern look with sans fonts for everything
 \DeclareThesisFontTheme{helvetica}{
   pdftex = {
     \RequirePackage[scaled=0.95]{helvet}
@@ -866,7 +1027,7 @@
     \setsansfont{TeX~Gyre~Heros}[Scale=0.95]
     \setmainfont{TeX~Gyre~Heros}[Scale=0.95]
     \setmonofont{Inconsolata}[Scale=MatchLowercase]
-    \setmathfont{Fira~Math}  % Sans-serif math font
+    \setmathfont{Fira~Math}
   },
   hooks/body = \sffamily,
   hooks/titlepage = \sffamily,
@@ -875,11 +1036,9 @@
   hooks/caption = \sffamily,
 }
 
-% Palatino theme: Serif body with sans-serif headings
-% Professional combination of Palatino and Helvetica
 \DeclareThesisFontTheme{palatino}{
   pdftex = {
-    \RequirePackage[sc]{mathpazo}  % Palatino + smallcaps
+    \RequirePackage[sc]{mathpazo}
     \RequirePackage[scaled=0.95]{helvet}
     \RequirePackage[varl]{inconsolata}
   },
@@ -895,8 +1054,6 @@
   hooks/caption = \sffamily,
 }
 
-% Libertine theme: Linux Libertine with multi-engine support
-% Elegant serif font with excellent unicode coverage
 \DeclareThesisFontTheme{libertine}{
   pdftex = {
     \RequirePackage[scaled=0.9,varl]{inconsolata}
@@ -914,8 +1071,6 @@
   hooks/caption = \sffamily,
 }
 
-% Noto theme: Google Noto fonts
-% Modern, comprehensive font family with excellent language support
 \DeclareThesisFontTheme{noto}{
   pdftex = {
     \RequirePackage{notomath}
@@ -926,7 +1081,7 @@
     \setmainfont{Noto~Serif}
     \setsansfont{Noto~Sans}
     \setmonofont{Noto~Sans~Mono}[Scale=MatchLowercase]
-    \setmathfont{STIXTwoMath-Regular.otf}  % Noto doesn't have a math font yet
+    \setmathfont{STIXTwoMath-Regular.otf}
   },
   hooks/titlepage = \sffamily,
   hooks/chaphead = \sffamily,
@@ -934,8 +1089,6 @@
   hooks/caption = \sffamily,
 }
 
-% Minion Pro theme: Adobe professional fonts
-% Premium serif/sans combination (requires commercial fonts)
 \DeclareThesisFontTheme{minionpro}{
   pdftex = {
     \RequirePackage[lf,minionint,loosequotes,footnotefigures]{MinionPro}
@@ -948,9 +1101,8 @@
     \setmainfont{Minion~Pro}
     \setsansfont{Myriad~Pro}
     \setmonofont{Inconsolata}[Scale=0.9]
-    \setmathfont{TeX~Gyre~Pagella~Math}  % Minion Math is commercial
+    \setmathfont{TeX~Gyre~Pagella~Math}
   },
-  %hooks/titlepage = \sffamily,
   hooks/chaphead = \sffamily,
   hooks/heading = \sffamily,
   hooks/caption = \sffamily,
@@ -958,14 +1110,14 @@
 
 \ProcessKeysOptions { nus-thesis }
 
-
 \NewDocumentCommand \ThesisSetup { m } {
   \keys_set:nn { nus-thesis } { #1 }
 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Package Loading
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    \end{macrocode}
+%
+% \subsection{Package Loading}
+%
+%    \begin{macrocode}
 
 % Date and localization
 \RequirePackage[UKenglish]{isodate}
@@ -1047,22 +1199,12 @@
   hidelinks%
 }
 \RequirePackage[nameinlink,noabbrev, capitalise]{cleveref}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Font Theme Loading Flag
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Boolean flag to ensure font themes are only loaded once
-% (prevents errors from duplicate package loading)
-\bool_new:N \g__nusthesis_fonttheme_loaded_bool
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Spacing and Size Constants
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% These constants define standard spacing and sizing throughout the document.
-% Consolidating them here makes it easier to maintain consistent formatting
-% and allows for future customization through \ThesisSetup{}.
-
-% Table of Contents spacing - vertical spacing between entries
+%    \end{macrocode}
+%
+% \subsection{Spacing Constants}
+%
+%    \begin{macrocode}
+% Table of Contents spacing
 \dim_const:Nn \c__nusthesis_toc_part_skip_dim { 2.25em }
 \dim_const:Nn \c__nusthesis_toc_chapter_skip_dim { 1.5em }
 \dim_const:Nn \c__nusthesis_toc_section_skip_dim { 1em }
@@ -1070,12 +1212,12 @@
 \dim_const:Nn \c__nusthesis_toc_figure_skip_dim { 1em }
 \dim_const:Nn \c__nusthesis_toc_table_skip_dim { 1em }
 
-% Cover page layout spacing
+% Cover page layout
 \dim_const:Nn \c__nusthesis_coverpage_title_vspace_dim { 0.3in }
 \dim_const:Nn \c__nusthesis_coverpage_author_vspace_dim { 8cm }
 \dim_const:Nn \c__nusthesis_coverpage_year_vspace_dim { 0.2cm }
 
-% Title page layout spacing
+% Title page layout
 \dim_const:Nn \c__nusthesis_titlepage_footer_vspace_dim { 2cm }
 
 % Declaration page spacing
@@ -1095,7 +1237,7 @@
 \int_const:Nn \c__nusthesis_chapnum_baseline_int { 130 }
 \dim_const:Nn \c__nusthesis_appendix_title_sep_dim { 20pt }
 
-% Section spacing (before and after section headings)
+% Section heading spacing
 \dim_const:Nn \c__nusthesis_section_before_dim { 3.5ex }
 \dim_const:Nn \c__nusthesis_section_after_dim { 2.3ex }
 \dim_const:Nn \c__nusthesis_subsection_before_dim { 3.25ex }
@@ -1104,30 +1246,25 @@
 \dim_const:Nn \c__nusthesis_subsubsection_after_dim { 1.5ex }
 
 % List of symbols/abbreviations column widths
-\dim_const:Nn \c__nusthesis_symbol_leftcol_dim { 2cm }   % Symbol/abbreviation column
-\dim_const:Nn \c__nusthesis_symbol_midcol_dim { 1cm }    % Spacing column
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Document Settings
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Double Line Spacing
+\dim_const:Nn \c__nusthesis_symbol_leftcol_dim { 2cm }
+\dim_const:Nn \c__nusthesis_symbol_midcol_dim { 1cm }
+%    \end{macrocode}
+%
+% \subsection{Document Settings}
+%
+%    \begin{macrocode}
 \doublespacing
-
-% Plain Page Style
 \pagestyle{plain}
-
-% Labels Declaration
 \graphicspath{ {./images/} }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Thesis Metadata Commands
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Initialize internal variables with default values
+%    \end{macrocode}
+%
+% \subsection{Thesis Metadata Commands}
+%
+%    \begin{macrocode}
 \tl_set:Nn \l__nusthesis_subtitle_tl { \space }
 \tl_set:Nn \l__nusthesis_qualification_tl { }
 \tl_set:Nn \l__nusthesis_keywords_tl { \space }
 
-% Public interface commands for setting thesis metadata
 \NewDocumentCommand \supervisor { m } {
   \tl_set:Nn \l__nusthesis_supervisor_tl { #1 }
 }
@@ -1144,7 +1281,7 @@
   \tl_set:Nn \l__nusthesis_keywords_tl { #1 }
 }
 
-% Helper for letterspacing (XeTeX doesn't need it)
+% letterspacing helper (XeTeX has no \textls)
 \cs_new:Npn \textsomels #1 {
   \sys_if_engine_xetex:TF {
     #1
@@ -1154,7 +1291,7 @@
   }
 }
 
-%% Preface
+%% Preface title class (used for acknowledgements, abstract, etc.)
 \providecommand*{\toclevel@preface}{1}
 \edef\toclevel@preface{1}
 \gdef\ttll@preface{0}
@@ -1163,19 +1300,13 @@
 \newcounter{preface}
 
 \titleformat{\preface}[display]{%
-  % format
     \__nusthesis_chaphead_font:\setstretch{0.9}}{%
-    % label
     }{%
-    % sep
     0em}{%
-    % beforecode
     \raggedleft\Huge}{%
-    % aftercode
   }
 
 \AfterEndPreamble{
-    % Table of contents spacing - using constants defined above
     \setlength{\cftbeforepartskip}{\c__nusthesis_toc_part_skip_dim \@plus\p@}
     \setlength{\cftbeforechapskip}{\c__nusthesis_toc_chapter_skip_dim \@plus.2\p@}
     \setlength{\cftbeforesecskip}{\c__nusthesis_toc_section_skip_dim \@plus.2\p@}
@@ -1226,14 +1357,11 @@
     \if@restonecol\twocolumn\fi
     }
 }
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Renewed Commands
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Title Page
+%    \end{macrocode}
+%
+% \subsection{Title Pages}
+%
+%    \begin{macrocode}
 \renewcommand{\titlepage}{
   \__nusthesis_titlepage_font:
   \thispagestyle{empty}
@@ -1249,7 +1377,6 @@
 \normalfont
 \clearpage{\thispagestyle{empty}\cleardoublepage}}
 
-% Title (Cover and Title)
 \renewcommand{\maketitle}{
   \frontmatter
   \pagestyle{empty}
@@ -1259,7 +1386,6 @@
   \pagestyle{plain}
 }
 
-% Table captions
 \renewcommand{\tablename}{Table}
 \DeclareCaptionLabelFormat{bf}{\bfseries #1~#2}
 \DeclareCaptionFormat{hfillstart}{#1#2#3}
@@ -1272,21 +1398,14 @@
   width = 0.9\linewidth
 }
 
-% Figure caption
 \renewcommand{\figurename}{Figure}
 \captionsetup[figure]{
   font={small,sf},
   labelformat=bf,
   labelsep=period,
-  width = 0.9\linewidth  
+  width = 0.9\linewidth
 }
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% New Commands
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Coverpage
 \newcommand{\coverpage}{
   \thispagestyle{empty}\vspace*{\c__nusthesis_coverpage_title_vspace_dim}
   \begin{center}\hyphenpenalty=10000
@@ -1303,7 +1422,6 @@
   \end{center}
   \cleardoublepage}
 
-% Title Page Body
 \cs_if_exist:cF { titlepagebody } {
   \NewDocumentCommand \titlepagebody { } {
     \Large\bfseries\text_uppercase:n {\@author}\\
@@ -1311,7 +1429,6 @@
   }
 }
 
-% Title Page Footer
 \cs_if_exist:cF { titlepagefooter } {
   \NewDocumentCommand \titlepagefooter { } {
     \large\text_uppercase:n {
@@ -1327,20 +1444,11 @@
       }{}
   }
 }
-
-%% Declaration Page Environment and Sub-commands
-%%
-%% Usage:
-%%   \begin{declaration}
-%%     \DeclarationStatement
-%%     \DeclarationGenAI          % template B: AI used (default)
-%%     \DeclarationGenAI[none]    % template A: no AI used
-%%     \DeclarationGenAICustom{custom text}  % custom AI statement
-%%     \DeclarationSignature[sig.png]  % optional signature image
-%%   \end{declaration}
-%%
-%% Backward-compatible shorthand: \DeclarationPage[sig.png]
-
+%    \end{macrocode}
+%
+% \subsection{Declaration Page}
+%
+%    \begin{macrocode}
 \NewDocumentEnvironment{declaration}{}
 {%
   \clearpage
@@ -1398,13 +1506,11 @@
     \vspace*{\c__nusthesis_declaration_author_adjust_dim}
     \@author\\
     \vspace*{\c__nusthesis_declaration_date_vspace_dim}
-    %\rule{\c__nusthesis_declaration_line_width_dim}{\c__nusthesis_declaration_line_thickness_dim}\\
     \vspace*{\c__nusthesis_declaration_author_adjust_dim}
     \today
   \end{center}
 }
 
-%% Backward-compatible \DeclarationPage wrapper
 \NewDocumentCommand \DeclarationPage { o }
 {
   \begin{declaration}
@@ -1414,23 +1520,18 @@
       { \DeclarationSignature }
   \end{declaration}
 }
-
-
-
-%% titlesec
+%    \end{macrocode}
+%
+% \subsection{Chapter and Section Formatting}
+%
+%    \begin{macrocode}
 \definecolor{chaptergrey}{rgb}{0.6,0.6,0.6}
 
-
-
-%%% chapter titles similar to quotchap
 \cs_new:Npn \chapnum {
   \fontsize{\c__nusthesis_chapnum_fontsize_int}{\c__nusthesis_chapnum_baseline_int}\__nusthesis_chaphead_font:\bfseries\selectfont
   \color{chaptergrey}\raggedleft
 }
 
-
-
-% Acknowledgment
 \newenvironment{acknowledgements}{%
   \chapter*{Acknowledgements}
    \addcontentsline{toc}{preface}{Acknowledgements}
@@ -1438,7 +1539,6 @@
      \newpage\cleardoublepage
 }
 
-% Abstract
 \NewDocumentEnvironment{abstract}{o}
 {%
   \IfNoValueTF{#1}{
@@ -1448,13 +1548,11 @@
  \chapter*{#1~Abstract}%
  \addcontentsline{toc}{preface}{#1~Abstract}%
 }
- 
   }{%
     \cleardoublepage%
 }
 
-
- \titlecontents{preface}
+\titlecontents{preface}
  [0pt]
  {\addvspace{1pc}%
    \mdseries\normalshape%
@@ -1465,33 +1563,27 @@
  }
  {\hfill\contentspage}
 
-% Strict Compliant
 \bool_if:NTF \l__classname_nusstrict_bool
 {
 }{
   \titleformat{\chapter}[display]{%
-    % format
     \__nusthesis_chaphead_font:\setstretch{0.9}}{%
-    % label
     \chapnum{\thechapter}}{%
-    % sep
     0em}{%
-    % beforecode
     \raggedleft\Huge}{%
-    % aftercode
   }
 }
 
 \titleformat{\section}{\setstretch{1.2}\__nusthesis_heading_font:\raggedright\Large}{\thesection}{1em}{}
 \titleformat{\subsection}{\setstretch{1.2}\__nusthesis_heading_font:\raggedright\large}{\thesubsection}{1em}{}
-
 \titleformat{\subsubsection}{\setstretch{1.2}\__nusthesis_heading_font:\normalsize}{\thesubsubsection}{1em}{}
-
-
-
-\bool_new:N \l__nusthesis_table_in_chapter_bool  %% has a table already appeared in this chapter
-\bool_new:N \l__nusthesis_figure_in_chapter_bool  %% has a figure already appeared in this chapter
-
+%    \end{macrocode}
+%
+% \subsection{Float Tracking}
+%
+%    \begin{macrocode}
+\bool_new:N \l__nusthesis_table_in_chapter_bool
+\bool_new:N \l__nusthesis_figure_in_chapter_bool
 
 \AddToHook{env/table/before}{
   \bool_if:NF \l__nusthesis_table_in_chapter_bool {
@@ -1521,17 +1613,18 @@
   }
 }
 
-
 \NewDocumentCommand{\ResetFloatsInChapter}{}{
   \bool_set_false:N \l__nusthesis_table_in_chapter_bool
   \bool_set_false:N \l__nusthesis_figure_in_chapter_bool
 }
 
-
 \pretocmd{\chapter}{%
   \ResetFloatsInChapter{}}{}{}
-
-
+%    \end{macrocode}
+%
+% \subsection{Appendices}
+%
+%    \begin{macrocode}
 \noappendicestocpagenum
 \renewcommand{\appendixpagename}{\__nusthesis_chaphead_font: Appendices}
 
@@ -1544,25 +1637,17 @@
 \appendixpage
 }
 
-
-
-% Format text referring to appendices
 \crefname{appsec}{Appendix}{Appendices}
 \crefname{figure}{Fig.}{Fig.}
 \crefname{table}{Table}{Tables}
 \crefname{equation}{}{}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Adapted from losymbol.sty
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% losymbol.sty by gerry van dooren, may 1992, revised august 1992.
-% elecgd@urc.tue.nl
-% 
-% definition is nearly analogous to the setup for list of figures
-% and list of tables; use same definition using \@starttoc,
-% however default extension is now .los
-% 
+%    \end{macrocode}
+%
+% \subsection{List of Symbols and Abbreviations}
+%
+% Adapted from \textsf{losymbol.sty} (gerry van dooren, 1992).
+%
+%    \begin{macrocode}
 \def\losymbolsname{List~of~Symbols}
 \def\loabbrevname{List~of~Abbreviations}
 \def\listofsymbolsnabbrev{
@@ -1575,20 +1660,15 @@
     \@starttoc{loab}
   \end{acronym}
 }
-% 
-% Command for adding symbols to the list of symbols
-% Writes to \jobname.los using \makenicesymbolline for formatting
+
 \NewDocumentCommand \addsymbol { m m } {
   \addtocontents{los}{\protect \makenicesymbolline{#1}{#2}}
 }
 
-% Command for adding abbreviations to the list of abbreviations
-% Writes to \jobname.loab using \makeniceabbrevline for formatting
 \NewDocumentCommand \addabbrev { m m } {
   \addtocontents{loab}{\protect \makeniceabbrevline{#1}{#2}}
 }
-% 
-% Physical dimensions of columns - using LaTeX3 dimension variables
+
 \dim_new:N \l__nusthesis_symbol_leftcol_working_dim
 \dim_set:Nn \l__nusthesis_symbol_leftcol_working_dim { \c__nusthesis_symbol_leftcol_dim }
 
@@ -1599,20 +1679,14 @@
 \dim_set:Nn \l__nusthesis_symbol_rightcol_working_dim {
   \hsize - \l__nusthesis_symbol_leftcol_working_dim - \l__nusthesis_symbol_midcol_working_dim
 }
-% 
-% command for producing the actual line uses standard minipages
-% to cope with long definitions
-%
+
 \def\makenicesymbolline#1#2{%
   \begin{minipage}[t]{\l__nusthesis_symbol_leftcol_working_dim}#1\end{minipage}%
   $\hspace{\l__nusthesis_symbol_midcol_working_dim}$%
   \begin{minipage}[t]{\l__nusthesis_symbol_rightcol_working_dim}#2\end{minipage}\newline}
 \def\makeniceabbrevline#1#2{%
-  % \begin{minipage}[t]{\l__nusthesis_symbol_leftcol_working_dim}#1\end{minipage}%
-  % $\hspace{\l__nusthesis_symbol_midcol_working_dim}$%
-  % \begin{minipage}[t]{\l__nusthesis_symbol_rightcol_working_dim}#2\end{minipage}\newline
   \acro{#1}{#2}}
-%</class>%
+%</class>
 %    \end{macrocode}
 %
 % \Finale

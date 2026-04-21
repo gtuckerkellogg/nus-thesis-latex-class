@@ -16,37 +16,31 @@
 \ProvidesExplClass{nus-thesis}
 {2024-11-29}{0.0.0.a}{NUS thesis class}
 \RequirePackage{iftex}
-
-
-
 \str_const:Nn \c__classname_base_class_str { book }
+
 \PassOptionsToClass{a4paper}{\c__classname_base_class_str}
 \PassOptionsToClass{12pt}{\c__classname_base_class_str}
 \PassOptionsToClass{oneside}{\c__classname_base_class_str}
 \PassOptionsToClass{openright}{\c__classname_base_class_str}
 \LoadClass { \c__classname_base_class_str }
+
 \sys_if_engine_pdftex:TF {
   \RequirePackage[T1]{fontenc}
   \RequirePackage[utf8]{inputenc}
-  \RequirePackage{textcomp} % provides euro and other symbols
+  \RequirePackage{textcomp}
   } {
     \RequirePackage{fontspec}
     \sys_if_engine_xetex:T { \RequirePackage{xunicode} }
 }
-
-
-\cs_new:Npn \__nusthesis_body_font: { \normalfont }          % Body text (main content)
-\cs_new:Npn \__nusthesis_titlepage_font: { \normalfont }     % Title page elements
-\cs_new:Npn \__nusthesis_chaphead_font: { \normalfont }      % Chapter headings
-\cs_new:Npn \__nusthesis_heading_font: { \normalfont }       % Section/subsection headings
-\cs_new:Npn \__nusthesis_caption_font: { \normalfont }       % Figure/table captions
-\cs_new:Npn \__nusthesis_verbatim_font: { \ttfamily }        % Code/verbatim blocks
-\cs_new:Npn \__nusthesis_math_setup: { }                     % Math font configuration hook
+\cs_new:Npn \__nusthesis_body_font: { \normalfont }
+\cs_new:Npn \__nusthesis_titlepage_font: { \normalfont }
+\cs_new:Npn \__nusthesis_chaphead_font: { \normalfont }
+\cs_new:Npn \__nusthesis_heading_font: { \normalfont }
+\cs_new:Npn \__nusthesis_caption_font: { \normalfont }
+\cs_new:Npn \__nusthesis_verbatim_font: { \ttfamily }
+\cs_new:Npn \__nusthesis_math_setup: { }
 
 \bool_new:N \l__thesis_use_glossaries_bool
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \prop_new:N \g__nusthesis_fontthemes_prop
 
@@ -60,6 +54,8 @@
     \str_set:Nn \l__nusthesis_engine_str { luatex }
   }
 }
+
+\bool_new:N \g__nusthesis_fonttheme_loaded_bool
 
 \tl_new:N \l__nusthesis_theme_config_tl
 \tl_new:N \l__nusthesis_theme_pdftex_tl
@@ -83,7 +79,7 @@
   , luatex .tl_set:N = \l__nusthesis_theme_luatex_tl
   , luatex .initial:n = { }
   , fontspec .tl_set:N = \l__nusthesis_theme_fontspec_tl
-  , fontspec .initial:n = { }  % Common code for XeTeX/LuaTeX
+  , fontspec .initial:n = { }
   , hooks / body .code:n = { \cs_gset:Npn \__nusthesis_body_font: { #1 } }
   , hooks / titlepage .code:n = { \cs_gset:Npn \__nusthesis_titlepage_font: { #1 } }
   , hooks / chaphead .code:n = { \cs_gset:Npn \__nusthesis_chaphead_font: { #1 } }
@@ -101,16 +97,9 @@
 \cs_new:Npn \__nusthesis_show_theme:nn #1 #2 { #1,~ }
 
 \cs_new:Npn \__nusthesis_load_fonttheme:n #1 {
-  % Check if theme exists in property list
   \prop_if_in:NnTF \g__nusthesis_fontthemes_prop { #1 } {
-    % Get theme configuration
     \prop_get:NnN \g__nusthesis_fontthemes_prop { #1 } \l__nusthesis_theme_config_tl
-
-    % Parse the configuration and set temporary variables
-    % NOTE: No group here - packages must be loaded at top level
     \keys_set:nV { nus-thesis / fonttheme } \l__nusthesis_theme_config_tl
-
-    % Load engine-specific fonts
     \str_case:Vn \l__nusthesis_engine_str {
       { pdftex } {
         \tl_if_empty:NF \l__nusthesis_theme_pdftex_tl {
@@ -118,7 +107,6 @@
         }
       }
       { xetex } {
-        % Try fontspec first (common code for XeTeX/LuaTeX), then xetex-specific
         \tl_if_empty:NTF \l__nusthesis_theme_fontspec_tl {
           \tl_if_empty:NF \l__nusthesis_theme_xetex_tl {
             \tl_use:N \l__nusthesis_theme_xetex_tl
@@ -128,7 +116,6 @@
         }
       }
       { luatex } {
-        % Try fontspec first (common code for XeTeX/LuaTeX), then luatex-specific
         \tl_if_empty:NTF \l__nusthesis_theme_fontspec_tl {
           \tl_if_empty:NF \l__nusthesis_theme_luatex_tl {
             \tl_use:N \l__nusthesis_theme_luatex_tl
@@ -138,9 +125,7 @@
         }
       }
     }
-    % Note: Font hooks are set globally during key processing (using \cs_gset:Npn)
   } {
-    % Theme not found - show error
     \msg_error:nnn { nus-thesis } { unknown-fonttheme } { #1 }
   }
 }
@@ -150,11 +135,7 @@
 \tl_new:N \g__nusthesis_selected_fonttheme_tl
 
 \NewDocumentCommand \DeclareThesisFontTheme { m m } {
-  % Store the theme configuration in the property list
   \prop_gput:Nnn \g__nusthesis_fontthemes_prop { #1 } { #2 }
-
-  % Also register this theme as a choice in the font key
-  % Load the theme immediately when selected (must be in preamble)
   \keys_define:nn { nus-thesis } {
     , font / #1 .code:n = {
         \bool_if:NF \g__nusthesis_fonttheme_loaded_bool {
@@ -168,9 +149,6 @@
 \NewDocumentCommand \UseFontTheme { m } {
   \__nusthesis_load_fonttheme:n { #1 }
 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \keys_define:nn { nus-thesis / usertheme }
 {
@@ -193,18 +171,12 @@
 }
 
 \NewDocumentCommand \ThesisDefineFontTheme { m m } {
-  % Parse user options
   \group_begin:
     \keys_set:nn { nus-thesis / usertheme } { #2 }
-
-    % Build fontspec configuration
     \tl_clear:N \l_tmpa_tl
-
-    % Load unicode-math if math font specified (must come before font setup)
     \tl_if_empty:NF \l__nusthesis_user_mathfont_tl {
       \tl_put_right:Nn \l_tmpa_tl { \RequirePackage{unicode-math} }
     }
-
     \tl_if_empty:NF \l__nusthesis_user_mainfont_tl {
       \tl_put_right:Nn \l_tmpa_tl { \setmainfont }
       \tl_put_right:NV \l_tmpa_tl \l__nusthesis_user_mainfont_tl
@@ -221,8 +193,6 @@
       \tl_put_right:Nn \l_tmpa_tl { \setmathfont }
       \tl_put_right:NV \l_tmpa_tl \l__nusthesis_user_mathfont_tl
     }
-
-    % Build hooks configuration
     \tl_clear:N \l_tmpb_tl
     \tl_if_empty:NF \l__nusthesis_user_chaphead_tl {
       \tl_put_right:Nn \l_tmpb_tl { hooks/chaphead = }
@@ -260,18 +230,16 @@
       }
       \tl_put_right:Nn \l_tmpb_tl { , }
     }
-
-    % Store for use outside group
     \tl_gset_eq:NN \g_tmpa_tl \l_tmpa_tl
     \tl_gset_eq:NN \g_tmpb_tl \l_tmpb_tl
   \group_end:
-
-  % Call low-level \DeclareThesisFontTheme with generated configuration
   \exp_args:Nnx \DeclareThesisFontTheme { #1 } {
     fontspec = { \exp_not:V \g_tmpa_tl },
     \exp_not:V \g_tmpb_tl
   }
 }
+\bool_new:N \l__classname_nusstrict_bool
+\bool_new:N \l__final_submission_bool
 
 \tl_new:N \l__nusthesis_supervisor_tl
 \tl_new:N \l__nusthesis_subtitle_tl
@@ -280,7 +248,6 @@
 
 \seq_new:N \g__nusthesis_symbol_seq
 \seq_new:N \g__nusthesis_abbrev_seq
-
 
 \keys_define:nn { nus-thesis }
 {
@@ -305,8 +272,17 @@
   , qualification .tl_set:N = \l__thesis_qualification_tl
   , qualification .initial:n = { qualification~undefined  }
   , qualification .code:n = {\qualification{#1}}
-  , strict .bool_set:N = \l__classname_nusstrict_bool
-  , strict .initial:n = { false}
+  , strict .code:n = {
+      \str_if_eq:nnTF { #1 } { true }
+        { \bool_set_true:N \l__classname_nusstrict_bool }
+        { \bool_set_false:N \l__classname_nusstrict_bool }
+      \bool_if:NT \l__classname_nusstrict_bool {
+        \bool_gset_false:N \g__nusthesis_fonttheme_loaded_bool
+        \keys_set:nn { nus-thesis } { font = times }
+      }
+    }
+  , strict .default:n = { true }
+  , strict .initial:n = { false }
   , final .bool_set:N = \l__final_submission_bool
   , final .initial:n = { false }
   , advisor .tl_set:N = \l__thesis_advisor_tl
@@ -317,8 +293,7 @@
   % Font themes are defined below using \DeclareThesisFontTheme
   , font / strict .meta:n = { font = times }  % Alias for backward compatibility
   , glossaries .bool_set:N = \l__thesis_use_glossaries_bool
-  , glossaries .initial:n = { false }  % Default: don't load glossaries
-  % \DeclareDefaultOption
+  , glossaries .initial:n = { false }
   , unknown .code:n =
   {
     \iow_term:x
@@ -330,14 +305,8 @@
   }
 }
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \DeclareThesisFontTheme{computermodern}{
   pdftex = {
-    % Computer Modern is the default - no packages needed
-    % Optionally load Latin Modern for better quality
     \RequirePackage{lmodern}
   },
   fontspec = {
@@ -347,12 +316,11 @@
     \setmonofont{Latin~Modern~Mono}[Scale=MatchLowercase]
     \setmathfont{Latin~Modern~Math}
   },
-  % All hooks use defaults (serif body, serif headings)
 }
 
 \DeclareThesisFontTheme{times}{
   pdftex = {
-    \RequirePackage{mathptmx}  % Times + math support
+    \RequirePackage{mathptmx}
   },
   fontspec = {
     \RequirePackage{unicode-math}
@@ -361,7 +329,6 @@
     \setmonofont{Latin~Modern~Mono}[Scale=MatchLowercase]
     \setmathfont{TeX~Gyre~Termes~Math}
   },
-  % All hooks use defaults (serif body, serif headings)
 }
 
 \DeclareThesisFontTheme{helvetica}{
@@ -377,7 +344,7 @@
     \setsansfont{TeX~Gyre~Heros}[Scale=0.95]
     \setmainfont{TeX~Gyre~Heros}[Scale=0.95]
     \setmonofont{Inconsolata}[Scale=MatchLowercase]
-    \setmathfont{Fira~Math}  % Sans-serif math font
+    \setmathfont{Fira~Math}
   },
   hooks/body = \sffamily,
   hooks/titlepage = \sffamily,
@@ -388,7 +355,7 @@
 
 \DeclareThesisFontTheme{palatino}{
   pdftex = {
-    \RequirePackage[sc]{mathpazo}  % Palatino + smallcaps
+    \RequirePackage[sc]{mathpazo}
     \RequirePackage[scaled=0.95]{helvet}
     \RequirePackage[varl]{inconsolata}
   },
@@ -431,7 +398,7 @@
     \setmainfont{Noto~Serif}
     \setsansfont{Noto~Sans}
     \setmonofont{Noto~Sans~Mono}[Scale=MatchLowercase]
-    \setmathfont{STIXTwoMath-Regular.otf}  % Noto doesn't have a math font yet
+    \setmathfont{STIXTwoMath-Regular.otf}
   },
   hooks/titlepage = \sffamily,
   hooks/chaphead = \sffamily,
@@ -451,9 +418,8 @@
     \setmainfont{Minion~Pro}
     \setsansfont{Myriad~Pro}
     \setmonofont{Inconsolata}[Scale=0.9]
-    \setmathfont{TeX~Gyre~Pagella~Math}  % Minion Math is commercial
+    \setmathfont{TeX~Gyre~Pagella~Math}
   },
-  %hooks/titlepage = \sffamily,
   hooks/chaphead = \sffamily,
   hooks/heading = \sffamily,
   hooks/caption = \sffamily,
@@ -464,9 +430,6 @@
 \NewDocumentCommand \ThesisSetup { m } {
   \keys_set:nn { nus-thesis } { #1 }
 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \RequirePackage[UKenglish]{isodate}
 
@@ -533,14 +496,6 @@
   hidelinks%
 }
 \RequirePackage[nameinlink,noabbrev, capitalise]{cleveref}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\bool_new:N \g__nusthesis_fonttheme_loaded_bool
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \dim_const:Nn \c__nusthesis_toc_part_skip_dim { 2.25em }
 \dim_const:Nn \c__nusthesis_toc_chapter_skip_dim { 1.5em }
 \dim_const:Nn \c__nusthesis_toc_section_skip_dim { 1em }
@@ -576,19 +531,11 @@
 \dim_const:Nn \c__nusthesis_subsubsection_before_dim { 3.25ex }
 \dim_const:Nn \c__nusthesis_subsubsection_after_dim { 1.5ex }
 
-\dim_const:Nn \c__nusthesis_symbol_leftcol_dim { 2cm }   % Symbol/abbreviation column
-\dim_const:Nn \c__nusthesis_symbol_midcol_dim { 1cm }    % Spacing column
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dim_const:Nn \c__nusthesis_symbol_leftcol_dim { 2cm }
+\dim_const:Nn \c__nusthesis_symbol_midcol_dim { 1cm }
 \doublespacing
-
 \pagestyle{plain}
-
 \graphicspath{ {./images/} }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tl_set:Nn \l__nusthesis_subtitle_tl { \space }
 \tl_set:Nn \l__nusthesis_qualification_tl { }
 \tl_set:Nn \l__nusthesis_keywords_tl { \space }
@@ -618,7 +565,7 @@
   }
 }
 
-%% Preface
+%% Preface title class (used for acknowledgements, abstract, etc.)
 \providecommand*{\toclevel@preface}{1}
 \edef\toclevel@preface{1}
 \gdef\ttll@preface{0}
@@ -627,19 +574,13 @@
 \newcounter{preface}
 
 \titleformat{\preface}[display]{%
-  % format
     \__nusthesis_chaphead_font:\setstretch{0.9}}{%
-    % label
     }{%
-    % sep
     0em}{%
-    % beforecode
     \raggedleft\Huge}{%
-    % aftercode
   }
 
 \AfterEndPreamble{
-    % Table of contents spacing - using constants defined above
     \setlength{\cftbeforepartskip}{\c__nusthesis_toc_part_skip_dim \@plus\p@}
     \setlength{\cftbeforechapskip}{\c__nusthesis_toc_chapter_skip_dim \@plus.2\p@}
     \setlength{\cftbeforesecskip}{\c__nusthesis_toc_section_skip_dim \@plus.2\p@}
@@ -690,9 +631,6 @@
     \if@restonecol\twocolumn\fi
     }
 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\titlepage}{
   \__nusthesis_titlepage_font:
   \thispagestyle{empty}
@@ -737,8 +675,6 @@
   width = 0.9\linewidth
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\coverpage}{
   \thispagestyle{empty}\vspace*{\c__nusthesis_coverpage_title_vspace_dim}
   \begin{center}\hyphenpenalty=10000
@@ -777,20 +713,6 @@
       }{}
   }
 }
-
-%% Declaration Page Environment and Sub-commands
-%%
-%% Usage:
-%%   \begin{declaration}
-%%     \DeclarationStatement
-%%     \DeclarationGenAI          % template B: AI used (default)
-%%     \DeclarationGenAI[none]    % template A: no AI used
-%%     \DeclarationGenAICustom{custom text}  % custom AI statement
-%%     \DeclarationSignature[sig.png]  % optional signature image
-%%   \end{declaration}
-%%
-%% Backward-compatible shorthand: \DeclarationPage[sig.png]
-
 \NewDocumentEnvironment{declaration}{}
 {%
   \clearpage
@@ -848,13 +770,11 @@
     \vspace*{\c__nusthesis_declaration_author_adjust_dim}
     \@author\\
     \vspace*{\c__nusthesis_declaration_date_vspace_dim}
-    %\rule{\c__nusthesis_declaration_line_width_dim}{\c__nusthesis_declaration_line_thickness_dim}\\
     \vspace*{\c__nusthesis_declaration_author_adjust_dim}
     \today
   \end{center}
 }
 
-%% Backward-compatible \DeclarationPage wrapper
 \NewDocumentCommand \DeclarationPage { o }
 {
   \begin{declaration}
@@ -864,11 +784,8 @@
       { \DeclarationSignature }
   \end{declaration}
 }
-
-%% titlesec
 \definecolor{chaptergrey}{rgb}{0.6,0.6,0.6}
 
-%%% chapter titles similar to quotchap
 \cs_new:Npn \chapnum {
   \fontsize{\c__nusthesis_chapnum_fontsize_int}{\c__nusthesis_chapnum_baseline_int}\__nusthesis_chaphead_font:\bfseries\selectfont
   \color{chaptergrey}\raggedleft
@@ -890,12 +807,11 @@
  \chapter*{#1~Abstract}%
  \addcontentsline{toc}{preface}{#1~Abstract}%
 }
-
   }{%
     \cleardoublepage%
 }
 
- \titlecontents{preface}
+\titlecontents{preface}
  [0pt]
  {\addvspace{1pc}%
    \mdseries\normalshape%
@@ -910,25 +826,18 @@
 {
 }{
   \titleformat{\chapter}[display]{%
-    % format
     \__nusthesis_chaphead_font:\setstretch{0.9}}{%
-    % label
     \chapnum{\thechapter}}{%
-    % sep
     0em}{%
-    % beforecode
     \raggedleft\Huge}{%
-    % aftercode
   }
 }
 
 \titleformat{\section}{\setstretch{1.2}\__nusthesis_heading_font:\raggedright\Large}{\thesection}{1em}{}
 \titleformat{\subsection}{\setstretch{1.2}\__nusthesis_heading_font:\raggedright\large}{\thesubsection}{1em}{}
-
 \titleformat{\subsubsection}{\setstretch{1.2}\__nusthesis_heading_font:\normalsize}{\thesubsubsection}{1em}{}
-
-\bool_new:N \l__nusthesis_table_in_chapter_bool  %% has a table already appeared in this chapter
-\bool_new:N \l__nusthesis_figure_in_chapter_bool  %% has a figure already appeared in this chapter
+\bool_new:N \l__nusthesis_table_in_chapter_bool
+\bool_new:N \l__nusthesis_figure_in_chapter_bool
 
 \AddToHook{env/table/before}{
   \bool_if:NF \l__nusthesis_table_in_chapter_bool {
@@ -965,7 +874,6 @@
 
 \pretocmd{\chapter}{%
   \ResetFloatsInChapter{}}{}{}
-
 \noappendicestocpagenum
 \renewcommand{\appendixpagename}{\__nusthesis_chaphead_font: Appendices}
 
@@ -982,9 +890,6 @@
 \crefname{figure}{Fig.}{Fig.}
 \crefname{table}{Table}{Tables}
 \crefname{equation}{}{}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \def\losymbolsname{List~of~Symbols}
 \def\loabbrevname{List~of~Abbreviations}
 \def\listofsymbolsnabbrev{
@@ -997,6 +902,7 @@
     \@starttoc{loab}
   \end{acronym}
 }
+
 \NewDocumentCommand \addsymbol { m m } {
   \addtocontents{los}{\protect \makenicesymbolline{#1}{#2}}
 }
@@ -1004,6 +910,7 @@
 \NewDocumentCommand \addabbrev { m m } {
   \addtocontents{loab}{\protect \makeniceabbrevline{#1}{#2}}
 }
+
 \dim_new:N \l__nusthesis_symbol_leftcol_working_dim
 \dim_set:Nn \l__nusthesis_symbol_leftcol_working_dim { \c__nusthesis_symbol_leftcol_dim }
 
@@ -1014,14 +921,12 @@
 \dim_set:Nn \l__nusthesis_symbol_rightcol_working_dim {
   \hsize - \l__nusthesis_symbol_leftcol_working_dim - \l__nusthesis_symbol_midcol_working_dim
 }
+
 \def\makenicesymbolline#1#2{%
   \begin{minipage}[t]{\l__nusthesis_symbol_leftcol_working_dim}#1\end{minipage}%
   $\hspace{\l__nusthesis_symbol_midcol_working_dim}$%
   \begin{minipage}[t]{\l__nusthesis_symbol_rightcol_working_dim}#2\end{minipage}\newline}
 \def\makeniceabbrevline#1#2{%
-  % \begin{minipage}[t]{\l__nusthesis_symbol_leftcol_working_dim}#1\end{minipage}%
-  % $\hspace{\l__nusthesis_symbol_midcol_working_dim}$%
-  % \begin{minipage}[t]{\l__nusthesis_symbol_rightcol_working_dim}#2\end{minipage}\newline
   \acro{#1}{#2}}
 \endinput
 %%
