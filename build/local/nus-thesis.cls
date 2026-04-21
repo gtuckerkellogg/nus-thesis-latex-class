@@ -839,31 +839,43 @@
 \bool_new:N \l__nusthesis_table_in_chapter_bool
 \bool_new:N \l__nusthesis_figure_in_chapter_bool
 
+\cs_new_protected:Npn \__nusthesis_write_list_chapter_entry:n #1 {
+  \group_begin:
+    \let \protect \@unexpandable@protect
+    \edef \reserved@a {
+      \string\@writefile{#1}{
+        \string\contentsline{chapter}{\chaptertitlename\ \thechapter}{}{}
+      }
+    }
+    \immediate\write\@auxout{\reserved@a}
+  \group_end:
+}
+
 \AddToHook{env/table/before}{
   \bool_if:NF \l__nusthesis_table_in_chapter_bool {
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
-    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    \__nusthesis_write_list_chapter_entry:n { lot }
   }
 }
 
 \AddToHook{env/longtable/before}{
   \bool_if:NF \l__nusthesis_table_in_chapter_bool {
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
-    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    \__nusthesis_write_list_chapter_entry:n { lot }
   }
 }
 
 \AddToHook{env/sidewaystable/before}{
   \bool_if:NF \l__nusthesis_table_in_chapter_bool {
     \bool_set_true:N \l__nusthesis_table_in_chapter_bool
-    \addtocontents{lot}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    \__nusthesis_write_list_chapter_entry:n { lot }
   }
 }
 
 \AddToHook{env/figure/before}{
   \bool_if:NF \l__nusthesis_figure_in_chapter_bool {
     \bool_set_true:N \l__nusthesis_figure_in_chapter_bool
-    \addtocontents{lof}{\protect\contentsline{chapter}{\chaptertitlename \  \thechapter}{}{}}
+    \__nusthesis_write_list_chapter_entry:n { lof }
   }
 }
 
