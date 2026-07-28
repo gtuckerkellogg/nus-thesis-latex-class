@@ -14,7 +14,7 @@
 \NeedsTeXFormat{LaTeX2e}[2022-06-01]
 \RequirePackage{l3keys2e}
 \ProvidesExplClass{nus-thesis}
-{2024-11-29}{0.0.0.a}{NUS thesis class}
+{2026-07-28}{0.2.0.a}{NUS thesis class}
 \RequirePackage{iftex}
 \str_const:Nn \c__classname_base_class_str { book }
 
@@ -246,6 +246,9 @@
 \tl_new:N \l__nusthesis_subtitle_tl
 \tl_new:N \l__nusthesis_qualification_tl
 \tl_new:N \l__nusthesis_keywords_tl
+\tl_new:N \l__nusthesis_submission_date_tl
+\tl_new:N \l__nusthesis_declaration_date_tl
+\tl_set:Nn \l__nusthesis_declaration_date_tl { \today }
 
 \seq_new:N \g__nusthesis_symbol_seq
 \seq_new:N \g__nusthesis_abbrev_seq
@@ -270,6 +273,12 @@
   , field .initial:n = { (field) }
   , submission-year .tl_set:N = \l__thesis_year_tl
   , submission-year .initial:n =  { \number\year }
+  , submission-date .code:n = {
+      \tl_set:Nn \l__nusthesis_submission_date_tl { #1 }
+      \seq_set_split:Nnn \l_tmpa_seq { - } { #1 }
+      \tl_set:Nx \l__thesis_year_tl { \int_eval:n { \seq_item:Nn \l_tmpa_seq {1} } }
+      \tl_set:Nn \l__nusthesis_declaration_date_tl { \printdate{#1} }
+    }
   , qualification .tl_set:N = \l__thesis_qualification_tl
   , qualification .initial:n = { qualification~undefined  }
   , qualification .code:n = {\qualification{#1}}
@@ -783,7 +792,7 @@
     \@author\\
     \vspace*{\c__nusthesis_declaration_date_vspace_dim}
     \vspace*{\c__nusthesis_declaration_author_adjust_dim}
-    \today
+    \l__nusthesis_declaration_date_tl
   \end{center}
 }
 

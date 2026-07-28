@@ -10,7 +10,7 @@
 %<class>\NeedsTeXFormat{LaTeX2e}[2022-06-01]
 %<class>\RequirePackage{l3keys2e}
 %<class>\ProvidesExplClass{nus-thesis}
-%<class>{2026-07-28}{0.1.1.a}{NUS thesis class}
+%<class>{2026-07-28}{0.2.0.a}{NUS thesis class}
 %<class>\RequirePackage{iftex}
 %<*manual,driver-impl>
 \documentclass{l3doc}
@@ -239,7 +239,7 @@
 % |submission-date| avoids that.  The value must be an ISO date
 % (\meta{YYYY-MM-DD}).  Setting it derives the four-digit year shown on the
 % cover and title pages (overriding |submission-year|) \emph{and} the
-% formatted date (e.g.\ |15 August 2025|) shown on the declaration page in
+% formatted date (e.g.\ |15th August 2025|) shown on the declaration page in
 % place of \cs{today}.  Leave it unset while actively drafting; set it once
 % for the final/archival copy.
 % \end{function}
@@ -968,32 +968,11 @@
   , field .initial:n = { (field) }
   , submission-year .tl_set:N = \l__thesis_year_tl
   , submission-year .initial:n =  { \number\year }
-  , submission-date .tl_set:N = \l__nusthesis_submission_date_tl
-  , submission-date .initial:n = { }
   , submission-date .code:n = {
+      \tl_set:Nn \l__nusthesis_submission_date_tl { #1 }
       \seq_set_split:Nnn \l_tmpa_seq { - } { #1 }
       \tl_set:Nx \l__thesis_year_tl { \int_eval:n { \seq_item:Nn \l_tmpa_seq {1} } }
-      \tl_set:Nx \l__nusthesis_declaration_date_tl {
-        \int_eval:n { \seq_item:Nn \l_tmpa_seq {3} }
-        \c_space_tl
-        \int_case:nn { \int_eval:n { \seq_item:Nn \l_tmpa_seq {2} } }
-          {
-            {1}{January}
-            {2}{February}
-            {3}{March}
-            {4}{April}
-            {5}{May}
-            {6}{June}
-            {7}{July}
-            {8}{August}
-            {9}{September}
-            {10}{October}
-            {11}{November}
-            {12}{December}
-          }
-        \c_space_tl
-        \int_eval:n { \seq_item:Nn \l_tmpa_seq {1} }
-      }
+      \tl_set:Nn \l__nusthesis_declaration_date_tl { \printdate{#1} }
     }
   , qualification .tl_set:N = \l__thesis_qualification_tl
   , qualification .initial:n = { qualification~undefined  }

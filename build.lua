@@ -3,7 +3,7 @@
 --- tags
 
 module = "nus-thesis"
-pkgversion = "0.1.1.a" -- Major, Minor, Patch, Tweak
+pkgversion = "0.2.0.a" -- Major, Minor, Patch, Tweak
 pkgdate = "2026-07-28"
 
 sourcefiledir = "src"
