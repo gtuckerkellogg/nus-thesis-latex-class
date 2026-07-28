@@ -3,8 +3,8 @@
 --- tags
 
 module = "nus-thesis"
-pkgversion = "0.1.0.a" -- Major, Minor, Patch, Tweak
-pkgdate = "2024-11-28"
+pkgversion = "0.1.1.a" -- Major, Minor, Patch, Tweak
+pkgdate = "2026-07-28"
 
 sourcefiledir = "src"
 docfiledir = "doc"
@@ -22,17 +22,28 @@ packtdszip = true
 checkengines = { "pdftex" }
 checksuppfiles = { "*.tex" }
 
-files2tag = {
-   {
-    name = "src/"..module..".dtx",
-    version_pattern = "ProvidesExplClass{"..module.."}{%d%d%d%d%-%d%d%-%d%d}{%d+%.%d+%.%d+%.%w+}",
-    version_subpattern = "}{%d+%.%d+%.%d+%.%w+}",
-    date_pattern = "ProvidesExplClass{"..module.."}{%d%d%d%d%-%d%d%-%d%d}{%d+%.%d+%.%d+%.%w+}",
-    date_subpattern = module.."}{%d%d%d%d%-%d%d%-%d%d}{",
-    version_output =  "}{".. pkgversion .."}",
-    date_output = module.."}{"..pkgdate.."}{"
-   }
-}
+-- l3build's `tag` target only edits files when a Lua `update_tag` function is
+-- supplied (see the l3build manual, section 4.2 "Automatic tagging"); with no
+-- such function defined, `l3build tag` is a no-op. Keep the
+-- \ProvidesExplClass{...}{date}{version}{...} declaration in src/nus-thesis.dtx
+-- in sync with pkgversion/pkgdate above. The declaration is split across two
+-- docstrip-tagged lines:
+--   %<class>\ProvidesExplClass{nus-thesis}
+--   %<class>{2024-11-29}{0.0.0.a}{NUS thesis class}
+local function lua_pattern_escape(s)
+  return (s:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1"))
+end
+
+function update_tag(file,content,tagname,tagdate)
+  if file == module..".dtx" then
+    local module_pat = lua_pattern_escape(module)
+    content = content:gsub(
+      "(\\ProvidesExplClass{"..module_pat.."}\n%%<class>){%d%d%d%d%-%d%d%-%d%d}{%d+%.%d+%.%d+%.%w+}",
+      "%1{"..pkgdate.."}{"..pkgversion.."}"
+    )
+  end
+  return content
+end
 
 -- Typeset documentation - builds two separate PDFs
 -- nus-thesis-manual.pdf: User documentation
