@@ -922,6 +922,9 @@
 \tl_new:N \l__nusthesis_subtitle_tl
 \tl_new:N \l__nusthesis_qualification_tl
 \tl_new:N \l__nusthesis_keywords_tl
+\tl_new:N \l__nusthesis_submission_date_tl
+\tl_new:N \l__nusthesis_declaration_date_tl
+\tl_set:Nn \l__nusthesis_declaration_date_tl { \today }
 
 \seq_new:N \g__nusthesis_symbol_seq
 \seq_new:N \g__nusthesis_abbrev_seq
@@ -946,6 +949,33 @@
   , field .initial:n = { (field) }
   , submission-year .tl_set:N = \l__thesis_year_tl
   , submission-year .initial:n =  { \number\year }
+  , submission-date .tl_set:N = \l__nusthesis_submission_date_tl
+  , submission-date .initial:n = { }
+  , submission-date .code:n = {
+      \seq_set_split:Nnn \l_tmpa_seq { - } { #1 }
+      \tl_set:Nx \l__thesis_year_tl { \int_eval:n { \seq_item:Nn \l_tmpa_seq {1} } }
+      \tl_set:Nx \l__nusthesis_declaration_date_tl {
+        \int_eval:n { \seq_item:Nn \l_tmpa_seq {3} }
+        \c_space_tl
+        \int_case:nn { \int_eval:n { \seq_item:Nn \l_tmpa_seq {2} } }
+          {
+            {1}{January}
+            {2}{February}
+            {3}{March}
+            {4}{April}
+            {5}{May}
+            {6}{June}
+            {7}{July}
+            {8}{August}
+            {9}{September}
+            {10}{October}
+            {11}{November}
+            {12}{December}
+          }
+        \c_space_tl
+        \int_eval:n { \seq_item:Nn \l_tmpa_seq {1} }
+      }
+    }
   , qualification .tl_set:N = \l__thesis_qualification_tl
   , qualification .initial:n = { qualification~undefined  }
   , qualification .code:n = {\qualification{#1}}
