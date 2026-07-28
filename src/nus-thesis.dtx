@@ -223,6 +223,25 @@
 %     |submission-year| = \meta{year}
 %   \end{syntax}
 % The four-digit submission year.  Defaults to the current year.
+% Prefer |submission-date| (below) when you want the year pinned
+% together with a fixed declaration-page date; if both are set, whichever
+% is processed later in \ThesisSetup{} wins.
+% \end{function}
+%
+% \begin{function}{submission-date}
+%   \begin{syntax}
+%     |submission-date| = \meta{ISO date, e.g.\ 2025-08-15}
+%   \end{syntax}
+% Pins the thesis to a fixed submission date instead of deriving it from
+% \cs{today} at compile time.  Recompiling the document later (e.g.\ to fix a
+% typo in an already-submitted thesis) would otherwise silently change the
+% printed year and the declaration-page signature date to "now" -- setting
+% |submission-date| avoids that.  The value must be an ISO date
+% (\meta{YYYY-MM-DD}).  Setting it derives the four-digit year shown on the
+% cover and title pages (overriding |submission-year|) \emph{and} the
+% formatted date (e.g.\ |15 August 2025|) shown on the declaration page in
+% place of \cs{today}.  Leave it unset while actively drafting; set it once
+% for the final/archival copy.
 % \end{function}
 %
 % \begin{function}{advisor}
